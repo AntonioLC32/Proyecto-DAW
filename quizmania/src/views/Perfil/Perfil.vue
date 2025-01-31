@@ -1,68 +1,82 @@
 <template>
   <section>
-    <div class="container-fluid pantalla-ranking">
-      <!-- Perfil -->
-      <div class="perfil-ranking">
-        <div class="perfil-title">
-          <h1><b>PERFIL</b></h1>
-        </div>
-        <img src="../../assets/perfil.jpg" alt="Perfil Image" width="250px" height="275px" style="border-radius: 50%;" />
-        <h3 class="text-white"><b>{{ username }}</b></h3>
+    <div class="perfil">
+      <div class="perfil-title">
+        <h1>PERFIL</h1>
       </div>
 
-      <!-- Opciones (Tabs) -->
-      <div class="ajustes">
-        <div class="container-fluid p-0">
-          <ul class="nav nav-tabs w-100">
-            <li class="nav-item" style="width: 50%; text-align: center;">
-              <a @click="setTab('ajustes')" :class="{ active: activeTab === 'ajustes' }" class="nav-link">
-                Ajustes
-              </a>
-            </li>
-            <li class="nav-item" style="width: 50%; text-align: center;">
-              <a @click="setTab('estadisticas')" :class="{ active: activeTab === 'estadisticas' }" class="nav-link">
-                Estadísticas
-              </a>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div v-if="activeTab === 'ajustes'" class="tab-pane fade in active">
-              <h1 class="ajustes-title text-white"><b>Ajustes de la Cuenta</b></h1>
-              <form @submit.prevent="saveSettings">
-                <label for="nombre">Nombre</label><br />
-                <input v-model="settings.name" type="text" placeholder="PEPE_123ASD" class="form-control mb-3" />
-                <label for="correo">Correo electrónico</label><br />
-                <input v-model="settings.email" type="email" placeholder="pepe123asdf@correo.com" class="form-control mb-3" />
-                <label>Desea recibir notificaciones?</label>
-                <div class="form-check">
-                  <input v-model="settings.notifications" type="radio" name="notificaciones" id="si" value="si" checked />
-                  <label for="si">Sí</label><br />
-                  <input v-model="settings.notifications" type="radio" name="notificaciones" id="no" value="no" />
-                  <label for="no">No</label>
-                </div>
-                <button class="btn btn-dark w-100 mt-3">
-                  <i class="fa fa-save"></i> Guardar Ajustes
-                </button>
-              </form>
-            </div>
+      <div class="division">
+        <!-- Perfil -->
+        <div class="perfil-vista">
+          <img src="../../assets/perfil.jpg" alt="Perfil Image"
+            style="border-radius: 50%;" />
+          <h3 class="text-white">PEPE_123ASD</h3>
+          <h4>¡Comparte tu perfil <br> con tus amigos!</h4>
+          <div class="d-flex text-white">
+            <i class="fa-brands fa-instagram"></i>
+            <i class="fa-solid fa-share"></i>
+          </div>
+        </div>
 
-            <!-- Contenido de Estadísticas -->
-            <div v-if="activeTab === 'estadisticas'" class="tab-pane fade">
-              <h1 class="ajustes-title text-white"><b>Estadísticas</b></h1>
-              <div class="estadisticas-container">
-                <div class="estadistica-item">
-                  <h4 class="me-5">Pos. Última Partida</h4>
-                  <p class="estadistica-valor">{{ stats.lastPosition }}</p>
-                </div>
-                <div class="estadistica-item">
-                  <h4 class="me-5">Puntos Última Partida</h4>
-                  <p class="estadistica-valor">{{ stats.lastPoints }}</p>
-                </div>
-                <div class="estadistica-item">
-                  <h4 class="me-5">Categoría Destacada</h4>
-                  <p class="estadistica-valor">
-                    <img :src="stats.featuredCategoryImage" alt="Categoría" style="width: 150px;" />
-                  </p>
+        <!-- Opciones (Tabs) -->
+        <div class="ajustes">
+          <div class="container-fluid p-0">
+            <ul class="nav nav-tabs w-100">
+              <li class="nav-item" style="width: 50%; text-align: center;">
+                <a @click="setTab('ajustes')" :class="{ active: activeTab === 'ajustes' }" class="nav-link">
+                  Ajustes
+                </a>
+              </li>
+              <li class="nav-item" style="width: 50%; text-align: center;">
+                <a @click="setTab('estadisticas')" :class="{ active: activeTab === 'estadisticas' }" class="nav-link">
+                  Estadísticas
+                </a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div v-if="activeTab === 'ajustes'" class="tab-pane" :class="{ 'show active': activeTab === 'ajustes' }">
+                <h1 class="ajustes-title text-white">Ajustes de la Cuenta</h1>
+
+                <form @submit.prevent="saveSettings">
+                  <label for="nombre">Nombre</label><br />
+                  <input v-model="settings.name" type="text" placeholder="PEPE_123ASD" class="form-control mb-3" />
+                  <label for="correo">Correo electrónico</label><br />
+                  <input v-model="settings.email" type="email" placeholder="pepe123asdf@correo.com"
+                    class="form-control mb-3" />
+                  <label>Desea recibir notificaciones?</label>
+                  <div class="form-check">
+                    <input v-model="settings.notifications" type="radio" name="notificaciones" id="si" value="si"
+                      checked />
+                    <label for="si">Sí</label><br />
+                    <input v-model="settings.notifications" type="radio" name="notificaciones" id="no" value="no" />
+                    <label for="no">No</label>
+                  </div>
+                  <button class="btn btn-dark w-100 mt-3">
+                    <i class="fa fa-save"></i> Guardar Ajustes
+                  </button>
+                </form>
+
+              </div>
+
+              <!-- Contenido de Estadísticas -->
+              <div v-if="activeTab === 'estadisticas'" class="tab-pane"
+                :class="{ 'show active': activeTab === 'estadisticas' }">
+                <h1 class="ajustes-title text-white">Estadísticas</h1>
+                <div class="estadisticas-container">
+                  <div class="estadistica-item">
+                    <h4>Pos. Última Partida</h4>
+                    <p class="estadistica-valor">{{ stats.lastPosition }}</p>
+                  </div>
+                  <div class="estadistica-item">
+                    <h4>Puntos Última Partida</h4>
+                    <p class="estadistica-valor">{{ stats.lastPoints }}</p>
+                  </div>
+                  <div class="estadistica-item">
+                    <h4>Categoría Destacada</h4>
+                    <p class="estadistica-valor">
+                      <img :src="stats.featuredCategoryImage" alt="Categoría" style="width: 150px;" />
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -70,6 +84,7 @@
         </div>
       </div>
     </div>
+
   </section>
 </template>
 
@@ -88,7 +103,7 @@ export default {
       stats: {
         lastPosition: 1,
         lastPoints: 15648,
-        featuredCategoryImage: 'imgs/entre.png'
+        featuredCategoryImage: '../../assets/entre.png'
       }
     };
   },
@@ -105,120 +120,175 @@ export default {
 
 <style scoped>
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
 
-html {
-  height: 100vh !important;
-  overflow: hidden;
+section {
+  background: linear-gradient(340deg, #8d89f9 0%, #2c2d67 100%);
+  min-height: 100vh;
+  height: auto;
+  overflow: auto;
 }
 
-body {
-  background: conic-gradient(
-    from 340deg,
-    #8d89f9 0%,
-    #5759cd 55%,
-    #2c2d67 100%
-  );
-  color: #fff;
-}
-
-.navbar {
-  background-color: #8d89f9;
-  height: 92px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-}
-
-.navbar .logo {
-  margin-left: 20px;
-}
-
-.navbar a {
-  color: #000;
-  font-size: 16px;
-  font-weight: bold;
-  text-decoration: none;
-  margin: 0 10px;
+.perfil {
+  margin-top: 46px;
+  margin-left: 48px;
+  margin-right: 48px;
 }
 
 .perfil-title {
-  background-color: #5759cd;
-  color: #fff;
-  font-size: 48px;
-  font-weight: bold;
-  height: 151px;
+  background-color: #2C2D67;
+  border: 5px solid #21224F;
+  border-radius: 8px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+  height: auto;
+  max-height: 150px;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.tab-content {
+.perfil-title h1 {
+  filter: drop-shadow(0 4px 4px #00000073);
+  /* drop shadow */
+  font-weight: bold;
+  font-size: 48px;
+  color: #fff;
+}
+
+.division {
+  width: 100%;
   display: flex;
-  justify-content: center;
+  height: auto;
+  min-height: 680px;
+  max-height: 680px;
+}
+
+.perfil-vista {
+  background-color: #2C2D67;
+  border: 5px solid #21224F;
+  border-radius: 8px;
+  width: 30%;
+  /* 30% of the container width */
+  height: auto;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  font-weight: bold;
+}
+
+.perfil-vista img {
+  margin-bottom: 20px;
+  margin-top: 47px;
+  width: 100%;
+  height: auto;
+  max-width:250px; 
+  max-height:275px;
+}
+
+.perfil-vista h3 {
+  font-weight: bold;
+  font-size: 32px;
+}
+
+.perfil-vista i {
+  filter: drop-shadow(0 4px 4px #00000073);
+  /* drop shadow */
+}
+
+.perfil-vista h4 {
+  font-weight: bold;
+  font-size: 20px;
+  color: #8D89F9;
+  filter: drop-shadow(0 4px 4px #00000073);
+  /* drop shadow */
+}
+
+.ajustes {
+  background-color: #2C2D67;
+  border: 5px solid #21224F;
+  width: 70%;
+  height: auto;
+  margin-left: 30px;
+  border-radius: 8px;
+}
+
+.tab-content {
+  border-radius: 8px;
+  display: flex;
   width: 100%;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
+  height: auto;
 }
+
+.tab-content>.active {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
 
 .tab-content form {
   background-color: #fff;
   padding: 24px;
   border: 1px solid #fff;
   border-radius: 8px;
-  margin-left: 350px;
-  margin-right: 350px;
+  height: auto;
+  width: 100%;
+  max-width: 320px;
+  max-height: 400px;
 }
 
 .ajustes-title {
-  font-size: 71px;
+  font-size: 48px;
   font-weight: bold;
   text-align: center;
-  margin-top: 100px;
-  margin-bottom: 100px;
+  margin-top: 35px;
+  margin-bottom: 35px;
 }
 
-.pantalla-ranking {
+.estadisticas-container {
   display: flex;
-  justify-content: flex-start;
-  padding: 20px;
-  align-items: flex-start;
-  height: 100%;
-  overflow-x: hidden;
-  padding-left: 50px !important;
-  padding-right: 250px !important;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  width: 100%;
 }
 
-.perfil-ranking {
-  width: 30%; /* 30% of the container width */
-  height: 100%;
-  background-color: #000;
-  border-top: 10px solid #4a4da5;
-  border-left: 10px solid #4a4da5;
-  border-right: 10px solid #4a4da5;
-  border-radius: 8px;
+.estadistica-item {
+  background-color: #4A4DA5;
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  text-align: left;
+  justify-content: space-between;
+  filter: drop-shadow(0 4px 4px #00000073);
+  /* drop shadow */
   align-items: center;
-  text-align: center;
-  padding: 20px;
-  font-weight: bold;
+  width: 100%;
+  height: auto;
+  max-height: 80px;
 }
 
-.perfil-ranking img {
-  border-radius: 50%;
-  margin-bottom: 20px;
-  margin-top: 47px;
+.estadistica-item h4 {
+  font-size: 24px;
+  filter: drop-shadow(0 4px 4px #00000073);
+  /* drop shadow */
+  margin: 0;
 }
 
-.pantalla-ranking p,
-h3.num {
-  color: #fff !important;
+.estadistica-valor {
+  font-size: 24px;
   font-weight: bold;
+  margin: 0;
 }
 
 .posicion {
@@ -236,17 +306,11 @@ h3.num {
   font-weight: bold;
 }
 
-.ajustes {
-  width: 70%;
-  height: 100%;
-  margin-left: 30px;
-  background-color: #4a4da5;
-  border-radius: 8px !important;
-}
-
 .nav-tabs {
   display: flex;
-  width: 100%; /* Ocupa todo el ancho */
+  width: 100%;
+  border-radius: 8px;
+  /* Ocupa todo el ancho */
 }
 
 .nav-tabs li {
@@ -261,8 +325,25 @@ h3.num {
   font-weight: bold;
   color: #fff;
   background-color: #2c2d67;
+  border: 5px solid #21224F;
+  border-bottom: 0px;
   text-decoration: none;
-  border-radius: 0;
+  border-radius: 8px;
+}
+
+.nav-link.active {
+  background-color: #8d89f9;
+  border: 5px solid #21224F;
+}
+
+.nav-link.active:hover {
+  border: 5px solid #21224F;
+
+}
+
+.nav-tabs li:hover a {
+  border: 5px solid #8d89f9;
+
 }
 
 .nav-tabs li.active a {
@@ -273,30 +354,8 @@ h3.num {
   border-bottom: 2px solid transparent;
 }
 
+
 .nav-tabs li:hover a {
   background-color: #6a6ecb !important;
-}
-
-.estadisticas-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-left: 100px;
-  margin-right: 100px;
-}
-
-.estadistica-item {
-  background-color: #2c2d67;
-  color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  text-align: left;
-  justify-content: space-between;
-}
-
-.estadistica-valor {
-  font-size: 24px;
-  font-weight: bold;
 }
 </style>
