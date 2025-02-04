@@ -118,7 +118,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="css">
+
 * {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;

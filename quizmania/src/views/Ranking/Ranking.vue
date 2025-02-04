@@ -15,9 +15,9 @@
           />
           <h3 class="text-white">{{ perfil.nombre }}</h3>
           <div>
-            <p><u>Estadísticas</u></p>
+            <p class="pos"><u>ESTADÍSTICAS</u></p>
             <div class="d-flex posicion">
-              <p class="me-2"><u>Última posición:</u></p>
+              <p class="me-2">Última posición:</p>
               <div class="num text-white">
                 <u><b>{{ perfil.posicion }}</b></u>
               </div>
@@ -40,7 +40,7 @@
                 <td class="posicion">{{ jugador.posicion }}</td>
                 <td class="puntos">{{ jugador.puntos }}</td>
                 <td class="categoria">
-                  <img :src="jugador.entreImage" alt="" width="100%" height="60" />
+                  <img :src="jugador.categoria" alt="" width="80%" height="100%" />
                 </td>
               </tr>
             </tbody>
@@ -124,7 +124,7 @@ const ranking = ref([
 ]);
 </script>
 
-<style scoped>
+<style scoped lang="css">
 * {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
@@ -135,28 +135,6 @@ section {
   color: #fff;
   overflow: auto;
   margin-top: 60px;
-}
-
-.navbar {
-  background-color: #8d89f9;
-  height: 92px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-}
-
-.navbar .logo {
-  margin-left: 20px;
-}
-
-.navbar a {
-  color: #000;
-  font-size: 16px;
-  font-weight: bold;
-  text-decoration: none;
-  margin: 0 10px;
 }
 
 .title {
@@ -239,6 +217,10 @@ h3.num {
 .posicion {
   align-items: center;
   flex-wrap: nowrap;
+}
+
+.pos > u{
+  color: #5759cd !important;
 }
 
 .num {
