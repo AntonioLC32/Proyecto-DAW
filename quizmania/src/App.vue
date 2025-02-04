@@ -1,12 +1,24 @@
 <template>
   <div>
-    <Header />
+    <div
+      v-if="
+        !['/admin', '/categorias', '/usuarios', '/preguntas'].includes(
+          $route.path
+        )
+      "
+    >
+      <Header />
+    </div>
+    <div v-else>
+      <Sidebar />
+    </div>
     <router-view />
   </div>
 </template>
 
 <script setup>
 import Header from "./views/Header.vue";
+import Sidebar from "./views/Admin/Sidebar.vue";
 </script>
 
 <style>

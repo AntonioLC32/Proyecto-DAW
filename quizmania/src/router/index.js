@@ -5,6 +5,7 @@ import Perfil from "../views/Perfil/Perfil.vue";
 import Ranking from "../views/Ranking/Ranking.vue";
 import Login from "../views/Auth/Login.vue";
 import Register from "../views/Auth/Register.vue";
+import Admin from "../views/Admin/Admin.vue";
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
   },
 ];
 
