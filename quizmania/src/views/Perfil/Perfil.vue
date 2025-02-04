@@ -129,6 +129,7 @@ section {
   min-height: 100vh;
   height: auto;
   overflow: auto;
+  margin-top: 60px !important;
 }
 
 .perfil {
@@ -166,6 +167,7 @@ section {
   height: auto;
   min-height: 680px;
   max-height: 680px;
+  padding-bottom: 30px;
 }
 
 .perfil-vista {
@@ -358,4 +360,113 @@ section {
 .nav-tabs li:hover a {
   background-color: #6a6ecb !important;
 }
+
+@media (max-width: 1024px) {
+  .perfil {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  .division {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+
+  }
+
+  .perfil-vista {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+
+  .ajustes {
+    width: 90%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .division {
+    height: 100%;
+    max-height: unset;
+  }
+  .perfil-title h1 {
+    font-size: 36px;
+  }
+
+  .perfil-vista {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .perfil-vista h3 {
+    font-size: 24px;
+  }
+
+  .perfil-vista h4 {
+    font-size: 18px;
+  }
+
+  .perfil-vista img {
+    max-width: 200px;
+  }
+
+  .ajustes {
+    width: 100%;
+  }
+
+  .estadisticas-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .perfil-title h1 {
+    font-size: 28px;
+  }
+
+  .perfil-vista img {
+    max-width: 150px;
+  }
+
+  .perfil-vista h3 {
+    font-size: 20px;
+  }
+
+  .perfil-vista h4 {
+    font-size: 16px;
+  }
+
+  .nav-tabs li {
+    width: 100%;
+  }
+
+  .nav-tabs li a {
+    font-size: 16px;
+    padding: 10px 0;
+  }
+
+  .estadisticas-container {
+    flex-direction: column;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .estadistica-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .estadistica-item h4,
+  .estadistica-valor {
+    font-size: 18px;
+  }
+
+  .estadistica-valor img {
+    width: 100px;
+  }
+}
+
 </style>

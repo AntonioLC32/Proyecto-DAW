@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from "../views/Home.vue";
-import Perfil from "../views/perfil/Perfil.vue";
+import Perfil from "../views/Perfil/Perfil.vue";
 import Ranking from "../views/Ranking/Ranking.vue";
 
 const routes = [
