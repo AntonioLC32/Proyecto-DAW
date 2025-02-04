@@ -140,6 +140,7 @@ export default {
   margin: 0;
   transition: transform 0.3s ease;
   font-size: 3rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .titulo .nav-link {
