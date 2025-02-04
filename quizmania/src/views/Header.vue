@@ -136,9 +136,16 @@ export default {
 
 .titulo {
   font-family: "Montserrat", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0;
   transition: transform 0.3s ease;
+  font-size: 3rem;
+}
+
+.titulo .nav-link {
+  font-size: inherit;
+  color: inherit;
+  text-decoration: none;
 }
 
 .titulo:hover {
@@ -262,7 +269,6 @@ export default {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Logout Styles - Ahora fijo al fondo */
 .logout-container {
   padding: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -298,7 +304,6 @@ export default {
   height: 20px;
 }
 
-/* Overlay */
 .overlay {
   position: fixed;
   top: 60px;
@@ -309,7 +314,6 @@ export default {
   z-index: 98;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .header {
     padding: 0.5rem 1rem;
@@ -321,7 +325,13 @@ export default {
   }
 
   .titulo {
-    font-size: 1.5rem;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo {
+    font-size: 2rem;
   }
 }
 </style>
