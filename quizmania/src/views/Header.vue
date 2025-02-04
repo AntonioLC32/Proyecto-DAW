@@ -49,23 +49,18 @@
       <nav class="sidebar-nav">
         <ul class="sidebar-list">
           <li class="sidebar-item">
-            <router-link to="/" class="sidebar-link">
-              <span>Inicio</span>
-            </router-link>
-          </li>
-          <li class="sidebar-item">
             <router-link to="/perfil" class="sidebar-link">
-              <span>Perfil</span>
+              <span>PERFIL</span>
             </router-link>
           </li>
           <li class="sidebar-item">
             <router-link to="/ranking" class="sidebar-link">
-              <span>Ránking</span>
+              <span>RÁNKING</span>
             </router-link>
           </li>
           <li class="sidebar-item">
             <router-link to="/estadisticas" class="sidebar-link">
-              <span>Estadísticas</span>
+              <span>ESTADÍSTICAS</span>
             </router-link>
           </li>
         </ul>
@@ -130,7 +125,7 @@ export default {
   padding: 0.5rem 2rem;
   background-color: #8d89f9;
   color: #fff;
-  height: 60px;
+  height: 90px;
   position: fixed;
   top: 0;
   left: 0;
@@ -219,14 +214,13 @@ export default {
   transform: rotate(90deg);
 }
 
-/* Sidebar Styles */
 .sidebar {
   font-family: "Roboto", sans-serif;
   position: fixed;
-  top: 60px;
+  top: 90px;
   right: -280px;
   width: 280px;
-  height: calc(100vh - 60px);
+  height: calc(100vh - 90px);
   background-color: #5759cd;
   transition: right 0.3s ease;
   z-index: 99;
@@ -265,8 +259,7 @@ export default {
 }
 
 .sidebar-link:hover {
-  background-color: #8d89f9;
-  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Logout Styles - Ahora fijo al fondo */
