@@ -24,6 +24,7 @@
               <p>Cada categoría tiene una corona propia.</p>
               <p>Consigue las 10 coronas y gana la partida.</p>
             </div>
+            <div class="barra2"></div>
           </div>
           <div class="comodines">
             <h2><u>Comodines</u></h2>
@@ -94,7 +95,7 @@
 
 .close-btn {
   position: absolute;
-  top: 15px;
+  top: 55px;
   right: 20px;
   background: none;
   border: none;
@@ -127,11 +128,19 @@
 .modo {
   width: 40%;
   margin-top: 70px;
+  margin-left: 10px;
 }
 
 .barra {
   background-color: #fff;
   width: 5px;
+  height: auto;
+  margin-top: 70px;
+}
+
+.barra2 {
+  background-color: #fff;
+  width: 0px;
   height: auto;
   margin-top: 70px;
 }
@@ -166,6 +175,75 @@
 
 .juego:hover{
   background-color:#4a4da5;
+}
+
+@media (max-width: 1200px) {
+  .popup{
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .popup-content{
+    margin-top: 10%; 
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
+    padding-bottom: 50px;
+  }
+
+  .instrucciones-btn{
+    width: 250px;
+    height: 70px;
+    font-size: 22px;
+}
+  .instrucciones h2 {
+    font-size: 3vw;
+    font-weight: bold;
+  }
+
+  .instrucciones p {
+    font-size: 2vw;
+    font-weight: bold;
+  }
+
+  .juegos {
+    flex-direction: column; 
+    gap: 30px;
+    align-items: center;
+  }
+
+  .juego {
+    width: 90%;
+    height: 200px;
+    font-size: 40px;
+  }
+
+  .modos {
+    padding-top: 40px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modo {
+    width: 80%;
+    margin-top: 10px;
+  }
+
+  .barra {
+    width: 80%;
+    height: 3px;
+    margin-top: 5px;
+  }
+
+  .barra2 {
+    width: 80%;
+    height: 3px;
+    margin-top: 5px;
+  }
+
+  .comodines{
+    margin-top: 50px;
+  }
 }
 
 </style>

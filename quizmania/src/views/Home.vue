@@ -23,6 +23,7 @@
         <p>Cada categoría tiene una corona propia.</p>
         <p>Consigue las 10 coronas y gana la partida.</p>
       </div>
+      <div class="barra2"></div>
     </div>
     <div class="comodines">
       <h2><u>Comodines</u></h2>
@@ -68,6 +69,7 @@
   border: none;
   transition: all ease 0.3s;
 }
+
 .aJugar-btn:hover{
   background-color: #4a4da5;
 }
@@ -95,6 +97,7 @@
 }
 
 .modo {
+  margin-left: 10px;
   width: 40%;
   margin-top: 70px;
 }
@@ -102,6 +105,13 @@
 .barra {
   background-color: #fff;
   width: 5px;
+  height: auto;
+  margin-top: 70px;
+}
+
+.barra2 {
+  background-color: #fff;
+  width: 0px;
   height: auto;
   margin-top: 70px;
 }
@@ -116,20 +126,52 @@
 
 
 @media (max-width: 1200px) {
+  .aJugar-btn{
+    width: 250px;
+    height: 80px;
+    font-size: 40px;
+  }
+
+  .instrucciones{
+  background-color: #8D89F8;
+  color: #fff;
+  }
+
+  .instrucciones h2 {
+    font-size: 3vw;
+    font-weight: bold;
+  }
+
+  .instrucciones p {
+    font-size: 2vw;
+    font-weight: bold;
+  }
+
   .modos {
+    padding-top: 40px;
     flex-direction: column;
     align-items: center;
   }
 
   .modo {
-    width: 80%; /* Ajusta el ancho para que no ocupe todo */
-    margin-top: 30px; /* Reduce el espacio entre elementos */
+    width: 80%;
+    margin-top: 10px;
   }
 
   .barra {
-    width: 80%; /* Hace que la barra sea horizontal */
-    height: 5px; /* Reduce el grosor */
-    margin: 30px 0; /* Espacio arriba y abajo */
+    width: 80%;
+    height: 3px;
+    margin-top: 5px;
+  }
+
+  .barra2 {
+    width: 80%;
+    height: 3px;
+    margin-top: 5px;
+  }
+
+  .comodines{
+    margin-top: 50px;
   }
 }
 
