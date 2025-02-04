@@ -1,6 +1,6 @@
 <template>
-  <div>
     <section>
+      <div class="encase">
       <div class="container-fluid title">
         <h1><b>Ránking Global</b></h1>
       </div>
@@ -40,15 +40,15 @@
                 <td class="posicion">{{ jugador.posicion }}</td>
                 <td class="puntos">{{ jugador.puntos }}</td>
                 <td class="categoria">
-                  <img :src="jugador.categoria" alt="" width="80%" height="100%" />
+                  <img :src="jugador.categoria" alt="" width="60px" height="60px" />
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+    </div>
     </section>
-  </div>
 </template>
 
 <script setup>
@@ -131,10 +131,16 @@ const ranking = ref([
 }
 
 section {
-  background: linear-gradient(190deg, #8d89f9 0%, #2c2d67 100%);
-  color: #fff;
-  overflow: auto;
-  margin-top: 60px;
+  background-color: #cac5f5;
+  min-height: 100vh;
+  height: 100%;
+  overflow-y: hidden;
+}
+
+.encase {
+  margin-top: 66px;
+  margin-left: 48px;
+  margin-right: 48px;
 }
 
 .title {
@@ -153,7 +159,6 @@ section {
   padding: 20px;
   align-items: flex-start;
   height: auto;
-  max-height: 100vh;
   width: 100%;
   padding-left: 50px;
   padding-right: 50px;
@@ -289,6 +294,7 @@ h3.num {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
   font-size: 15px;
   font-weight: bold;
+  overflow: hidden;
 }
 
 .ranking .puntos {
@@ -311,6 +317,7 @@ h3.num {
   font-weight: bold;
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
+
 
 @media (max-width: 768px) {
   .pantalla-ranking {
@@ -367,10 +374,9 @@ h3.num {
     gap: 5px;
   }
 
-  /* Tabla responsive */
   .ranking {
     width: 100%;
-    overflow-x: auto; /* Permite desplazamiento horizontal */
+    overflow-x: auto; 
     padding: 10px;
   }
 
@@ -378,17 +384,17 @@ h3.num {
     width: 100%;
     display: block;
     overflow-x: auto;
-    white-space: nowrap; /* Evita que las celdas se rompan en varias líneas */
+    white-space: nowrap; 
   }
 
   .ranking th,
   .ranking td {
-    font-size: 14px; /* Reduce tamaño de fuente */
-    padding: 5px; /* Reduce espacio en celdas */
+    font-size: 14px; 
+    padding: 5px; 
   }
 
   .ranking .categoria img {
-    height: 40px; /* Reduce tamaño de imágenes */
+    height: 40px; 
     width: auto;
   }
 }

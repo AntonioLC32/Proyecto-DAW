@@ -8,13 +8,23 @@
       <div class="division">
         <!-- Perfil -->
         <div class="perfil-vista">
-          <img src="../../assets/perfil.jpg" alt="Perfil Image"
-            style="border-radius: 50%;" />
+          <img
+            src="../../assets/perfil.jpg"
+            alt="Perfil Image"
+            style="border-radius: 50%"
+          />
           <h3 class="text-white">PEPE_123ASD</h3>
-          <h4>¡Comparte tu perfil <br> con tus amigos!</h4>
-          <div class="d-flex text-white">
-            <i class="fa-brands fa-instagram"></i>
-            <i class="fa-solid fa-share"></i>
+          <h4>
+            ¡Comparte tu perfil <br />
+            con tus amigos!
+          </h4>
+          <div class="socials text-white">
+            <button type="button">
+              <a href="#instagram"><img src="../../assets/instagram2.png" alt="instagram" /></a>
+            </button>
+            <button type="button">
+              <a href="#compartir"><img src="../../assets/share.png" alt="share" /></a>
+            </button>
           </div>
         </div>
 
@@ -22,45 +32,80 @@
         <div class="ajustes">
           <div class="container-fluid p-0">
             <ul class="nav nav-tabs w-100">
-              <li class="nav-item" style="width: 50%; text-align: center;">
-                <a @click="setTab('ajustes')" :class="{ active: activeTab === 'ajustes' }" class="nav-link">
+              <li class="nav-item" style="width: 50%; text-align: center">
+                <a
+                  @click="setTab('ajustes')"
+                  :class="{ active: activeTab === 'ajustes' }"
+                  class="nav-link"
+                >
                   Ajustes
                 </a>
               </li>
-              <li class="nav-item" style="width: 50%; text-align: center;">
-                <a @click="setTab('estadisticas')" :class="{ active: activeTab === 'estadisticas' }" class="nav-link">
+              <li class="nav-item" style="width: 50%; text-align: center">
+                <a
+                  @click="setTab('estadisticas')"
+                  :class="{ active: activeTab === 'estadisticas' }"
+                  class="nav-link"
+                >
                   Estadísticas
                 </a>
               </li>
             </ul>
             <div class="tab-content">
-              <div v-if="activeTab === 'ajustes'" class="tab-pane" :class="{ 'show active': activeTab === 'ajustes' }">
+              <div
+                v-if="activeTab === 'ajustes'"
+                class="tab-pane"
+                :class="{ 'show active': activeTab === 'ajustes' }"
+              >
                 <h1 class="ajustes-title text-white">Ajustes de la Cuenta</h1>
 
                 <form @submit.prevent="saveSettings">
                   <label for="nombre">Nombre</label><br />
-                  <input v-model="settings.name" type="text" placeholder="PEPE_123ASD" class="form-control mb-3" />
+                  <input
+                    v-model="settings.name"
+                    type="text"
+                    placeholder="PEPE_123ASD"
+                    class="form-control mb-3"
+                  />
                   <label for="correo">Correo electrónico</label><br />
-                  <input v-model="settings.email" type="email" placeholder="pepe123asdf@correo.com"
-                    class="form-control mb-3" />
+                  <input
+                    v-model="settings.email"
+                    type="email"
+                    placeholder="pepe123asdf@correo.com"
+                    class="form-control mb-3"
+                  />
                   <label>Desea recibir notificaciones?</label>
                   <div class="form-check">
-                    <input v-model="settings.notifications" type="radio" name="notificaciones" id="si" value="si"
-                      checked />
+                    <input
+                      v-model="settings.notifications"
+                      type="radio"
+                      name="notificaciones"
+                      id="si"
+                      value="si"
+                      checked
+                    />
                     <label for="si">Sí</label><br />
-                    <input v-model="settings.notifications" type="radio" name="notificaciones" id="no" value="no" />
+                    <input
+                      v-model="settings.notifications"
+                      type="radio"
+                      name="notificaciones"
+                      id="no"
+                      value="no"
+                    />
                     <label for="no">No</label>
                   </div>
                   <button class="btn btn-dark w-100 mt-3">
                     <i class="fa fa-save"></i> Guardar Ajustes
                   </button>
                 </form>
-
               </div>
 
               <!-- Contenido de Estadísticas -->
-              <div v-if="activeTab === 'estadisticas'" class="tab-pane"
-                :class="{ 'show active': activeTab === 'estadisticas' }">
+              <div
+                v-if="activeTab === 'estadisticas'"
+                class="tab-pane"
+                :class="{ 'show active': activeTab === 'estadisticas' }"
+              >
                 <h1 class="ajustes-title text-white">Estadísticas</h1>
                 <div class="estadisticas-container">
                   <div class="estadistica-item">
@@ -74,7 +119,11 @@
                   <div class="estadistica-item">
                     <h4>Categoría Destacada</h4>
                     <p class="estadistica-valor">
-                      <img :src="stats.featuredCategoryImage" alt="Categoría" style="width: 150px;" />
+                      <img
+                        :src="stats.featuredCategoryImage"
+                        alt="Categoría"
+                        style="width: 150px"
+                      />
                     </p>
                   </div>
                 </div>
@@ -84,7 +133,6 @@
         </div>
       </div>
     </div>
-
   </section>
 </template>
 
@@ -93,18 +141,18 @@ export default {
   name: "Perfil",
   data() {
     return {
-      activeTab: 'ajustes', // Estado para manejar las pestañas
-      username: 'PEPE_123ASD',
+      activeTab: "ajustes",
+      username: "PEPE_123ASD",
       settings: {
-        name: 'PEPE_123ASD',
-        email: 'pepe123asdf@correo.com',
-        notifications: 'si'
+        name: "PEPE_123ASD",
+        email: "pepe123asdf@correo.com",
+        notifications: "si",
       },
       stats: {
         lastPosition: 1,
         lastPoints: 15648,
-        featuredCategoryImage: '../../assets/entre.png'
-      }
+        featuredCategoryImage: "../../assets/entre.png",
+      },
     };
   },
   methods: {
@@ -112,36 +160,34 @@ export default {
       this.activeTab = tab;
     },
     saveSettings() {
-      console.log('Settings saved:', this.settings);
-    }
-  }
+      console.log("Settings saved:", this.settings);
+    },
+  },
 };
 </script>
 
 <style scoped lang="css">
-
 * {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
 
 section {
-  background: linear-gradient(340deg, #8d89f9 0%, #2c2d67 100%);
+  background-color: #cac5f5;
   min-height: 100vh;
-  height: auto;
-  overflow: auto;
-  margin-top: 60px !important;
+  height: 100%;
+  overflow-y: hidden;
 }
 
 .perfil {
-  margin-top: 46px;
+  margin-top: 100px;
   margin-left: 48px;
   margin-right: 48px;
 }
 
 .perfil-title {
-  background-color: #2C2D67;
-  border: 5px solid #21224F;
+  background-color: #2c2d67;
+  border: 5px solid #21224f;
   border-radius: 8px;
   padding-top: 25px;
   padding-bottom: 25px;
@@ -172,8 +218,8 @@ section {
 }
 
 .perfil-vista {
-  background-color: #2C2D67;
-  border: 5px solid #21224F;
+  background-color: #2c2d67;
+  border: 5px solid #21224f;
   border-radius: 8px;
   width: 30%;
   /* 30% of the container width */
@@ -189,14 +235,42 @@ section {
   margin-top: 47px;
   width: 100%;
   height: auto;
-  max-width:250px; 
-  max-height:275px;
+  max-width: 250px;
+  max-height: 275px;
 }
 
 .perfil-vista h3 {
   font-weight: bold;
   font-size: 32px;
 }
+
+.perfil-vista > .socials {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 5px #8d89f9;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.perfil-vista .socials > button {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border: 5px solid #8d89f9;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.perfil-vista .socials > button:hover {
+  transform: scale(1.1);
+}
+
+.perfil-vista > .socials > button > a > img {
+  margin: 0;
+}
+
+
 
 .perfil-vista i {
   filter: drop-shadow(0 4px 4px #00000073);
@@ -206,14 +280,14 @@ section {
 .perfil-vista h4 {
   font-weight: bold;
   font-size: 20px;
-  color: #8D89F9;
+  color: #8d89f9;
   filter: drop-shadow(0 4px 4px #00000073);
   /* drop shadow */
 }
 
 .ajustes {
-  background-color: #2C2D67;
-  border: 5px solid #21224F;
+  background-color: #2c2d67;
+  border: 5px solid #21224f;
   width: 70%;
   height: auto;
   margin-left: 30px;
@@ -229,13 +303,13 @@ section {
   height: auto;
 }
 
-.tab-content>.active {
+.tab-content > .active {
   display: flex;
   align-items: center;
   flex-direction: column;
   width: 100%;
+  padding: 30px;
 }
-
 
 .tab-content form {
   background-color: #fff;
@@ -266,7 +340,7 @@ section {
 }
 
 .estadistica-item {
-  background-color: #4A4DA5;
+  background-color: #4a4da5;
   color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -313,7 +387,6 @@ section {
   display: flex;
   width: 100%;
   border-radius: 8px;
-  /* Ocupa todo el ancho */
 }
 
 .nav-tabs li {
@@ -328,7 +401,7 @@ section {
   font-weight: bold;
   color: #fff;
   background-color: #2c2d67;
-  border: 5px solid #21224F;
+  border: 5px solid #21224f;
   border-bottom: 0px;
   text-decoration: none;
   border-radius: 8px;
@@ -336,27 +409,24 @@ section {
 
 .nav-link.active {
   background-color: #8d89f9;
-  border: 5px solid #21224F;
+  border: 5px solid #21224f;
 }
 
 .nav-link.active:hover {
-  border: 5px solid #21224F;
-
+  border: 5px solid #21224f;
 }
 
 .nav-tabs li:hover a {
   border: 5px solid #8d89f9;
-
 }
 
 .nav-tabs li.active a {
   background-color: #8d89f9 !important;
-  border-top: 8px solid #CAC5F5 !important;
-  border-left: 8px solid #CAC5F5 !important;
-  border-right: 8px solid #CAC5F5 !important;
+  border-top: 8px solid #cac5f5 !important;
+  border-left: 8px solid #cac5f5 !important;
+  border-right: 8px solid #cac5f5 !important;
   border-bottom: 2px solid transparent;
 }
-
 
 .nav-tabs li:hover a {
   background-color: #6a6ecb !important;
@@ -367,21 +437,22 @@ section {
     margin-left: 20px;
     margin-right: 20px;
   }
-  
+
   .division {
     flex-direction: column;
     align-items: center;
     height: auto;
-
+    max-height: unset;
+    width: 100%;
   }
 
   .perfil-vista {
-    width: 80%;
+    width: 100%;
     margin-bottom: 20px;
   }
 
   .ajustes {
-    width: 90%;
+    width: 100%;
     margin-left: 0;
   }
 }
@@ -469,5 +540,4 @@ section {
     width: 100px;
   }
 }
-
 </style>
