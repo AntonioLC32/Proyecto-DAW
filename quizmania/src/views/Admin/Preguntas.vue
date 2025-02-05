@@ -3,9 +3,9 @@
         <section class="gestion-preguntas">
 
             <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
-            
-            
-            
+
+
+
             <input type="text" v-model="input" placeholder="Buscar pregunta..." />
             <button @click="buscarPregunta">Buscar</button>
 
@@ -21,49 +21,104 @@
                 <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
                 <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
             </div>
-            
-            <table class="preguntas-table">
-                <tr>
-                    <th>Id</th>
-                    <th>Pregunta</th>
-                    <th>Dificultad</th>
-                <th>Categoría</th>
-                <th>Acciones</th>
-            </tr>
-            <tr v-for="pregunta in preguntas" :key="pregunta.id">
-                <td>{{pregunta.id}}</td>
-                <td>{{pregunta.pregunta}}</td>
-                <td>{{pregunta.dificultad}}</td>
-                <td>{{pregunta.categoria}}</td>
-                <td>
-                    <router-link :to="{name: 'EditarPregunta', params: {id: pregunta.id}}">Editar</router-link>
-                    <button @click="eliminarPregunta(pregunta.id)">Eliminar</button>
-                </td>
-            </tr>
-        </table>
-    </section>
-    <section class="add-pregunta">
-        <h1 class="titulo-preguntas">AÑADIR PREGUNTA</h1>
-        <form @submit.prevent="addPregunta">
-            <textarea v-model="pregunta" placeholder="Pregunta"></textarea>
-            <input type="text" v-model="dificultad" placeholder="Dificultad" />
-            <input type="text" v-model="categoria" placeholder="Categoría" />
-            <textarea v-model="respuestas" placeholder="Respuestas"></textarea>
-            <input type="text" v-model="correcta" placeholder="Respuesta correcta" />
-            <button type="submit">Añadir pregunta</button>
-        </form>
 
-    </section>
-    
+            <div class="tabla">
+                <Table :headers="headers" :rows="rows" />
+            </div>
+        </section>
+        <section class="add-pregunta">
+            <h1 class="titulo-preguntas">AÑADIR PREGUNTA</h1>
+            <form @submit.prevent="addPregunta">
+                <textarea v-model="pregunta" placeholder="Pregunta"></textarea>
+                <input type="text" v-model="dificultad" placeholder="Dificultad" />
+                <input type="text" v-model="categoria" placeholder="Categoría" />
+                <textarea v-model="respuestas" placeholder="Respuestas"></textarea>
+                <input type="text" v-model="correcta" placeholder="Respuesta correcta" />
+                <button type="submit">Añadir pregunta</button>
+            </form>
+
+        </section>
+
     </div>
-        
+
 </template>
 
 <script>
+import Table from './Table.vue'; // Ajusta la ruta según tu estructura
+
 export default {
     name: "Preguntas",
+    components: {
+        Table
+    },
+    data() {
+        return {
+            input: '', // Para la búsqueda
+            pregunta: '', // Para añadir pregunta
+            dificultad: '',
+            categoria: '',
+            respuestas: '',
+            correcta: '',
+            // Datos de ejemplo para la tabla
+            headers: [
+                { key: 'id', label: 'ID' },
+                { key: 'pregunta', label: 'Pregunta' },
+                { key: 'dificultad', label: 'Dificultad' },
+                { key: 'categoria', label: 'Categoría' },
+                { key: 'acciones', label: 'Acciones' }
+            ],
+            rows: [
+                {
+                    id: 1,
+                    pregunta: '¿Quién pintó la Mona Lisa?',
+                    dificultad: 'Fácil',
+                    categoria: 'Arte',
+                    acciones: 'Editar | Eliminar'
+                },
+                {
+                    id: 2,
+                    pregunta: '¿Cuál es la capital de Francia?',
+                    dificultad: 'Fácil',
+                    categoria: 'Geografía',
+                    acciones: 'Editar | Eliminar'
+                },
+                {
+                    id: 3,
+                    pregunta: '¿En qué año llegó el hombre a la luna?',
+                    dificultad: 'Media',
+                    categoria: 'Historia',
+                    acciones: 'Editar | Eliminar'
+                }
+            ]
+        };
+    },
+    methods: {
+        buscarPregunta() {
+            // Lógica para buscar preguntas
+            console.log('Buscando:', this.input);
+        },
+        filtrarCategorias() {
+            // Lógica para filtrar por categorías
+            console.log('Filtrando categorías');
+        },
+        addPregunta() {
+            // Lógica para añadir una pregunta
+            const nuevaPregunta = {
+                id: this.rows.length + 1,
+                pregunta: this.pregunta,
+                dificultad: this.dificultad,
+                categoria: this.categoria,
+                acciones: 'Editar | Eliminar'
+            };
+            this.rows.push(nuevaPregunta);
+            this.pregunta = '';
+            this.dificultad = '';
+            this.categoria = '';
+            this.respuestas = '';
+            this.correcta = '';
+        }
+    }
 };
-
 </script>
 
 <style scoped>
@@ -76,7 +131,8 @@ export default {
     font-family: Arial, sans-serif;
 }
 
-.gestion-preguntas, .add-pregunta {
+.gestion-preguntas,
+.add-pregunta {
     background: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -92,7 +148,8 @@ export default {
     font-weight: bold;
 }
 
-input[type="text"], textarea {
+input[type="text"],
+textarea {
     width: 100%;
     padding: 12px;
     margin-bottom: 15px;
@@ -126,56 +183,6 @@ button:hover {
 
 .filtro-categorias input[type="checkbox"] {
     margin-right: 5px;
-}
-
-.preguntas-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 8px;
-    margin-bottom: 20px;
-}
-
-.preguntas-table th {
-    padding: 12px;
-    text-align: left;
-    color: #666;
-    font-weight: normal;
-    border-bottom: 2px solid #eee;
-}
-
-.preguntas-table td {
-    padding: 12px;
-    background: white;
-}
-
-.preguntas-table tr td:first-child {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-}
-
-.preguntas-table tr td:last-child {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-.preguntas-table button {
-    background: #ff4757;
-    padding: 6px 12px;
-    font-size: 12px;
-}
-
-.preguntas-table button:hover {
-    background: #ff3748;
-}
-
-.preguntas-table a {
-    color: #6c5ce7;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-.preguntas-table a:hover {
-    text-decoration: underline;
 }
 
 .add-pregunta form {
