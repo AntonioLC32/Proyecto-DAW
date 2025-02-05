@@ -5,7 +5,9 @@
     @mouseleave="collapseMenu"
   >
     <div class="logo-container">
-      <img src="../../assets/logo.png" alt="QuizManía Logo" class="logo" />
+      <router-link to="/admin">
+        <img src="../../assets/logo.png" alt="QuizManía Logo" class="logo" />
+      </router-link>
     </div>
 
     <div class="menu-header">
@@ -66,7 +68,7 @@ export default {
 <style scoped>
 .main-menu {
   background: #cac5f5;
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
