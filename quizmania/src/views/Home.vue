@@ -2,7 +2,9 @@
   <section class="aJugar">
     <div class="aJugar-content">
       <button class="aJugar-btn">
-        A JUGAR!
+        <router-link to="/quizmania" class="aJugar-nav">
+          A JUGAR!
+        </router-link>
       </button>
     </div>
     <img src="../assets/background_inicio.png" alt="background_inicio">
@@ -68,6 +70,10 @@
   border-radius: 25px;
   border: none;
   transition: all ease 0.3s;
+}
+
+.aJugar-nav{
+  color: #fff;
 }
 
 .aJugar-btn:hover{
