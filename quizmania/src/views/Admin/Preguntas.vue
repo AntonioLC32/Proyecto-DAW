@@ -1,31 +1,36 @@
 <template>
     <div class="preguntas">
+        <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
         <section class="gestion-preguntas">
 
-            <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
+            <div class="searchBar">
+                <div class="input-container">
+                    <input type="text" v-model="input" class="search-input" placeholder="Buscar pregunta..." />
+                    <button @click="buscarPregunta" class="buscar-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
 
-
-
-            <input type="text" v-model="input" placeholder="Buscar pregunta..." />
-            <button @click="buscarPregunta">Buscar</button>
 
             <div class="filtro-categorias">
+                <input type="checkbox" v-model="Ciencia" @change="filtrarCategorias" /> Ciencia
                 <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
+                <input type="checkbox" v-model="Geografia" @change="filtrarCategorias" /> Geografía
+                <input type="checkbox" v-model="Deportes" @change="filtrarCategorias" /> Deportes
+                <input type="checkbox" v-model="AyL" @change="filtrarCategorias" /> Arte y Literatura
+                <input type="checkbox" v-model="Entretenimiento" @change="filtrarCategorias" /> Entretenimiento
+                <input type="checkbox" v-model="Tecnologia" @change="filtrarCategorias" /> Tecnología
+                <input type="checkbox" v-model="Matematicas" @change="filtrarCategorias" /> Matemáticas
+                <input type="checkbox" v-model="CulturaGeneral" @change="filtrarCategorias" /> Cultura General
+                <input type="checkbox" v-model="Musica" @change="filtrarCategorias" /> Música
             </div>
 
-            <div class="tabla">
-                <Table :headers="headers" :rows="rows" />
-            </div>
         </section>
+        <section class="tabla">
+            <Table :headers="headers" :rows="rows" />
+        </section>
+        <br>
         <section class="add-pregunta">
             <h1 class="titulo-preguntas">AÑADIR PREGUNTA</h1>
             <form @submit.prevent="addPregunta">
@@ -44,7 +49,7 @@
 </template>
 
 <script>
-import Table from './Table.vue'; // Ajusta la ruta según tu estructura
+import Table from './Table.vue';
 
 export default {
     name: "Preguntas",
@@ -53,19 +58,12 @@ export default {
     },
     data() {
         return {
-            input: '', // Para la búsqueda
-            pregunta: '', // Para añadir pregunta
-            dificultad: '',
-            categoria: '',
-            respuestas: '',
-            correcta: '',
-            // Datos de ejemplo para la tabla
             headers: [
                 { key: 'id', label: 'ID' },
-                { key: 'pregunta', label: 'Pregunta' },
-                { key: 'dificultad', label: 'Dificultad' },
-                { key: 'categoria', label: 'Categoría' },
-                { key: 'acciones', label: 'Acciones' }
+                { key: 'pregunta', label: 'PREGUNTA' },
+                { key: 'dificultad', label: 'DIFICULTAD' },
+                { key: 'categoria', label: 'CATEGORÍA' },
+                { key: 'acciones', label: 'ACCIONES' }
             ],
             rows: [
                 {
@@ -73,49 +71,46 @@ export default {
                     pregunta: '¿Quién pintó la Mona Lisa?',
                     dificultad: 'Fácil',
                     categoria: 'Arte',
-                    acciones: 'Editar | Eliminar'
+                    acciones: {
+                        editar: true,
+                        eliminar: true,
+                        info: false
+                    }
                 },
                 {
                     id: 2,
                     pregunta: '¿Cuál es la capital de Francia?',
                     dificultad: 'Fácil',
                     categoria: 'Geografía',
-                    acciones: 'Editar | Eliminar'
+                    acciones: {
+                        editar: true,
+                        eliminar: true,
+                        info: false
+                    }
                 },
                 {
                     id: 3,
                     pregunta: '¿En qué año llegó el hombre a la luna?',
                     dificultad: 'Media',
                     categoria: 'Historia',
-                    acciones: 'Editar | Eliminar'
+                    acciones: {
+                        editar: true,
+                        eliminar: true,
+                        info: false
+                    }
                 }
             ]
         };
     },
     methods: {
         buscarPregunta() {
-            // Lógica para buscar preguntas
-            console.log('Buscando:', this.input);
+
         },
         filtrarCategorias() {
-            // Lógica para filtrar por categorías
-            console.log('Filtrando categorías');
+
         },
         addPregunta() {
-            // Lógica para añadir una pregunta
-            const nuevaPregunta = {
-                id: this.rows.length + 1,
-                pregunta: this.pregunta,
-                dificultad: this.dificultad,
-                categoria: this.categoria,
-                acciones: 'Editar | Eliminar'
-            };
-            this.rows.push(nuevaPregunta);
-            this.pregunta = '';
-            this.dificultad = '';
-            this.categoria = '';
-            this.respuestas = '';
-            this.correcta = '';
+
         }
     }
 };
@@ -128,10 +123,9 @@ export default {
     min-height: 100vh;
     padding: 20px;
     color: #333;
-    font-family: Arial, sans-serif;
+    font-family: Roboto, sans-serif;
 }
 
-.gestion-preguntas,
 .add-pregunta {
     background: #fff;
     padding: 20px;
@@ -148,30 +142,56 @@ export default {
     font-weight: bold;
 }
 
-input[type="text"],
 textarea {
     width: 100%;
-    padding: 12px;
+    padding: 6px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: #fff;
-    color: #333;
 }
 
-button {
-    padding: 8px 20px;
-    border: none;
-    border-radius: 6px;
-    background: #6c5ce7;
-    color: #fff;
-    cursor: pointer;
-    margin-right: 10px;
+.searchBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: #fff;
     font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    outline: none;
 }
 
-button:hover {
-    background: #5b4bc4;
+.search-input:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+}
+
+.buscar-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #6c5ce7;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.buscar-btn:hover {
+    color: #5b4bc4;
 }
 
 .filtro-categorias {
