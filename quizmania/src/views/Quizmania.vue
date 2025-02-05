@@ -51,7 +51,6 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
 }
 
@@ -157,6 +156,8 @@
   display: flex;
   justify-content: center;
   flex-direction: row;
+  margin: 0 10%;
+  height: 30%;
   gap: 20%;
 }
 
@@ -164,8 +165,8 @@
   background-color: #5759CD;
   border: none;
   border-radius: 25px;
-  width: 750px;
-  height: 350px;
+  width: 100%;
+  height: 100%;
   margin-top: 50px;
   font-size: 50px;
   color: white;
@@ -214,7 +215,7 @@
 
   .juego {
     width: 90%;
-    height: 200px;
+    min-height: 200px;
     font-size: 40px;
   }
 
@@ -223,6 +224,7 @@
     flex-direction: column;
     align-items: center;
   }
+  
 
   .modo {
     width: 80%;
