@@ -341,6 +341,27 @@ h3.num {
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
+/*SCROLLBAR*/
+*::-webkit-scrollbar {
+    width: 12px;
+    padding-right: 5px;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: #8d89f9;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #4943f0; 
+    border-radius: 20px;       
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #332fac; 
+    border-radius: 20px;  
+    transform: 0.2 color ease;     
+}
+
 @media (max-width: 1024px) {
   .pantalla-ranking {
     flex-direction: column;
