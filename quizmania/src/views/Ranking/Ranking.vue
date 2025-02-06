@@ -1,6 +1,6 @@
 <template>
-    <section>
-      <div class="encase">
+  <section>
+    <div class="encase">
       <div class="container-fluid title text-white">
         <h1><b>Ránking Global</b></h1>
       </div>
@@ -19,7 +19,9 @@
             <div class="d-flex posicion">
               <p class="me-2">Última posición:</p>
               <div class="num text-white">
-                <u><b>{{ perfil.posicion }}</b></u>
+                <u
+                  ><b>{{ perfil.posicion }}</b></u
+                >
               </div>
             </div>
           </div>
@@ -40,7 +42,12 @@
                 <td class="posicion">{{ jugador.posicion }}</td>
                 <td class="puntos">{{ jugador.puntos }}</td>
                 <td class="categoria">
-                  <img :src="jugador.categoria" alt="" width="60px" height="60px" />
+                  <img
+                    :src="jugador.categoria"
+                    alt=""
+                    width="60px"
+                    height="60px"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -48,12 +55,21 @@
         </div>
       </div>
     </div>
-    </section>
+  </section>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import arteImage from "../../assets/arte.png";
+import cienciasImage from "../../assets/ciencias.png";
+import culturaImage from "../../assets/cultura.png";
 import entreImage from "../../assets/entre.png";
+import geoImage from "../../assets/geografia.png";
+import historiaImage from "../../assets/historia.png";
+import matesImage from "../../assets/mates.png";
+import tecnoImage from "../../assets/tecno.png";
+import musicaImage from "../../assets/musica.png";
+import deportesImage from "../../assets/deportes.png";
 
 const perfil = ref({
   nombre: "PEPE_123ASD",
@@ -71,55 +87,55 @@ const ranking = ref([
     nombre: "PEPESITO",
     posicion: 2,
     puntos: 15648,
-    categoria: entreImage,
+    categoria: arteImage,
   },
   {
     nombre: "PEPE",
     posicion: 3,
     puntos: 15648,
-    categoria: entreImage,
+    categoria: geoImage,
   },
   {
     nombre: "MARIA_ABCD",
     posicion: 4,
     puntos: 15432,
-    categoria: entreImage,
+    categoria: musicaImage,
   },
   {
     nombre: "JUAN_XYZ",
     posicion: 5,
     puntos: 15210,
-    categoria: entreImage,
+    categoria: matesImage,
   },
   {
     nombre: "ANA_321",
     posicion: 6,
     puntos: 15100,
-    categoria: entreImage,
+    categoria: tecnoImage,
   },
   {
     nombre: "LUIS_654",
     posicion: 7,
     puntos: 15000,
-    categoria: entreImage,
+    categoria: cienciasImage,
   },
   {
     nombre: "CARLA_987",
     posicion: 8,
     puntos: 14850,
-    categoria: entreImage,
+    categoria: culturaImage,
   },
   {
     nombre: "PEDRO_KLM",
     posicion: 9,
     puntos: 14700,
-    categoria: entreImage,
+    categoria: historiaImage,
   },
   {
     nombre: "SOFIA_GHI",
     posicion: 10,
     puntos: 14560,
-    categoria: entreImage,
+    categoria: deportesImage,
   },
 ]);
 </script>
@@ -144,8 +160,8 @@ section {
 }
 
 .title {
-  background-color: #000;
-  border: 5px solid #4A4DA5;
+  background-color: #5759cd;
+  border: 5px solid #4a4da5;
   border-radius: 8px;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -166,8 +182,9 @@ section {
   height: auto;
   width: 100%;
   padding-top: 0;
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-bottom: 30px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .perfil-vista {
@@ -176,16 +193,15 @@ section {
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  background-color: #000;
-  border: 5px solid #21224f;
+  background-color: #5759cd;
   border-radius: 8px;
   width: 30%; /* 30% of the container width */
   text-align: center;
   padding: 30px;
   font-weight: bold;
-  margin-top: 80px;
   max-height: 80vh;
   min-height: 680px;
+  filter: drop-shadow(0 4px 4px #00000073);
 }
 
 .perfil-vista img {
@@ -230,7 +246,7 @@ h3.num {
   flex-wrap: nowrap;
 }
 
-.pos > u{
+.pos > u {
   color: #5759cd !important;
 }
 
@@ -248,16 +264,17 @@ h3.num {
 .ranking {
   width: 70%; /* 70% of the container width */
   height: 100%;
-  max-height: 80vh;
+  max-height: 680px;
   overflow: auto;
   display: flex;
   flex-direction: column;
-  border: 5px solid #21224f;
   margin-left: 30px;
-  background-color: #000;
+  background-color: #5759cd;
   border-radius: 8px !important;
   padding-left: 20px !important;
   padding-right: 20px !important;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 4px #00000073);
 }
 
 .ranking table {
@@ -296,7 +313,7 @@ h3.num {
 }
 
 .ranking .jugador {
-  background: linear-gradient(#2c2d67 0%, #5759cd 50%, #2c2d67 100%);
+  background-color: #2c2d67;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
   font-size: 15px;
   font-weight: bold;
@@ -304,7 +321,7 @@ h3.num {
 }
 
 .ranking .puntos {
-  background-color: #2c2d67;
+  background-color: #aeafdd;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
   font-size: 20px;
   font-weight: bold;
@@ -317,7 +334,7 @@ h3.num {
 }
 
 .ranking .posicion {
-  background-color: #cac5f5;
+  background-color: #8d89f9;
   font-size: 25px;
   text-decoration: underline;
   font-weight: bold;
@@ -346,18 +363,35 @@ h3.num {
     margin-top: 0;
     height: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
     padding: 20px;
     min-height: auto;
     text-align: center;
   }
 
   .perfil-vista img {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
+    margin: 0;
+  }
+
+  .perfil-vista h3 {
+    margin: 0;
+  }
+
+  .perfil-vista p {
+    margin: 0;
+  }
+
+  .perfil-vista .num {
+    margin: 0;
+  }
+
+  .posicion {
+    align-items: normal;
   }
 }
 @media (max-width: 768px) {
@@ -367,7 +401,6 @@ h3.num {
     width: 100%;
     gap: 20px;
     max-height: unset;
-    padding: 20px;
   }
 
   .perfil-ranking,
@@ -404,7 +437,7 @@ h3.num {
   .perfil-vista > div {
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     width: 100%;
   }
 
@@ -416,7 +449,7 @@ h3.num {
 
   .ranking {
     width: 100%;
-    overflow-x: auto; 
+    overflow-x: auto;
     padding: 10px;
   }
 
@@ -424,20 +457,18 @@ h3.num {
     width: 100%;
     display: block;
     overflow-x: auto;
-    white-space: nowrap; 
+    white-space: nowrap;
   }
 
   .ranking th,
   .ranking td {
-    font-size: 14px; 
-    padding: 5px; 
+    font-size: 14px;
+    padding: 5px;
   }
 
   .ranking .categoria img {
-    height: 40px; 
+    height: 40px;
     width: auto;
   }
 }
-
-
 </style>

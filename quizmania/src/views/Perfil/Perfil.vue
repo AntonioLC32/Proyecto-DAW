@@ -17,9 +17,7 @@
           </div>
 
           <h3 class="text-white">PEPE_123ASD</h3>
-          <h4 class="text-wrap">
-            ¡Comparte tu perfil con tus amigos!
-          </h4>
+          <h4 class="text-wrap">¡Comparte tu perfil con tus amigos!</h4>
           <div class="socials text-white">
             <a href="#instagram" class="social-button" aria-label="Instagram">
               <img
@@ -102,9 +100,7 @@
                     />
                     <label for="no">No</label>
                   </div>
-                  <button class="btn w-100 mt-3">
-                    ✍ Guardar Ajustes
-                  </button>
+                  <button class="btn w-100 mt-3">✍ Guardar Ajustes</button>
                 </form>
               </div>
 
@@ -129,13 +125,17 @@
                       <img
                         :src="stats.imagenCategoria"
                         alt="Categoría"
-                        width="70px" height="60px" style="border-radius: 8px;"
+                        width="70px"
+                        height="60px"
+                        style="border-radius: 8px"
                       />
                     </p>
                   </div>
                 </div>
                 <div class="my-5">
-                  <a href="/estadisticas" class="btn btn-outline-light">Ver Tus estadisticas completas</a>
+                  <a href="/estadisticas" class="btn btn-outline-light"
+                    >Ver tus estadisticas completas</a
+                  >
                 </div>
               </div>
             </div>
@@ -176,7 +176,6 @@ export default {
 };
 
 import entreImage from "../../assets/entre.png";
-
 </script>
 
 <style scoped lang="css">
@@ -199,8 +198,8 @@ section {
 }
 
 .perfil-title {
-  background-color: #5759CD;
-  border: 5px solid #4A4DA5;
+  background-color: #5759cd;
+  border: 5px solid #4a4da5;
   border-radius: 8px;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -232,7 +231,7 @@ section {
 .perfil-vista {
   display: flex;
   flex-direction: column;
-  background-color: #5759CD;
+  background-color: #5759cd;
   filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
 
   border-radius: 8px;
@@ -300,7 +299,7 @@ section {
 }
 
 .ajustes {
-  background-color: #5759CD;
+  background-color: #5759cd;
   filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
   width: 70%;
   height: auto;
@@ -379,7 +378,7 @@ section {
   display: flex;
   text-align: left;
   justify-content: space-between;
-  filter: drop-shadow(0 4px 4px #00000073);  /* drop shadow */
+  filter: drop-shadow(0 4px 4px #00000073); /* drop shadow */
   align-items: center;
   width: 100%;
   height: auto;
@@ -388,7 +387,7 @@ section {
 
 .estadistica-item h4 {
   font-size: 24px;
-  filter: drop-shadow(0 4px 4px #00000073);  /* drop shadow */
+  filter: drop-shadow(0 4px 4px #00000073); /* drop shadow */
   margin: 0;
 }
 
@@ -417,7 +416,7 @@ section {
   display: flex;
   width: 100%;
   border: 0;
-  filter: drop-shadow(0 2px 2px #00000073);  /* drop shadow */
+  filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
 }
 
 .nav-tabs li {
@@ -431,10 +430,10 @@ section {
   font-size: 18px;
   font-weight: bold;
   color: #fff;
-  background-color: #4A4DA5;
+  background-color: #4a4da5;
   text-decoration: none;
   border: 0;
-  border-radius: 8px ;
+  border-radius: 8px;
   align-content: center;
 }
 
@@ -447,7 +446,6 @@ section {
   color: #fff;
   border: 0;
   border-radius: 8px;
-
 }
 
 .nav-tabs li.active a {
@@ -555,11 +553,12 @@ section {
     min-height: 460px;
   }
 
-  .tab-content form >label,input{
+  .tab-content form > label,
+  input {
     font-size: 14px;
   }
 
-  .tab-content form > input{
+  .tab-content form > input {
     height: 40px;
   }
 
@@ -581,7 +580,6 @@ section {
     max-height: 100%;
   }
 
-  
   .estadistica-item h4,
   .estadistica-valor {
     font-size: 18px;
