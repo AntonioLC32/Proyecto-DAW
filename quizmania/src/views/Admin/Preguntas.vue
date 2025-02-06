@@ -112,32 +112,49 @@
       </div>
 
       <!-- Popup de edición -->
-      <div v-if="popupVisible" class="popup">
-        <div class="popup-content">
-          <span class="close" @click="cerrarPopup">&times;</span>
-          <h2>{{ preguntaSeleccionada.pregunta }}</h2>
+      <div v-if="popupVisible" class="popup-backdrop" @click.self="cerrarPopup">
+        <div class="popup" @click.stop>
+          <div class="popup-content">
+            <span class="close" @click="cerrarPopup">&times;</span>
+            <h2>{{ preguntaSeleccionada.pregunta }}</h2>
 
-          <div class="form-group">
-            <label>Categoría</label>
-            <input v-model="preguntaSeleccionada.categoria" type="text" />
+            <div class="form-group">
+              <label>Categoría</label>
+              <select v-model="preguntaSeleccionada.categoria">
+                <option value="Ciencia">Ciencia</option>
+                <option value="Historia">Historia</option>
+                <option value="Geografía">Geografía</option>
+                <option value="Deportes">Deportes</option>
+                <option value="Arte y Literatura">Arte y Literatura</option>
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Cultura General">Cultura General</option>
+                <option value="Música">Música</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Dificultad</label>
+              <select v-model="preguntaSeleccionada.dificultad">
+                <option value="Fácil">Fácil</option>
+                <option value="Media">Media</option>
+                <option value="Difícil">Difícil</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Opciones</label>
+              <textarea v-model="preguntaSeleccionada.opciones"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Respuesta correcta</label>
+              <input v-model="preguntaSeleccionada.correcta" type="text" />
+            </div>
+
+            <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
           </div>
-
-          <div class="form-group">
-            <label>Dificultad</label>
-            <input v-model="preguntaSeleccionada.dificultad" type="text" />
-          </div>
-
-          <div class="form-group">
-            <label>Opciones</label>
-            <textarea v-model="preguntaSeleccionada.opciones"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Respuesta correcta</label>
-            <input v-model="preguntaSeleccionada.correcta" type="text" />
-          </div>
-
-          <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
         </div>
       </div>
 
@@ -155,22 +172,30 @@
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="dificultad">Dificultad</label>
-              <input
-                id="dificultad"
-                type="text"
-                v-model="dificultad"
-                placeholder="Escribe la dificultad"
-              />
-            </div>
-            <div class="form-group">
               <label for="categoria">Categoría</label>
-              <input
-                id="categoria"
-                type="text"
-                v-model="categoria"
-                placeholder="Escribe la categoría"
-              />
+              <select id="categoria" v-model="categoria" required>
+                <option value="">Selecciona una categoría</option>
+                <option value="Ciencia">Ciencia</option>
+                <option value="Historia">Historia</option>
+                <option value="Geografía">Geografía</option>
+                <option value="Deportes">Deportes</option>
+                <option value="Arte y Literatura">Arte y Literatura</option>
+                <option value="Entretenimiento">Entretenimiento</option>
+                <option value="Tecnología">Tecnología</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Cultura General">Cultura General</option>
+                <option value="Música">Música</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="dificultad">Dificultad</label>
+              <select id="dificultad" v-model="dificultad" required>
+                <option value="">Selecciona la dificultad</option>
+                <option value="Fácil">Fácil</option>
+                <option value="Media">Media</option>
+                <option value="Difícil">Difícil</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="respuestas">Respuestas</label>
@@ -290,7 +315,7 @@ export default {
           id: 5,
           pregunta: "¿Cuál es el planeta más cercano al Sol?",
           dificultad: "Difícil",
-          categoria: "Astronomía",
+          categoria: "Geografía",
           opciones: "París|Londres|Berlín|Roma",
           correcta: "París",
           acciones: {
@@ -648,6 +673,40 @@ export default {
   background-color: #5b4bc4;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .popup {
   position: fixed;
   top: 50%;
@@ -660,19 +719,8 @@ export default {
   width: 500px;
   max-width: 90%;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
   border: 1px solid rgba(108, 92, 231, 0.2);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
 }
 
 .popup-content {
@@ -736,6 +784,47 @@ export default {
 .popup .form-group textarea {
   min-height: 100px;
   resize: vertical;
+}
+
+.add-pregunta select,
+.popup select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%236c5ce7' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.add-pregunta select:focus,
+.popup select:focus {
+  border-color: #6c5ce7;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+.add-pregunta select option,
+.popup select option {
+  background-color: white;
+  color: #333;
+  padding: 10px;
+}
+
+.add-pregunta select option:hover,
+.popup select option:hover {
+  background-color: #f0f0f0;
+}
+
+.add-pregunta select option[value=""] {
+  color: #888;
 }
 
 .popup-btn {
