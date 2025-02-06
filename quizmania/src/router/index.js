@@ -9,7 +9,7 @@ import Register from "../views/Auth/Register.vue";
 import Admin from "../views/Admin/Admin.vue";
 import Quizmania from "../views/Quizmania.vue";
 import Preguntas from "../views/admin/Preguntas.vue";
-
+import Usuarios from "../views/admin/Usuarios.vue";
 
 const routes = [
   {
@@ -56,7 +56,12 @@ const routes = [
     path: "/preguntas",
     name: "Preguntas",
     component: Preguntas,
-  }
+  },
+  {
+    path: "/usuarios",
+    name: "Usuarios",
+    component: Usuarios,
+  },
 ];
 
 // Crear el router
