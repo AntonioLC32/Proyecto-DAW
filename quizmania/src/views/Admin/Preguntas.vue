@@ -106,8 +106,39 @@
         </section>
 
         <section class="tabla">
-          <Table :headers="headers" :rows="rows" />
+          <!-- Se asume que el componente Table emite el evento "editar" pasando la fila -->
+          <Table :headers="headers" :rows="rows" @editar="abrirPopup" />
         </section>
+      </div>
+
+      <!-- Popup de edición -->
+      <div v-if="popupVisible" class="popup">
+        <div class="popup-content">
+          <span class="close" @click="cerrarPopup">&times;</span>
+          <h2>{{ preguntaSeleccionada.pregunta }}</h2>
+
+          <div class="form-group">
+            <label>Categoría</label>
+            <input v-model="preguntaSeleccionada.categoria" type="text" />
+          </div>
+
+          <div class="form-group">
+            <label>Dificultad</label>
+            <input v-model="preguntaSeleccionada.dificultad" type="text" />
+          </div>
+
+          <div class="form-group">
+            <label>Opciones</label>
+            <textarea v-model="preguntaSeleccionada.opciones"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Respuesta correcta</label>
+            <input v-model="preguntaSeleccionada.correcta" type="text" />
+          </div>
+
+          <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
+        </div>
       </div>
 
       <!-- Columna derecha: formulario para añadir pregunta -->
@@ -208,6 +239,8 @@ export default {
           pregunta: "¿Quién pintó la Mona Lisa?",
           dificultad: "Fácil",
           categoria: "Arte",
+          opciones: "Opción 1|Opción 2|Opción 3",
+          correcta: "Opción 1",
           acciones: {
             editar: true,
             eliminar: true,
@@ -219,6 +252,8 @@ export default {
           pregunta: "¿Cuál es la capital de Francia?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -230,6 +265,8 @@ export default {
           pregunta: "¿En qué año llegó el hombre a la luna?",
           dificultad: "Media",
           categoria: "Historia",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -241,6 +278,8 @@ export default {
           pregunta: "¿Cuál es la capital de Italia?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -252,6 +291,8 @@ export default {
           pregunta: "¿Cuál es el planeta más cercano al Sol?",
           dificultad: "Difícil",
           categoria: "Astronomía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -263,6 +304,8 @@ export default {
           pregunta: "¿Cuál es la capital de Australia?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -274,6 +317,8 @@ export default {
           pregunta: "¿Cuál es la capital de Japón?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -285,6 +330,8 @@ export default {
           pregunta: "¿Cuál es la capital de Brasil?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -296,6 +343,8 @@ export default {
           pregunta: "¿Cuál es la capital de España?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -307,6 +356,8 @@ export default {
           pregunta: "¿Cuál es la capital de Argentina?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -318,6 +369,8 @@ export default {
           pregunta: "¿Cuál es la capital de Colombia?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -329,6 +382,8 @@ export default {
           pregunta: "¿Cuál es la capital de México?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -340,6 +395,8 @@ export default {
           pregunta: "¿Cuál es la capital de Perú?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -351,6 +408,8 @@ export default {
           pregunta: "¿Cuál es la capital de Chile?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -362,6 +421,8 @@ export default {
           pregunta: "¿Cuál es la capital de Venezuela?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -373,6 +434,8 @@ export default {
           pregunta: "¿Cuál es la capital de Uruguay?",
           dificultad: "Fácil",
           categoria: "Geografía",
+          opciones: "París|Londres|Berlín|Roma",
+          correcta: "París",
           acciones: {
             editar: true,
             eliminar: true,
@@ -380,9 +443,21 @@ export default {
           },
         },
       ],
+      popupVisible: false,
+      preguntaSeleccionada: {},
     };
   },
   methods: {
+    abrirPopup(pregunta) {
+      this.preguntaSeleccionada = { ...pregunta };
+      this.popupVisible = true;
+    },
+    cerrarPopup() {
+      this.popupVisible = false;
+    },
+    guardarCambios() {
+      this.popupVisible = false;
+    },
     buscarPregunta() {},
     filtrarCategorias() {},
     addPregunta() {},
@@ -571,6 +646,118 @@ export default {
 
 .add-pregunta button:hover {
   background-color: #5b4bc4;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 500px;
+  max-width: 90%;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+  border: 1px solid rgba(108, 92, 231, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 15px;
+}
+
+.popup-content h2 {
+  color: #4a4aa6;
+  font-size: 20px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(108, 92, 231, 0.1);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.close:hover {
+  color: #6c5ce7;
+}
+
+.popup .form-group {
+  margin-bottom: 15px;
+}
+
+.popup .form-group label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.popup .form-group input,
+.popup .form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.popup .form-group input:focus,
+.popup .form-group textarea:focus {
+  border-color: #6c5ce7;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+}
+
+.popup .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.popup-btn {
+  background-color: #6c5ce7;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  align-self: center;
+  width: 100%;
+}
+
+.popup-btn:hover {
+  background-color: #5b4bc4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 1400px) {
