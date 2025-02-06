@@ -38,13 +38,15 @@
               </div>
             </div>
             <div class="stat-item">
+              <p class="me-2">Victorias:</p>
+              <div class="num text-white">
+                <b>{{ perfil.victorias }}</b>
+              </div>
+            </div>
+            <div class="stat-item">
               <p class="me-2">Categoria Destacada:</p>
               <div class="num text-white">
-                <img
-                :src="perfil.categoria"
-                alt="Categoría"
-                class="cat-img"
-              />
+                <img :src="perfil.categoria" alt="Categoría" class="cat-img" />
               </div>
             </div>
           </div>
@@ -57,13 +59,19 @@
               :key="index"
               class="estadisticas-item"
             >
+              <p>Categoria</p>
               <img
                 :src="categoria.categoria"
                 alt="Categoría"
                 class="estadisticas-img"
               />
-              <p class="puntos">{{ categoria.puntos }} pts</p>
-              <p class="posicion">#{{ categoria.mejorPosicion }}</p>
+              <div class="d-flex ptot">
+                <p>Puntos Totales</p>
+                <p class="puntos">{{ categoria.puntos }} pts</p>
+              </div>
+              <p class="posicion">
+                Mejor Posición #{{ categoria.mejorPosicion }}
+              </p>
             </div>
           </div>
         </div>
@@ -74,26 +82,37 @@
 
 <script setup>
 import { ref } from "vue";
+import arteImage from "../../assets/arte.png";
+import cienciasImage from "../../assets/ciencias.png";
+import culturaImage from "../../assets/cultura.png";
 import entreImage from "../../assets/entre.png";
+import geoImage from "../../assets/geografia.png";
+import historiaImage from "../../assets/historia.png";
+import matesImage from "../../assets/mates.png";
+import tecnoImage from "../../assets/tecno.png";
+import musicaImage from "../../assets/musica.png";
+import deportesImage from "../../assets/deportes.png";
 
 const perfil = ref({
   nombre: "PEPE_123ASD",
   posicion: 1,
   puntos: 15648,
   juegosJugados: 120,
+  victorias: 89,
   categoria: entreImage,
 });
 
 const estadisticas = ref([
   { categoria: entreImage, puntos: 5600, mejorPosicion: 1 },
-  { categoria: entreImage, puntos: 4200, mejorPosicion: 3 },
-  { categoria: entreImage, puntos: 3200, mejorPosicion: 5 },
-  { categoria: entreImage, puntos: 2648, mejorPosicion: 7 },
-  { categoria: entreImage, puntos: 2400, mejorPosicion: 8 },
-  { categoria: entreImage, puntos: 2000, mejorPosicion: 10 },
-  { categoria: entreImage, puntos: 1800, mejorPosicion: 12 },
-  { categoria: entreImage, puntos: 1500, mejorPosicion: 15 },
-  { categoria: entreImage, puntos: 1200, mejorPosicion: 18 },
+  { categoria: arteImage, puntos: 4200, mejorPosicion: 3 },
+  { categoria: cienciasImage, puntos: 3200, mejorPosicion: 5 },
+  { categoria: culturaImage, puntos: 2648, mejorPosicion: 7 },
+  { categoria: geoImage, puntos: 2400, mejorPosicion: 8 },
+  { categoria: historiaImage, puntos: 2000, mejorPosicion: 10 },
+  { categoria: matesImage, puntos: 1800, mejorPosicion: 12 },
+  { categoria: tecnoImage, puntos: 1500, mejorPosicion: 15 },
+  { categoria: musicaImage, puntos: 1200, mejorPosicion: 18 },
+  { categoria: deportesImage, puntos: 1200, mejorPosicion: 18 },
 ]);
 </script>
 
@@ -136,6 +155,7 @@ section {
   align-items: flex-start;
   width: 100%;
   padding: 0;
+  margin-bottom: 50px;
   gap: 50px;
 }
 
@@ -159,6 +179,10 @@ section {
   width: 200px;
 }
 
+.ptot {
+  gap: 10px;
+  align-items: center;
+}
 .perfil-vista h3 {
   font-size: 32px;
   font-weight: bold;
@@ -212,6 +236,7 @@ section {
   justify-content: center;
   align-items: center;
   filter: drop-shadow(0 2px 2px #00000073);
+  height: 680px;
 }
 
 .estadisticas-grid {
@@ -219,6 +244,9 @@ section {
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   width: 100%;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .estadisticas-item {
@@ -240,7 +268,6 @@ section {
   height: 60px !important;
   border-radius: 8px;
 }
-
 
 .estadisticas-img {
   width: 60px;
