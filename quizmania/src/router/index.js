@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Home from "../views/Home.vue";
 import Perfil from "../views/Perfil/Perfil.vue";
+import Estadisticas from "../views/Estadisticas/Estadisticas.vue";
 import Ranking from "../views/Ranking/Ranking.vue";
 import Login from "../views/Auth/Login.vue";
 import Register from "../views/Auth/Register.vue";
@@ -20,6 +21,11 @@ const routes = [
     path: "/perfil",
     name: "Perfil",
     component: Perfil,
+  },
+  {
+    path: "/estadisticas",
+    name: "Estadisticas",
+    component: Estadisticas,
   },
   {
     path: "/ranking",

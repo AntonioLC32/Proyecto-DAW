@@ -8,23 +8,35 @@
       <div class="division">
         <!-- Perfil -->
         <div class="perfil-vista">
-          <img
-            src="../../assets/perfil.jpg"
-            alt="Perfil Image"
-            style="border-radius: 50%"
-          />
+          <div id="perfil_img">
+            <img
+              src="../../assets/perfil.jpg"
+              alt="Perfil Image"
+              style="border-radius: 50%"
+            />
+          </div>
+
           <h3 class="text-white">PEPE_123ASD</h3>
-          <h4>
-            ¡Comparte tu perfil <br />
-            con tus amigos!
+          <h4 class="text-wrap">
+            ¡Comparte tu perfil con tus amigos!
           </h4>
           <div class="socials text-white">
-            <button type="button">
-              <a href="#instagram"><img src="../../assets/instagram2.png" alt="instagram" /></a>
-            </button>
-            <button type="button">
-              <a href="#compartir"><img src="../../assets/share.png" alt="share" /></a>
-            </button>
+            <a href="#instagram" class="social-button" aria-label="Instagram">
+              <img
+                src="../../assets/instagram2.png"
+                alt="instagram"
+                height="32px"
+                width="32px"
+              />
+            </a>
+            <a href="#compartir" class="social-button">
+              <img
+                src="../../assets/share.png"
+                alt="share"
+                height="32px"
+                width="32px"
+              />
+            </a>
           </div>
         </div>
 
@@ -38,7 +50,7 @@
                   :class="{ active: activeTab === 'ajustes' }"
                   class="nav-link"
                 >
-                  Ajustes
+                  Ajustes de la cuenta
                 </a>
               </li>
               <li class="nav-item" style="width: 50%; text-align: center">
@@ -47,7 +59,7 @@
                   :class="{ active: activeTab === 'estadisticas' }"
                   class="nav-link"
                 >
-                  Estadísticas
+                  Resumen de tus estadísticas
                 </a>
               </li>
             </ul>
@@ -57,45 +69,41 @@
                 class="tab-pane"
                 :class="{ 'show active': activeTab === 'ajustes' }"
               >
-                <h1 class="ajustes-title text-white">Ajustes de la Cuenta</h1>
-
                 <form @submit.prevent="saveSettings">
-                  <label for="nombre">Nombre</label><br />
+                  <label for="nombre">Nombre de usuario</label><br />
                   <input
-                    v-model="settings.name"
+                    v-model="settings.nombre"
                     type="text"
                     placeholder="PEPE_123ASD"
                     class="form-control mb-3"
                   />
-                  <label for="correo">Correo electrónico</label><br />
+                  <label for="correo">Contraseña</label><br />
                   <input
-                    v-model="settings.email"
-                    type="email"
-                    placeholder="pepe123asdf@correo.com"
+                    v-model="settings.password"
+                    type="password"
                     class="form-control mb-3"
                   />
                   <label>Desea recibir notificaciones?</label>
                   <div class="form-check">
                     <input
-                      v-model="settings.notifications"
+                      v-model="settings.notificaciones"
                       type="radio"
-                      name="notificaciones"
+                      nombre="notificaciones"
                       id="si"
                       value="si"
-                      checked
                     />
                     <label for="si">Sí</label><br />
                     <input
-                      v-model="settings.notifications"
+                      v-model="settings.notificaciones"
                       type="radio"
-                      name="notificaciones"
+                      nombre="notificaciones"
                       id="no"
                       value="no"
                     />
                     <label for="no">No</label>
                   </div>
-                  <button class="btn btn-dark w-100 mt-3">
-                    <i class="fa fa-save"></i> Guardar Ajustes
+                  <button class="btn w-100 mt-3">
+                    ✍ Guardar Ajustes
                   </button>
                 </form>
               </div>
@@ -106,7 +114,6 @@
                 class="tab-pane"
                 :class="{ 'show active': activeTab === 'estadisticas' }"
               >
-                <h1 class="ajustes-title text-white">Estadísticas</h1>
                 <div class="estadisticas-container">
                   <div class="estadistica-item">
                     <h4>Pos. Última Partida</h4>
@@ -120,12 +127,15 @@
                     <h4>Categoría Destacada</h4>
                     <p class="estadistica-valor">
                       <img
-                        :src="stats.featuredCategoryImage"
+                        :src="stats.imagenCategoria"
                         alt="Categoría"
-                        style="width: 150px"
+                        width="70px" height="60px" style="border-radius: 8px;"
                       />
                     </p>
                   </div>
+                </div>
+                <div class="my-5">
+                  <a href="/estadisticas" class="btn btn-outline-light">Ver Tus estadisticas completas</a>
                 </div>
               </div>
             </div>
@@ -138,20 +148,20 @@
 
 <script>
 export default {
-  name: "Perfil",
+  nombre: "Perfil",
   data() {
     return {
       activeTab: "ajustes",
-      username: "PEPE_123ASD",
+      usernombre: "PEPE_123ASD",
       settings: {
-        name: "PEPE_123ASD",
-        email: "pepe123asdf@correo.com",
-        notifications: "si",
+        nombre: "PEPE_123ASD",
+        password: "pepe123asd",
+        notificaciones: "si",
       },
       stats: {
         lastPosition: 1,
         lastPoints: 15648,
-        featuredCategoryImage: "../../assets/entre.png",
+        imagenCategoria: entreImage,
       },
     };
   },
@@ -164,6 +174,9 @@ export default {
     },
   },
 };
+
+import entreImage from "../../assets/entre.png";
+
 </script>
 
 <style scoped lang="css">
@@ -180,18 +193,18 @@ section {
 }
 
 .perfil {
-  margin-top: 100px;
+  margin-top: 110px;
   margin-left: 48px;
   margin-right: 48px;
 }
 
 .perfil-title {
-  background-color: #2c2d67;
-  border: 5px solid #21224f;
+  background-color: #5759CD;
+  border: 5px solid #4A4DA5;
   border-radius: 8px;
-  padding-top: 25px;
-  padding-bottom: 25px;
-  margin-bottom: 25px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
   height: auto;
   max-height: 150px;
   width: 100%;
@@ -201,8 +214,7 @@ section {
 }
 
 .perfil-title h1 {
-  filter: drop-shadow(0 4px 4px #00000073);
-  /* drop shadow */
+  filter: drop-shadow(0 4px 4px #00000073); /* drop shadow */
   font-weight: bold;
   font-size: 48px;
   color: #fff;
@@ -218,11 +230,13 @@ section {
 }
 
 .perfil-vista {
-  background-color: #2c2d67;
-  border: 5px solid #21224f;
+  display: flex;
+  flex-direction: column;
+  background-color: #5759CD;
+  filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
+
   border-radius: 8px;
   width: 30%;
-  /* 30% of the container width */
   height: auto;
   align-items: center;
   text-align: center;
@@ -230,9 +244,8 @@ section {
   font-weight: bold;
 }
 
-.perfil-vista img {
+.perfil-vista > #perfil_img > img {
   margin-bottom: 20px;
-  margin-top: 47px;
   width: 100%;
   height: auto;
   max-width: 250px;
@@ -248,46 +261,47 @@ section {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  border: 5px #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
+  background: #8d89f9;
   border-radius: 8px;
   padding: 10px;
+  gap: 10px;
 }
 
-.perfil-vista .socials > button {
+.perfil-vista .socials .social-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 40px;
   height: 40px;
-  margin-right: 10px;
-  border: 5px solid #8d89f9;
   border-radius: 8px;
   transition: all 0.3s ease-in-out;
 }
 
-.perfil-vista .socials > button:hover {
+.perfil-vista .socials .social-button:hover {
   transform: scale(1.1);
 }
 
-.perfil-vista > .socials > button > a > img {
+.perfil-vista .socials .social-button img {
   margin: 0;
+  filter: drop-shadow(0 2px 2px #00000071);
 }
-
-
 
 .perfil-vista i {
   filter: drop-shadow(0 4px 4px #00000073);
-  /* drop shadow */
 }
 
 .perfil-vista h4 {
+  padding: 20px;
   font-weight: bold;
   font-size: 20px;
-  color: #8d89f9;
-  filter: drop-shadow(0 4px 4px #00000073);
-  /* drop shadow */
+  color: #fff;
+  filter: drop-shadow(0 2px 2px #00000071);
 }
 
 .ajustes {
-  background-color: #2c2d67;
-  border: 5px solid #21224f;
+  background-color: #5759CD;
+  filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
   width: 70%;
   height: auto;
   margin-left: 30px;
@@ -301,6 +315,7 @@ section {
   flex-direction: column;
   align-items: center;
   height: auto;
+  justify-content: center;
 }
 
 .tab-content > .active {
@@ -312,22 +327,39 @@ section {
 }
 
 .tab-content form {
-  background-color: #fff;
+  background-color: #5759cd;
+  color: #fff;
   padding: 24px;
-  border: 1px solid #fff;
   border-radius: 8px;
   height: auto;
   width: 100%;
-  max-width: 320px;
-  max-height: 400px;
+  min-width: 320px;
 }
 
-.ajustes-title {
-  font-size: 48px;
+.tab-content form > input {
+  padding: 1.2rem;
+  border: 2px solid #ddd;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.tab-content form > label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.tab-content form > input:focus {
+  outline: none;
+  border-color: #8d89f9;
+  box-shadow: 0 0 0 3px rgba(141, 137, 249, 0.3);
+}
+
+.tab-content form > button {
+  background-color: #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073); /* drop shadow */
+  color: #fff;
   font-weight: bold;
-  text-align: center;
-  margin-top: 35px;
-  margin-bottom: 35px;
 }
 
 .estadisticas-container {
@@ -347,8 +379,7 @@ section {
   display: flex;
   text-align: left;
   justify-content: space-between;
-  filter: drop-shadow(0 4px 4px #00000073);
-  /* drop shadow */
+  filter: drop-shadow(0 4px 4px #00000073);  /* drop shadow */
   align-items: center;
   width: 100%;
   height: auto;
@@ -357,8 +388,7 @@ section {
 
 .estadistica-item h4 {
   font-size: 24px;
-  filter: drop-shadow(0 4px 4px #00000073);
-  /* drop shadow */
+  filter: drop-shadow(0 4px 4px #00000073);  /* drop shadow */
   margin: 0;
 }
 
@@ -386,7 +416,8 @@ section {
 .nav-tabs {
   display: flex;
   width: 100%;
-  border-radius: 8px;
+  border: 0;
+  filter: drop-shadow(0 2px 2px #00000073);  /* drop shadow */
 }
 
 .nav-tabs li {
@@ -400,36 +431,33 @@ section {
   font-size: 18px;
   font-weight: bold;
   color: #fff;
-  background-color: #2c2d67;
-  border: 5px solid #21224f;
-  border-bottom: 0px;
+  background-color: #4A4DA5;
   text-decoration: none;
-  border-radius: 8px;
+  border: 0;
+  border-radius: 8px ;
+  align-content: center;
+}
+
+.nav-link {
+  height: 100%;
 }
 
 .nav-link.active {
   background-color: #8d89f9;
-  border: 5px solid #21224f;
-}
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
 
-.nav-link.active:hover {
-  border: 5px solid #21224f;
-}
-
-.nav-tabs li:hover a {
-  border: 5px solid #8d89f9;
 }
 
 .nav-tabs li.active a {
   background-color: #8d89f9 !important;
-  border-top: 8px solid #cac5f5 !important;
-  border-left: 8px solid #cac5f5 !important;
-  border-right: 8px solid #cac5f5 !important;
-  border-bottom: 2px solid transparent;
+  border: 0;
 }
 
 .nav-tabs li:hover a {
   background-color: #6a6ecb !important;
+  border: 0;
 }
 
 @media (max-width: 1024px) {
@@ -454,6 +482,10 @@ section {
   .ajustes {
     width: 100%;
     margin-left: 0;
+  }
+
+  .tab-content {
+    min-height: 510px;
   }
 }
 
@@ -515,8 +547,25 @@ section {
   }
 
   .nav-tabs li a {
-    font-size: 16px;
+    font-size: 14px;
     padding: 10px 0;
+  }
+
+  .tab-content {
+    min-height: 460px;
+  }
+
+  .tab-content form >label,input{
+    font-size: 14px;
+  }
+
+  .tab-content form > input{
+    height: 40px;
+  }
+
+  .tab-content form {
+    min-width: 130px;
+    max-width: 250px;
   }
 
   .estadisticas-container {
@@ -529,14 +578,17 @@ section {
     flex-direction: column;
     text-align: center;
     padding: 10px;
+    max-height: 100%;
   }
 
+  
   .estadistica-item h4,
   .estadistica-valor {
     font-size: 18px;
   }
 
   .estadistica-valor img {
+    margin-top: 10px;
     width: 100px;
   }
 }

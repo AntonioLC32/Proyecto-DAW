@@ -1,7 +1,7 @@
 <template>
     <section>
       <div class="encase">
-      <div class="container-fluid title">
+      <div class="container-fluid title text-white">
         <h1><b>Ránking Global</b></h1>
       </div>
       <div class="container-fluid pantalla-ranking">
@@ -138,19 +138,24 @@ section {
 }
 
 .encase {
-  margin-top: 66px;
+  margin-top: 110px;
   margin-left: 48px;
   margin-right: 48px;
 }
 
 .title {
-  height: 98px;
+  background-color: #000;
+  border: 5px solid #4A4DA5;
+  border-radius: 8px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  height: auto;
+  max-height: 150px;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #fff;
-  font-size: 48px;
-  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
 .pantalla-ranking {
@@ -160,6 +165,7 @@ section {
   align-items: flex-start;
   height: auto;
   width: 100%;
+  padding-top: 0;
   padding-left: 50px;
   padding-right: 50px;
 }
@@ -318,7 +324,42 @@ h3.num {
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
 }
 
+@media (max-width: 1024px) {
+  .pantalla-ranking {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+    max-height: unset;
+    padding: 0;
+  }
 
+  .perfil-ranking,
+  .ranking {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .perfil-vista {
+    width: 100%;
+    margin-top: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    min-height: auto;
+    text-align: center;
+  }
+
+  .perfil-vista img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+  }
+}
 @media (max-width: 768px) {
   .pantalla-ranking {
     flex-direction: column;
@@ -327,7 +368,6 @@ h3.num {
     gap: 20px;
     max-height: unset;
     padding: 20px;
-
   }
 
   .perfil-ranking,
