@@ -1,228 +1,586 @@
 <template>
-    <div class="preguntas">
-        <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
+  <div class="preguntas">
+    <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
+
+    <!-- Contenedor principal que agrupa ambas columnas -->
+    <div class="content-wrapper">
+      <!-- Columna izquierda: búsqueda, filtros y tabla -->
+      <div class="left-column">
         <section class="gestion-preguntas">
-
-            <div class="searchBar">
-                <div class="input-container">
-                    <input type="text" v-model="input" class="search-input" placeholder="Buscar pregunta..." />
-                    <button @click="buscarPregunta" class="buscar-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
+          <div class="searchBar">
+            <div class="input-container">
+              <input
+                type="text"
+                v-model="input"
+                class="search-input"
+                placeholder="Buscar pregunta..."
+              />
+              <button @click="buscarPregunta" class="buscar-btn">
+                <i class="fas fa-search"></i>
+              </button>
             </div>
+          </div>
 
-
-            <div class="filtro-categorias">
-                <input type="checkbox" v-model="Ciencia" @change="filtrarCategorias" /> Ciencia
-                <input type="checkbox" v-model="Historia" @change="filtrarCategorias" /> Historia
-                <input type="checkbox" v-model="Geografia" @change="filtrarCategorias" /> Geografía
-                <input type="checkbox" v-model="Deportes" @change="filtrarCategorias" /> Deportes
-                <input type="checkbox" v-model="AyL" @change="filtrarCategorias" /> Arte y Literatura
-                <input type="checkbox" v-model="Entretenimiento" @change="filtrarCategorias" /> Entretenimiento
-                <input type="checkbox" v-model="Tecnologia" @change="filtrarCategorias" /> Tecnología
-                <input type="checkbox" v-model="Matematicas" @change="filtrarCategorias" /> Matemáticas
-                <input type="checkbox" v-model="CulturaGeneral" @change="filtrarCategorias" /> Cultura General
-                <input type="checkbox" v-model="Musica" @change="filtrarCategorias" /> Música
-            </div>
-
+          <div class="filtro-categorias">
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Ciencia"
+                @change="filtrarCategorias"
+              />
+              <span>Ciencia</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Historia"
+                @change="filtrarCategorias"
+              />
+              <span>Historia</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Geografia"
+                @change="filtrarCategorias"
+              />
+              <span>Geografía</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Deportes"
+                @change="filtrarCategorias"
+              />
+              <span>Deportes</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="AyL"
+                @change="filtrarCategorias"
+              />
+              <span>Arte y Literatura</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Entretenimiento"
+                @change="filtrarCategorias"
+              />
+              <span>Entretenimiento</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Tecnologia"
+                @change="filtrarCategorias"
+              />
+              <span>Tecnología</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Matematicas"
+                @change="filtrarCategorias"
+              />
+              <span>Matemáticas</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="CulturaGeneral"
+                @change="filtrarCategorias"
+              />
+              <span>Cultura General</span>
+            </label>
+            <label class="category-item">
+              <input
+                type="checkbox"
+                v-model="Musica"
+                @change="filtrarCategorias"
+              />
+              <span>Música</span>
+            </label>
+          </div>
         </section>
+
         <section class="tabla">
-            <Table :headers="headers" :rows="rows" />
+          <Table :headers="headers" :rows="rows" />
         </section>
-        <br>
+      </div>
+
+      <!-- Columna derecha: formulario para añadir pregunta -->
+      <div class="right-column">
         <section class="add-pregunta">
-            <h1 class="titulo-preguntas">AÑADIR PREGUNTA</h1>
-            <form @submit.prevent="addPregunta">
-                <textarea v-model="pregunta" placeholder="Pregunta"></textarea>
-                <input type="text" v-model="dificultad" placeholder="Dificultad" />
-                <input type="text" v-model="categoria" placeholder="Categoría" />
-                <textarea v-model="respuestas" placeholder="Respuestas"></textarea>
-                <input type="text" v-model="correcta" placeholder="Respuesta correcta" />
-                <button type="submit">Añadir pregunta</button>
-            </form>
-
+          <h1 class="titulo-form">AÑADIR PREGUNTA</h1>
+          <form @submit.prevent="addPregunta">
+            <div class="form-group">
+              <label for="pregunta">Pregunta</label>
+              <textarea
+                id="pregunta"
+                v-model="pregunta"
+                placeholder="Escribe la pregunta"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="dificultad">Dificultad</label>
+              <input
+                id="dificultad"
+                type="text"
+                v-model="dificultad"
+                placeholder="Escribe la dificultad"
+              />
+            </div>
+            <div class="form-group">
+              <label for="categoria">Categoría</label>
+              <input
+                id="categoria"
+                type="text"
+                v-model="categoria"
+                placeholder="Escribe la categoría"
+              />
+            </div>
+            <div class="form-group">
+              <label for="respuestas">Respuestas</label>
+              <textarea
+                id="respuestas"
+                v-model="respuestas"
+                placeholder="Escribe las respuestas (separadas por |)"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="correcta">Respuesta correcta</label>
+              <input
+                id="correcta"
+                type="text"
+                v-model="correcta"
+                placeholder="Escribe la respuesta correcta"
+              />
+            </div>
+            <button type="submit">Añadir pregunta</button>
+          </form>
         </section>
-
+      </div>
     </div>
-
+  </div>
 </template>
 
 <script>
-import Table from './Table.vue';
+import Table from "./Table.vue";
 
 export default {
-    name: "Preguntas",
-    components: {
-        Table
-    },
-    data() {
-        return {
-            headers: [
-                { key: 'id', label: 'ID' },
-                { key: 'pregunta', label: 'PREGUNTA' },
-                { key: 'dificultad', label: 'DIFICULTAD' },
-                { key: 'categoria', label: 'CATEGORÍA' },
-                { key: 'acciones', label: 'ACCIONES' }
-            ],
-            rows: [
-                {
-                    id: 1,
-                    pregunta: '¿Quién pintó la Mona Lisa?',
-                    dificultad: 'Fácil',
-                    categoria: 'Arte',
-                    acciones: {
-                        editar: true,
-                        eliminar: true,
-                        info: false
-                    }
-                },
-                {
-                    id: 2,
-                    pregunta: '¿Cuál es la capital de Francia?',
-                    dificultad: 'Fácil',
-                    categoria: 'Geografía',
-                    acciones: {
-                        editar: true,
-                        eliminar: true,
-                        info: false
-                    }
-                },
-                {
-                    id: 3,
-                    pregunta: '¿En qué año llegó el hombre a la luna?',
-                    dificultad: 'Media',
-                    categoria: 'Historia',
-                    acciones: {
-                        editar: true,
-                        eliminar: true,
-                        info: false
-                    }
-                }
-            ]
-        };
-    },
-    methods: {
-        buscarPregunta() {
-
+  name: "Preguntas",
+  components: {
+    Table,
+  },
+  data() {
+    return {
+      // Variables de búsqueda y filtros
+      input: "",
+      Ciencia: false,
+      Historia: false,
+      Geografia: false,
+      Deportes: false,
+      AyL: false,
+      Entretenimiento: false,
+      Tecnologia: false,
+      Matematicas: false,
+      CulturaGeneral: false,
+      Musica: false,
+      // Variables para el formulario
+      pregunta: "",
+      dificultad: "",
+      categoria: "",
+      respuestas: "",
+      correcta: "",
+      // Datos de la tabla
+      headers: [
+        { key: "id", label: "ID" },
+        { key: "pregunta", label: "PREGUNTA" },
+        { key: "dificultad", label: "DIFICULTAD" },
+        { key: "categoria", label: "CATEGORÍA" },
+        { key: "acciones", label: "ACCIONES" },
+      ],
+      rows: [
+        {
+          id: 1,
+          pregunta: "¿Quién pintó la Mona Lisa?",
+          dificultad: "Fácil",
+          categoria: "Arte",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
         },
-        filtrarCategorias() {
-
+        {
+          id: 2,
+          pregunta: "¿Cuál es la capital de Francia?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
         },
-        addPregunta() {
-
-        }
-    }
+        {
+          id: 3,
+          pregunta: "¿En qué año llegó el hombre a la luna?",
+          dificultad: "Media",
+          categoria: "Historia",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 4,
+          pregunta: "¿Cuál es la capital de Italia?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 5,
+          pregunta: "¿Cuál es el planeta más cercano al Sol?",
+          dificultad: "Difícil",
+          categoria: "Astronomía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 6,
+          pregunta: "¿Cuál es la capital de Australia?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 7,
+          pregunta: "¿Cuál es la capital de Japón?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 8,
+          pregunta: "¿Cuál es la capital de Brasil?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 9,
+          pregunta: "¿Cuál es la capital de España?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 10,
+          pregunta: "¿Cuál es la capital de Argentina?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 11,
+          pregunta: "¿Cuál es la capital de Colombia?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 12,
+          pregunta: "¿Cuál es la capital de México?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 13,
+          pregunta: "¿Cuál es la capital de Perú?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 14,
+          pregunta: "¿Cuál es la capital de Chile?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 15,
+          pregunta: "¿Cuál es la capital de Venezuela?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+        {
+          id: 16,
+          pregunta: "¿Cuál es la capital de Uruguay?",
+          dificultad: "Fácil",
+          categoria: "Geografía",
+          acciones: {
+            editar: true,
+            eliminar: true,
+            info: false,
+          },
+        },
+      ],
+    };
+  },
+  methods: {
+    buscarPregunta() {},
+    filtrarCategorias() {},
+    addPregunta() {},
+  },
 };
 </script>
 
 <style scoped>
 .preguntas {
-    margin-left: 60px;
-    background: linear-gradient(to bottom, #8D89F8 0%, #8682EB 54%, #535192 100%);
-    min-height: 100vh;
-    padding: 20px;
-    color: #333;
-    font-family: Roboto, sans-serif;
+  margin-left: 60px;
+  background: linear-gradient(to bottom, #8d89f8 0%, #8682eb 54%, #535192 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+  font-family: Roboto, sans-serif;
+  width: calc(100% - 60px);
 }
 
-.add-pregunta {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.titulo-form,
+.titulo-preguntas {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: left;
+  font-weight: bold;
 }
 
 .titulo-preguntas {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #333;
-    text-align: left;
-    font-weight: bold;
+  color: #fff;
 }
 
-textarea {
-    width: 100%;
-    padding: 6px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: #fff;
+.content-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.left-column {
+  flex: 2;
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .searchBar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .input-container {
-    position: relative;
-    width: 100%;
+  position: relative;
+  width: 100%;
 }
 
 .search-input {
-    width: 100%;
-    padding: 10px 40px 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background: #fff;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
-    outline: none;
+  width: 100%;
+  padding: 10px 40px 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 14px;
+  transition: all 0.3s ease-in-out;
+  outline: none;
 }
 
 .search-input:focus {
-    border-color: #6c5ce7;
-    box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
+  border-color: #6c5ce7;
+  box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
 }
 
 .buscar-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: #6c5ce7;
-    cursor: pointer;
-    font-size: 16px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #6c5ce7;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .buscar-btn:hover {
-    color: #5b4bc4;
+  color: #5b4bc4;
 }
 
 .filtro-categorias {
-    margin: 20px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
 }
 
-.filtro-categorias input[type="checkbox"] {
-    margin-right: 5px;
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.category-item input[type="checkbox"] {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: rgba(74, 77, 165, 0.87);
+}
+
+.tabla {
+  margin-top: 20px;
+}
+
+.add-pregunta {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .add-pregunta form {
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: space-around;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.add-pregunta textarea,
+.add-pregunta input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-pregunta textarea:focus,
+.add-pregunta input:focus {
+  border-color: #6c5ce7;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
 }
 
 .add-pregunta textarea {
-    height: 120px;
-    resize: vertical;
+  min-height: 80px;
+  resize: vertical;
 }
 
-.add-pregunta button[type="submit"] {
-    background: #6c5ce7;
-    padding: 12px 24px;
-    align-self: flex-end;
-    font-size: 14px;
+.add-pregunta button {
+  background-color: #6c5ce7;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s;
 }
 
-.add-pregunta button[type="submit"]:hover {
-    background: #5b4bc4;
+.add-pregunta button:hover {
+  background-color: #5b4bc4;
+}
+
+@media (max-width: 1400px) {
+  .content-wrapper {
+    flex-direction: column;
+    align-items: initial;
+  }
+  .left-column,
+  .right-column {
+    flex: initial;
+  }
 }
 </style>
