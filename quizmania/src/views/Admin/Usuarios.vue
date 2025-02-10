@@ -11,9 +11,27 @@
       </div>
     </div>
 
-    <section class="tabla">
-      <Table :headers="headers" :rows="rows" @info="abrirPopup" />
-    </section>
+    <div class="content-wrapper">
+      <div class="left-column">
+        <section class="tabla">
+          <Table :headers="headers" :rows="rows" @info="abrirPopup" />
+        </section>
+      </div>
+
+      <div class="right-column">
+        <section class="edit-user">
+          <img
+            src="https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png"
+            alt="Admin"
+          />
+          <form action="">
+            <input type="text" placeholder="Nombre de usuario" required />
+            <input type="email" placeholder="Correo electrónico" required />
+            <button type="submit">EDITAR</button>
+          </form>
+        </section>
+      </div>
+    </div>
 
     <div v-if="popupVisible" class="popup-backdrop" @click.self="cerrarPopup">
       <div class="popup" @click.stop>
@@ -155,6 +173,22 @@ export default {
   color: #5759cd;
 }
 
+.content-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.left-column {
+  flex: 2;
+}
+
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .tabla {
   margin-top: 20px;
 }
@@ -249,5 +283,67 @@ export default {
 
 .close:hover {
   color: #6c5ce7;
+}
+
+.edit-user {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-user img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin: 0 auto 15px;
+}
+
+.edit-user form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: space-around;
+}
+
+.edit-user input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.edit-user button {
+  background-color: #6c5ce7;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color 0.3s;
+}
+
+.edit-user button:hover {
+  background-color: #5b4bc4;
+}
+
+@media (max-width: 1300px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .right-column {
+    margin-top: 20px;
+  }
 }
 </style>
