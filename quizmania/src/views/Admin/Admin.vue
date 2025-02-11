@@ -5,16 +5,15 @@
       <div class="datos">ACIERTOS POR CATEGORÍA</div>
       <div class="datos">PARTICIPACIÓN USUARIOS SEMANAL</div>
       <div class="datos">ACIERTOS POR DIFICULTAD</div>
-      <div class="datos">PARTIDAS JUGADAS DIARIAS</div>  
+      <div class="datos">PARTIDAS JUGADAS DIARIAS</div>
     </div>
   </div>
 </template>
 
-
 <style scoped>
 .body {
   font-family: "Montserrat", sans-serif;
-  background: linear-gradient(to bottom, #7D7DE6, #4D4D9D);
+  background: linear-gradient(to bottom, #7d7de6, #4d4d9d);
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -48,9 +47,7 @@ h1 {
   font-size: 16px;
   height: 350px;
 }
-
 </style>
-
 
 <script>
 export default {

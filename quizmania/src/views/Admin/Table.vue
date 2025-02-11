@@ -43,6 +43,13 @@
                   </button>
                 </div>
               </template>
+              <template v-else-if="header.key === 'imagen'">
+                <img
+                  :src="getImageUrl(row[header.key])"
+                  :alt="`Imagen de ${row.nombre}`"
+                  class="table-image"
+                />
+              </template>
               <template v-else>
                 {{ row[header.key] }}
               </template>
@@ -84,6 +91,13 @@
                 </button>
               </div>
             </template>
+            <template v-else-if="header.key === 'imagen'">
+              <img
+                :src="getImageUrl(row[header.key])"
+                :alt="`Imagen de ${row.nombre}`"
+                class="table-image"
+              />
+            </template>
             <template v-else>
               {{ row[header.key] }}
             </template>
@@ -117,6 +131,9 @@ export default {
     },
     info(row) {
       this.$emit("info", row);
+    },
+    getImageUrl(path) {
+      return new URL(`../../assets/${path}`, import.meta.url).href;
     },
   },
 };
@@ -210,6 +227,13 @@ export default {
   color: white;
 }
 
+.table-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
 @media (max-width: 480px) {
   .table-header {
     padding: 0.5rem 0.75rem;
@@ -226,7 +250,6 @@ export default {
     font-size: 0.7rem;
   }
 
-  /* Ajusta el ancho mínimo para dispositivos móviles */
   .dynamic-table {
     min-width: 100%;
   }
