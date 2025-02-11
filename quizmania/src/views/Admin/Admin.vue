@@ -2,13 +2,85 @@
   <div class="body">
     <h1>Datos generales</h1>
     <div class="general">
-      <div class="datos">ACIERTOS POR CATEGORÍA</div>
-      <div class="datos">PARTICIPACIÓN USUARIOS SEMANAL</div>
-      <div class="datos">ACIERTOS POR DIFICULTAD</div>
-      <div class="datos">PARTIDAS JUGADAS DIARIAS</div>
+      <div class="datos">
+        <h2>Aciertos por Categoría</h2>
+        <canvas id="chartAciertos"></canvas>
+      </div>
+      <div class="datos">
+        <h2>Participación Usuarios Semanal</h2>
+        <canvas id="chartUsuarios"></canvas>
+      </div>
+      <div class="datos">
+        <h2>Aciertos por Dificultad</h2>
+        <canvas id="chartDificultad"></canvas>
+      </div>
+      <div class="datos">
+        <h2>Partidas Jugadas Diarias</h2>
+        <canvas id="chartPartidas"></canvas>
+      </div>
     </div>
   </div>
 </template>
+
+<script>
+import { onMounted } from 'vue';
+import Chart from 'chart.js/auto';
+
+export default {
+  name: 'Admin',
+  setup() {
+    onMounted(() => {
+      new Chart(document.getElementById('chartAciertos'), {
+        type: 'bar',
+        data: {
+          labels: ['Ciencia', 'Historia', 'Geografía', 'Deportes', 'Arte', 'Entretenimiento', 'Tecnología', 'Mates', 'Cultura', 'Música'],
+          datasets: [{
+            label: 'Aciertos',
+            data: [40, 20, 50, 35, 45, 13, 27, 42, 31, 37],
+            backgroundColor: 'blue'
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('chartUsuarios'), {
+        type: 'bar',
+        data: {
+          labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+          datasets: [{
+            label: 'Usuarios activos',
+            data: [30, 15, 40, 32, 25, 5, 35],
+            backgroundColor: 'green'
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('chartDificultad'), {
+        type: 'bar',
+        data: {
+          labels: ['Fácil', 'Medio', 'Difícil'],
+          datasets: [{
+            label: 'Aciertos',
+            data: [50, 70, 30],
+            backgroundColor: 'orange'
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('chartPartidas'), {
+        type: 'bar',
+        data: {
+          labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+          datasets: [{
+            label: 'Partidas',
+            data: [10, 15, 8, 20, 18, 15, 20],
+            backgroundColor: 'red'
+          }]
+        }
+      });
+    });
+  }
+};
+</script>
 
 <style scoped>
 .body {
@@ -48,10 +120,3 @@ h1 {
   height: 350px;
 }
 </style>
-
-<script>
-export default {
-  name: "Admin",
-  data() {},
-};
-</script>
