@@ -199,17 +199,32 @@ export default {
   width: 80px;
 }
 
+.table-image {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: nowrap;
 }
 
 .action-btn {
-  padding: 4px 8px;
-  font-size: 1rem;
+  padding: 8px 16px;
+  min-width: 80px;
+  font-size: 0.9rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .editar-btn {
@@ -217,9 +232,19 @@ export default {
   color: white;
 }
 
+.editar-btn:hover {
+  background-color: #5b4bc4;
+  box-shadow: 0 3px 6px rgba(108, 92, 231, 0.2);
+}
+
 .eliminar-btn {
   background-color: #e74c3c;
   color: white;
+}
+
+.eliminar-btn:hover {
+  background-color: #c44133;
+  box-shadow: 0 3px 6px rgba(231, 76, 60, 0.2);
 }
 
 .info-btn {
@@ -227,47 +252,23 @@ export default {
   color: white;
 }
 
-.table-image {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
+.info-btn:hover {
+  background-color: #2c81ba;
+  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.2);
 }
 
 @media (max-width: 480px) {
-  .table-header {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  .table-cell {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
   .action-btn {
-    padding: 2px 4px;
-    font-size: 0.7rem;
-  }
-
-  .dynamic-table {
-    min-width: 100%;
+    min-width: 70px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
   }
 }
 
 @media (min-width: 481px) and (max-width: 1023px) {
-  .table-header {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  .table-cell {
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
-  }
-
   .action-btn {
-    padding: 3px 6px;
+    min-width: 75px;
+    padding: 7px 14px;
     font-size: 0.8rem;
   }
 }
