@@ -12,6 +12,7 @@ import Juego from "../views/Juego/Juego.vue";
 import Preguntas from "../views/admin/Preguntas.vue";
 import Usuarios from "../views/admin/Usuarios.vue";
 import Categorias from "../views/admin/Categorias.vue";
+import CSV from "../views/admin/CSV.vue";
 
 const routes = [
   {
@@ -73,6 +74,11 @@ const routes = [
     path: "/categorias",
     name: "Categorias",
     component: Categorias,
+  },
+  {
+    path: "/importar-csv",
+    name: "CSV",
+    component: CSV,
   },
 ];
 

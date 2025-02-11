@@ -2,9 +2,13 @@
   <div>
     <div
       v-if="
-        !['/admin', '/categorias', '/usuarios', '/preguntas'].includes(
-          $route.path
-        )
+        ![
+          '/admin',
+          '/categorias',
+          '/usuarios',
+          '/preguntas',
+          '/importar-csv',
+        ].includes($route.path)
       "
     >
       <Header />
