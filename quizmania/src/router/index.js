@@ -10,6 +10,7 @@ import Admin from "../views/Admin/Admin.vue";
 import Quizmania from "../views/Quizmania.vue";
 import Preguntas from "../views/admin/Preguntas.vue";
 import Usuarios from "../views/admin/Usuarios.vue";
+import Categorias from "../views/admin/Categorias.vue";
 
 const routes = [
   {
@@ -61,6 +62,11 @@ const routes = [
     path: "/usuarios",
     name: "Usuarios",
     component: Usuarios,
+  },
+  {
+    path: "/categorias",
+    name: "Categorias",
+    component: Categorias,
   },
 ];
 
