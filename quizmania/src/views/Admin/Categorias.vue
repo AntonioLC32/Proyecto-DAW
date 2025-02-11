@@ -235,10 +235,9 @@ export default {
 }
 
 .titulo-categorias {
-  font-size: 24px;
   margin-bottom: 20px;
   color: #fff;
-  text-align: left;
+  text-align: center;
   font-weight: bold;
 }
 

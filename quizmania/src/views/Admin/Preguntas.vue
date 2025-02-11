@@ -501,17 +501,19 @@ export default {
   width: calc(100% - 60px);
 }
 
-.titulo-form,
-.titulo-preguntas {
+.titulo-form {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
-  text-align: left;
+  text-align: center;
   font-weight: bold;
 }
 
 .titulo-preguntas {
+  margin-bottom: 20px;
   color: #fff;
+  text-align: center;
+  font-weight: bold;
 }
 
 .content-wrapper {
