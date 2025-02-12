@@ -1,6 +1,6 @@
 <template>
   <div class="body">
-    <h1>Datos generales</h1>
+    <h1 class="admin-titulo">Datos generales</h1>
     <div class="general">
       <div class="datos">
         <h2>Aciertos por Categoría</h2>
@@ -23,62 +23,97 @@
 </template>
 
 <script>
-import { onMounted } from 'vue';
-import Chart from 'chart.js/auto';
+import { onMounted } from "vue";
+import Chart from "chart.js/auto";
 
 export default {
-  name: 'Admin',
+  name: "Admin",
   setup() {
     onMounted(() => {
-      new Chart(document.getElementById('chartAciertos'), {
-        type: 'bar',
+      new Chart(document.getElementById("chartAciertos"), {
+        type: "bar",
         data: {
-          labels: ['Ciencia', 'Historia', 'Geografía', 'Deportes', 'Arte', 'Entretenimiento', 'Tecnología', 'Mates', 'Cultura', 'Música'],
-          datasets: [{
-            label: 'Aciertos',
-            data: [40, 20, 50, 35, 45, 13, 27, 42, 31, 37],
-            backgroundColor: 'blue'
-          }]
-        }
+          labels: [
+            "Ciencia",
+            "Historia",
+            "Geografía",
+            "Deportes",
+            "Arte",
+            "Entretenimiento",
+            "Tecnología",
+            "Mates",
+            "Cultura",
+            "Música",
+          ],
+          datasets: [
+            {
+              label: "Aciertos",
+              data: [40, 20, 50, 35, 45, 13, 27, 42, 31, 37],
+              backgroundColor: "blue",
+            },
+          ],
+        },
       });
 
-      new Chart(document.getElementById('chartUsuarios'), {
-        type: 'bar',
+      new Chart(document.getElementById("chartUsuarios"), {
+        type: "bar",
         data: {
-          labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-          datasets: [{
-            label: 'Usuarios activos',
-            data: [30, 15, 40, 32, 25, 5, 35],
-            backgroundColor: 'green'
-          }]
-        }
+          labels: [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+            "Domingo",
+          ],
+          datasets: [
+            {
+              label: "Usuarios activos",
+              data: [30, 15, 40, 32, 25, 5, 35],
+              backgroundColor: "green",
+            },
+          ],
+        },
       });
 
-      new Chart(document.getElementById('chartDificultad'), {
-        type: 'bar',
+      new Chart(document.getElementById("chartDificultad"), {
+        type: "bar",
         data: {
-          labels: ['Fácil', 'Medio', 'Difícil'],
-          datasets: [{
-            label: 'Aciertos',
-            data: [50, 70, 30],
-            backgroundColor: 'orange'
-          }]
-        }
+          labels: ["Fácil", "Medio", "Difícil"],
+          datasets: [
+            {
+              label: "Aciertos",
+              data: [50, 70, 30],
+              backgroundColor: "orange",
+            },
+          ],
+        },
       });
 
-      new Chart(document.getElementById('chartPartidas'), {
-        type: 'bar',
+      new Chart(document.getElementById("chartPartidas"), {
+        type: "bar",
         data: {
-          labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-          datasets: [{
-            label: 'Partidas',
-            data: [10, 15, 8, 20, 18, 15, 20],
-            backgroundColor: 'red'
-          }]
-        }
+          labels: [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+            "Domingo",
+          ],
+          datasets: [
+            {
+              label: "Partidas",
+              data: [10, 15, 8, 20, 18, 15, 20],
+              backgroundColor: "red",
+            },
+          ],
+        },
       });
     });
-  }
+  },
 };
 </script>
 
@@ -86,7 +121,7 @@ export default {
 .body {
   font-family: "Montserrat", sans-serif;
   background: linear-gradient(to bottom, #7d7de6, #4d4d9d);
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -94,13 +129,11 @@ export default {
   padding: 20px;
 }
 
-h1 {
-  color: black;
-  font-size: 24px;
-  font-weight: bold;
-  text-align: left;
-  width: 80%;
+.admin-titulo {
   margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
 }
 
 .general {
@@ -118,5 +151,12 @@ h1 {
   font-weight: bold;
   font-size: 16px;
   height: 350px;
+}
+
+@media (max-width: 900px) {
+  .general {
+    grid-template-columns: 1fr;
+    gap: 20px; /* Opcional: ajusta el espacio entre elementos */
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!['/juego', '/selecciontema'].includes($route.path)">
     <!-- Header se mantiene igual -->
     <header class="header">
       <div class="logo">
@@ -90,6 +90,37 @@
     <!-- Overlay se mantiene igual -->
     <div v-if="showSidebar" class="overlay" @click="toggleSidebar"></div>
   </div>
+  <div v-else-if="'/juego'.includes($route.path)">
+    <header class="header header--centered">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" />
+      </div>
+      <div class="juego-container">
+        <div class="timer" :style="{ color: timerColor }">
+          {{ timer }}
+        </div>
+        <div class="category-info">
+          <h1 class="titulo">{{ nombreCategoria }}</h1>
+          <img
+            :src="getImageUrl(imagenCategoria)"
+            :alt="nombreCategoria"
+            class="category-image"
+          />
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <div v-else-if="'/selecciontema'.includes($route.path)">
+    <header class="header header--centered">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" />
+      </div>
+      <div class="seleccion-container">
+        <h1 class="titulo">{{ tituloRonda }}</h1>
+      </div>
+    </header>
+  </div>
 </template>
 
 <script>
@@ -98,9 +129,50 @@ export default {
   data() {
     return {
       showSidebar: false,
+      timer: 60,
+      timerInterval: null,
+      nombreCategoria: "Música",
+      imagenCategoria: "musica.png",
+      ronda: 1,
     };
   },
+  computed: {
+    timerColor() {
+      if (this.timer > 40) {
+        return "#36ec5f";
+      } else if (this.timer > 20) {
+        return "#ffc107";
+      } else {
+        return "#dc3545";
+      }
+    },
+    tituloRonda() {
+      return `Ronda ${this.ronda}`;
+    },
+  },
+  mounted() {
+    if (this.$route.path === "/juego") {
+      this.startTimer();
+    }
+  },
+  beforeDestroy() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  },
   methods: {
+    getImageUrl(path) {
+      return new URL(`../assets/${path}`, import.meta.url).href;
+    },
+    startTimer() {
+      this.timerInterval = setInterval(() => {
+        if (this.timer > 0) {
+          this.timer--;
+        } else {
+          clearInterval(this.timerInterval);
+        }
+      }, 1000);
+    },
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;
       document.body.style.overflow = this.showSidebar ? "hidden" : "auto";
@@ -313,6 +385,54 @@ export default {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 98;
+}
+
+.juego-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.timer {
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: "Montserrat", sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.category-title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.category-image {
+  height: 50px;
+  width: 50px;
+  object-fit: contain;
+}
+
+.header--centered {
+  justify-content: center;
+}
+
+.header--centered .logo {
+  position: absolute;
+  left: 2rem;
+}
+
+.seleccion-container,
+.juego-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {

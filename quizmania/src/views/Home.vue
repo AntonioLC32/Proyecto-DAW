@@ -2,12 +2,10 @@
   <section class="aJugar">
     <div class="aJugar-content">
       <button class="aJugar-btn">
-        <router-link to="/quizmania" class="aJugar-nav">
-          A JUGAR!
-        </router-link>
+        <router-link to="/quizmania" class="aJugar-nav"> A JUGAR! </router-link>
       </button>
     </div>
-    <img src="../assets/background_inicio.png" alt="background_inicio">
+    <img src="../assets/background_inicio.png" alt="background_inicio" />
   </section>
   <section class="instrucciones">
     <div class="modos">
@@ -21,7 +19,9 @@
       <div class="modo">
         <h2><u>Modo multijugador</u></h2>
         <p>Responde preguntas de todo tipo.</p>
-        <p>Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.</p>
+        <p>
+          Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.
+        </p>
         <p>Cada categoría tiene una corona propia.</p>
         <p>Consigue las 10 coronas y gana la partida.</p>
       </div>
@@ -29,38 +29,48 @@
     </div>
     <div class="comodines">
       <h2><u>Comodines</u></h2>
-      <p>50/50: Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta.</p>
-      <p>Pista: Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta.</p>
-      <p>Salto: Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta).</p>
+      <p>
+        50/50: Se eliminarán 2 opciones incorrectas de las opciones a elegir de
+        la pregunta.
+      </p>
+      <p>
+        Pista: Se eliminará 1 opción incorrecta de las opciones a elegir de la
+        pregunta.
+      </p>
+      <p>
+        Salto: Se salta la pregunta actual y se continúa con otra pregunta (no
+        cuenta como correcta).
+      </p>
     </div>
   </section>
+  <Footer />
 </template>
 
 <style scoped>
 .aJugar {
-    position: relative;
-    text-align: center;
-    overflow: hidden;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
 }
 
 .aJugar img {
-    width: 100%;
-    height: 650px;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 650px;
+  object-fit: cover;
+  display: block;
 }
 
 .aJugar-content {
-    position: absolute; 
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
-.aJugar-btn{
-  background-color: #5759CD;
+.aJugar-btn {
+  background-color: #5759cd;
   color: #fff;
   font-family: "Montserrat", sans-serif;
   font-weight: bold;
@@ -72,16 +82,16 @@
   transition: all ease 0.3s;
 }
 
-.aJugar-nav{
+.aJugar-nav {
   color: #fff;
 }
 
-.aJugar-btn:hover{
+.aJugar-btn:hover {
   background-color: #4a4da5;
 }
 
-.instrucciones{
-  background-color: #8D89F8;
+.instrucciones {
+  background-color: #8d89f8;
   color: #fff;
 }
 
@@ -130,17 +140,16 @@
   padding-bottom: 5%;
 }
 
-
 @media (max-width: 1200px) {
-  .aJugar-btn{
+  .aJugar-btn {
     width: 250px;
     height: 80px;
     font-size: 40px;
   }
 
-  .instrucciones{
-  background-color: #8D89F8;
-  color: #fff;
+  .instrucciones {
+    background-color: #8d89f8;
+    color: #fff;
   }
 
   .instrucciones h2 {
@@ -176,15 +185,19 @@
     margin-top: 5px;
   }
 
-  .comodines{
+  .comodines {
     margin-top: 50px;
   }
 }
-
 </style>
 
 <script>
+import Footer from "./Footer.vue";
+
 export default {
   name: "Home",
+  components: {
+    Footer,
+  },
 };
 </script>

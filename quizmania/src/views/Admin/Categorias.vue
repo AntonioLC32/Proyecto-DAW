@@ -35,7 +35,7 @@
 
 <script>
 import Table from "./Table.vue";
-// import Chart from "chart.js/auto";
+import Chart from "chart.js/auto";
 
 export default {
   name: "Categorias",
