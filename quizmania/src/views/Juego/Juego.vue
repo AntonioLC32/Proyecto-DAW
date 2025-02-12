@@ -13,7 +13,7 @@
             :key="opcion"
             :class="{
               correcta: seleccionado && opcion === 'Michael Jackson',
-              incorrecta: seleccionado && opcion !== 'Michael Jackson',
+              incorrecta: seleccionado && opcion !== 'Michael Jackson'
             }"
             @click="seleccionarRespuesta(opcion)"
           >
@@ -30,7 +30,7 @@
                 height="70px"
               />
             </a>
-            <a href="#siguientePregunta">
+            <a href="/selecciontema">
               <img
                 src="../../assets/siguiente.png"
                 alt="Siguiente"
@@ -67,45 +67,59 @@
   </section>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const opciones = ref([
-  "Jason Derulo",
-  "Bon Jovi",
-  "Miley Cyrus",
-  "Michael Jackson",
-]);
-const opcionesVisibles = ref([...opciones.value]);
-const respuestaSeleccionada = ref(null);
-const seleccionado = ref(false);
-const pistaUsada = ref(false);
-const progreso = ref(50);
-
-const seleccionarRespuesta = (opcion) => {
-  if (!seleccionado.value) {
-    respuestaSeleccionada.value = opcion;
-    seleccionado.value = true;
-  }
-};
-
-const usarPista = () => {
-  if (!pistaUsada.value) {
-    const incorrectas = opcionesVisibles.value.filter(
-      (opcion) => opcion !== "Michael Jackson"
-    );
-
-    if (incorrectas.length > 0) {
-      const eliminarIndex = opcionesVisibles.value.indexOf(
-        incorrectas[Math.floor(Math.random() * incorrectas.length)]
-      );
-      opcionesVisibles.value.splice(eliminarIndex, 1);
+<script>
+export default {
+  name: "PreguntaThriller",
+  data() {
+    return {
+      opciones: [
+        "Jason Derulo",
+        "Bon Jovi",
+        "Miley Cyrus",
+        "Michael Jackson"
+      ],
+      // Se hace una copia del arreglo original para poder eliminar opciones sin modificar el original
+      opcionesVisibles: [
+        "Jason Derulo",
+        "Bon Jovi",
+        "Miley Cyrus",
+        "Michael Jackson"
+      ],
+      respuestaSeleccionada: null,
+      seleccionado: false,
+      pistaUsada: false,
+      progreso: 50
+    };
+  },
+  methods: {
+    seleccionarRespuesta(opcion) {
+      if (!this.seleccionado) {
+        this.respuestaSeleccionada = opcion;
+        this.seleccionado = true;
+      }
+    },
+    usarPista() {
+      if (!this.pistaUsada) {
+        // Filtra las opciones que no son la respuesta correcta
+        const incorrectas = this.opcionesVisibles.filter(
+          opcion => opcion !== "Michael Jackson"
+        );
+        if (incorrectas.length > 0) {
+          // Elige una opción incorrecta aleatoriamente para eliminarla
+          const eliminarIndex = this.opcionesVisibles.indexOf(
+            incorrectas[Math.floor(Math.random() * incorrectas.length)]
+          );
+          if (eliminarIndex !== -1) {
+            this.opcionesVisibles.splice(eliminarIndex, 1);
+          }
+        }
+        this.pistaUsada = true;
+      }
     }
-
-    pistaUsada.value = true;
   }
 };
 </script>
+
 
 <style scoped>
 * {

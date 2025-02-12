@@ -9,6 +9,7 @@ import Register from "../views/Auth/Register.vue";
 import Admin from "../views/Admin/Admin.vue";
 import Quizmania from "../views/Quizmania.vue";
 import Juego from "../views/Juego/Juego.vue";
+import Seleccion from "../views/Juego/SeleccionTema.vue";
 import Preguntas from "../views/admin/Preguntas.vue";
 import Usuarios from "../views/admin/Usuarios.vue";
 import Categorias from "../views/admin/Categorias.vue";
@@ -54,6 +55,11 @@ const routes = [
     path: "/quizmania",
     name: "Index",
     component: Quizmania,
+  },
+  {
+    path: "/selecciontema",
+    name: "Seleccion",
+    component: Seleccion,
   },
   {
     path: "/juego",

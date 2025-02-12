@@ -6,12 +6,10 @@
       </div>
       <div class="container-fluid pantalla-estadisticas">
         <div class="perfil-vista">
-          <div class="d-flex nombre-img">
+          <div class="d-flex nombre-img flex-column">
             <img
               src="../../assets/perfil.jpg"
               alt="Perfil Image"
-              width="250"
-              height="275"
               class="perfil-img"
             />
             <h3 class="text-white">{{ perfil.nombre }}</h3>
@@ -184,7 +182,6 @@ section {
   align-items: center;
 }
 .perfil-vista h3 {
-  font-size: 32px;
   font-weight: bold;
   color: #fff;
 }

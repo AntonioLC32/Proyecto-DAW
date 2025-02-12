@@ -37,9 +37,8 @@
     </div>
     <!-- Botones juego -->
     <div class="juegos">
-        <button class="juego"><a href="/juego" class="text-decoration-none text-white">Modo solitario</a></button>
-
-      <button class="juego">Modo multijugador</button>
+        <button class="juego"><a href="/selecciontema" class="text-decoration-none text-white">Modo solitario</a></button>
+        <button class="juego"><a href="/selecciontema" class="text-decoration-none text-white">Modo multijugador</a></button>
     </div>
   </section>
 </template>
