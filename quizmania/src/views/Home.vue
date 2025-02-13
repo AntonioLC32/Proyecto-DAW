@@ -1,193 +1,242 @@
 <template>
-  <section class="aJugar">
-    <div class="aJugar-content">
-      <button class="aJugar-btn">
-        <router-link to="/quizmania" class="aJugar-nav"> A JUGAR! </router-link>
-      </button>
-    </div>
-    <img src="../assets/background_inicio.png" alt="background_inicio" />
-  </section>
-  <section class="instrucciones">
-    <div class="modos">
-      <div class="modo">
-        <h2><u>Modo solitario</u></h2>
-        <p>Acierta tantas preguntas como puedas y supérate a ti mismo.</p>
-        <p>Tienes 3 vidas y pierdes una cada vez que fallas.</p>
-        <p>El juego termina cuando pierdas todas tus vidas.</p>
+  <section class="game-landing">
+    <div class="hero">
+      <div class="hero-content">
+        <button class="play-button">
+          <router-link to="/quizmania" class="play-link">¡A JUGAR!</router-link>
+        </button>
       </div>
-      <div class="barra"></div>
-      <div class="modo">
-        <h2><u>Modo multijugador</u></h2>
-        <p>Responde preguntas de todo tipo.</p>
-        <p>
-          Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.
-        </p>
-        <p>Cada categoría tiene una corona propia.</p>
-        <p>Consigue las 10 coronas y gana la partida.</p>
+      <img
+        src="../assets/background_inicio.png"
+        alt="Fondo de inicio del juego"
+        class="hero-image"
+      />
+    </div>
+
+    <section class="game-modes">
+      <div class="modes-container">
+        <div class="mode-card">
+          <h2 class="mode-title">Modo solitario</h2>
+          <div class="mode-content">
+            <p>Acierta tantas preguntas como puedas y supérate a ti mismo.</p>
+            <p>Tienes 3 vidas y pierdes una cada vez que fallas.</p>
+            <p>El juego termina cuando pierdas todas tus vidas.</p>
+          </div>
+        </div>
+
+        <div class="mode-divider"></div>
+
+        <div class="mode-card">
+          <h2 class="mode-title">Modo multijugador</h2>
+          <div class="mode-content">
+            <p>Responde preguntas de todo tipo.</p>
+            <p>
+              Cada 3 preguntas correctas, en la siguiente puedes ganar una
+              corona.
+            </p>
+            <p>Cada categoría tiene una corona propia.</p>
+            <p>Consigue las 10 coronas y gana la partida.</p>
+          </div>
+        </div>
       </div>
-      <div class="barra2"></div>
-    </div>
-    <div class="comodines">
-      <h2><u>Comodines</u></h2>
-      <p>
-        50/50: Se eliminarán 2 opciones incorrectas de las opciones a elegir de
-        la pregunta.
-      </p>
-      <p>
-        Pista: Se eliminará 1 opción incorrecta de las opciones a elegir de la
-        pregunta.
-      </p>
-      <p>
-        Salto: Se salta la pregunta actual y se continúa con otra pregunta (no
-        cuenta como correcta).
-      </p>
-    </div>
+
+      <div class="powerups">
+        <h2 class="powerups-title">Comodines</h2>
+        <div class="powerups-content">
+          <p>
+            <strong>50/50:</strong> Se eliminarán 2 opciones incorrectas de las
+            opciones a elegir de la pregunta.
+          </p>
+          <p>
+            <strong>Pista:</strong> Se eliminará 1 opción incorrecta de las
+            opciones a elegir de la pregunta.
+          </p>
+          <p>
+            <strong>Salto:</strong> Se salta la pregunta actual y se continúa
+            con otra pregunta (no cuenta como correcta).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <Footer />
   </section>
-  <Footer />
 </template>
 
 <style scoped>
-.aJugar {
+.game-landing {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.hero {
   position: relative;
-  text-align: center;
+  height: 80vh;
   overflow: hidden;
 }
 
-.aJugar img {
+.hero-image {
   width: 100%;
-  height: 650px;
+  height: 100%;
   object-fit: cover;
-  display: block;
+  transition: filter 0.3s ease;
 }
 
-.aJugar-content {
+.hero-content {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  z-index: 2;
 }
 
-.aJugar-btn {
-  background-color: #5759cd;
-  color: #fff;
-  font-family: "Montserrat", sans-serif;
-  font-weight: bold;
-  width: 350px;
-  height: 100px;
-  font-size: 50px;
-  border-radius: 25px;
+.play-button {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  padding: 1.5rem 3rem;
   border: none;
-  transition: all ease 0.3s;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.aJugar-nav {
-  color: #fff;
+.play-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+}
+
+.play-link {
+  color: white;
   text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.aJugar-btn:hover {
-  background-color: #4a4da5;
+.game-modes {
+  background: linear-gradient(135deg, #8d89f8, #6366f1);
+  padding: 4rem 2rem;
+  color: white;
 }
 
-.instrucciones {
-  background-color: #8d89f8;
-  color: #fff;
-}
-
-.instrucciones h2 {
-  font-size: 2.7vw;
-  font-weight: bold;
-}
-
-.instrucciones p {
-  margin-top: 2vw;
-  font-size: 1.5vw;
-  font-weight: bold;
-}
-
-.modos {
+.modes-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
+  gap: 3rem;
   justify-content: center;
-  gap: 50px;
+  align-items: stretch;
 }
 
-.modo {
-  margin-left: 10px;
-  width: 40%;
-  margin-top: 70px;
+.mode-card {
+  flex: 1;
+  max-width: 500px;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
 }
 
-.barra {
-  background-color: #fff;
-  width: 5px;
-  height: auto;
-  margin-top: 70px;
+.mode-card:hover {
+  transform: translateY(-5px);
 }
 
-.barra2 {
-  background-color: #fff;
-  width: 0px;
-  height: auto;
-  margin-top: 70px;
+.mode-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-decoration: underline;
+  text-underline-offset: 0.5rem;
 }
 
-.comodines {
-  width: 90%;
-  margin-top: 20px;
-  padding-left: 5%;
-  margin-left: 5%;
-  padding-bottom: 5%;
+.mode-content p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
-@media (max-width: 1200px) {
-  .aJugar-btn {
-    width: 250px;
-    height: 80px;
-    font-size: 40px;
-  }
+.mode-divider {
+  width: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
 
-  .instrucciones {
-    background-color: #8d89f8;
-    color: #fff;
-  }
+.powerups {
+  max-width: 1200px;
+  margin: 4rem auto 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+}
 
-  .instrucciones h2 {
-    font-size: 3vw;
-    font-weight: bold;
-  }
+.powerups-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-decoration: underline;
+  text-underline-offset: 0.5rem;
+}
 
-  .instrucciones p {
-    font-size: 2vw;
-    font-weight: bold;
-  }
+.powerups-content p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
 
-  .modos {
-    padding-top: 40px;
+@media (max-width: 1024px) {
+  .modes-container {
     flex-direction: column;
-    align-items: center;
+    gap: 2rem;
   }
 
-  .modo {
-    width: 80%;
-    margin-top: 10px;
-  }
-
-  .barra {
-    width: 80%;
+  .mode-divider {
     height: 3px;
-    margin-top: 5px;
-  }
-
-  .barra2 {
     width: 80%;
-    height: 3px;
-    margin-top: 5px;
+    margin: 0 auto;
   }
 
-  .comodines {
-    margin-top: 50px;
+  .mode-card {
+    max-width: 100%;
+  }
+
+  .play-button {
+    padding: 1.2rem 2.5rem;
+  }
+
+  .play-link {
+    font-size: 2rem;
+  }
+
+  .mode-title,
+  .powerups-title {
+    font-size: 1.8rem;
+  }
+
+  .mode-content p,
+  .powerups-content p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    height: 60vh;
+  }
+
+  .play-button {
+    padding: 1rem 2rem;
+  }
+
+  .play-link {
+    font-size: 1.5rem;
+  }
+
+  .game-modes {
+    padding: 2rem 1rem;
   }
 }
 </style>

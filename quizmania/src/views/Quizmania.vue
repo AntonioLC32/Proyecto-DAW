@@ -4,7 +4,7 @@
     <button class="instrucciones-btn" @click="showPopup = true">
       INSTRUCCIONES
     </button>
-  <!-- POP UP -->
+    <!-- POP UP -->
     <div v-if="showPopup" class="popup">
       <div class="popup-content">
         <button class="close-btn" @click="showPopup = false">✖</button>
@@ -20,7 +20,10 @@
             <div class="modo">
               <h2><u>Modo multijugador</u></h2>
               <p>Responde preguntas de todo tipo.</p>
-              <p>Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.</p>
+              <p>
+                Cada 3 preguntas correctas, en la siguiente puedes ganar una
+                corona.
+              </p>
               <p>Cada categoría tiene una corona propia.</p>
               <p>Consigue las 10 coronas y gana la partida.</p>
             </div>
@@ -28,37 +31,52 @@
           </div>
           <div class="comodines">
             <h2><u>Comodines</u></h2>
-            <p>50/50: Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta.</p>
-            <p>Pista: Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta.</p>
-            <p>Salto: Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta).</p>
+            <p>
+              50/50: Se eliminarán 2 opciones incorrectas de las opciones a
+              elegir de la pregunta.
+            </p>
+            <p>
+              Pista: Se eliminará 1 opción incorrecta de las opciones a elegir
+              de la pregunta.
+            </p>
+            <p>
+              Salto: Se salta la pregunta actual y se continúa con otra pregunta
+              (no cuenta como correcta).
+            </p>
           </div>
         </section>
       </div>
     </div>
     <!-- Botones juego -->
     <div class="juegos">
-        <button class="juego"><a href="/selecciontema" class="text-decoration-none text-white">Modo solitario</a></button>
-        <button class="juego"><a href="/selecciontema" class="text-decoration-none text-white">Modo multijugador</a></button>
+      <button class="juego">
+        <a href="/selecciontema" class="juego-link">Modo solitario</a>
+      </button>
+      <button class="juego">
+        <a href="/selecciontema" class="juego-link">Modo multijugador</a>
+      </button>
     </div>
   </section>
 </template>
 
 <style scoped>
-.inicio{
-  background: url("../assets/background_inicio.png") no-repeat center center fixed;
+.inicio {
+  background: url("../assets/background_inicio.png") no-repeat center center
+    fixed;
   background-size: cover;
   width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: 80px; /* Espacio para el header */
 }
 
-.instrucciones-btn{
-  position: absolute;
-  top: 100px;
+.instrucciones-btn {
+  position: fixed; /* Cambiado a fixed para mejor control */
+  top: 120px; /* Ajustado para dar espacio al header */
   left: 30px;
-  background-color: #5759CD;
+  background: linear-gradient(135deg, #5759cd, #4a4da5);
   color: #fff;
   font-family: "Montserrat", sans-serif;
   font-weight: bold;
@@ -67,10 +85,16 @@
   font-size: 26px;
   border-radius: 25px;
   border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(87, 89, 205, 0.3);
+  z-index: 10; /* Asegura que esté por encima del contenido pero debajo del popup */
 }
 
-.instrucciones-btn:hover{
-  background-color: #4a4da5;
+.instrucciones-btn:hover {
+  background: linear-gradient(135deg, #4a4da5, #3f418a);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(87, 89, 205, 0.4);
 }
 
 .popup {
@@ -82,7 +106,11 @@
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Cambiado para mejor control del scroll */
+  backdrop-filter: blur(5px);
+  z-index: 1000; /* Asegura que esté por encima de todo */
+  padding-top: 80px; /* Espacio para el header */
+  overflow-y: auto;
 }
 
 .popup-content {
@@ -90,6 +118,8 @@
   padding: 30px;
   width: 100%;
   position: relative;
+  max-height: calc(100vh - 100px); /* Ajustado para considerar el header */
+  overflow-y: auto;
 }
 
 .close-btn {
@@ -101,18 +131,26 @@
   font-size: 30px;
   color: #fff;
   cursor: pointer;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
-  color: #ddd;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg);
 }
 
-.instrucciones h2{
+.instrucciones h2 {
   font-size: 50px;
   font-weight: bold;
 }
 
-.instrucciones p{
+.instrucciones p {
   margin-top: 20px;
   font-size: 24px;
   font-weight: bold;
@@ -152,7 +190,7 @@
   padding-bottom: 5%;
 }
 
-.juegos{
+.juegos {
   display: flex;
   justify-content: center;
   flex-direction: row;
@@ -162,7 +200,7 @@
 }
 
 .juego {
-  background-color: #5759CD;
+  background: linear-gradient(135deg, #5759cd, #4a4da5);
   border: none;
   border-radius: 25px;
   width: 100%;
@@ -172,31 +210,48 @@
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(87, 89, 205, 0.3);
+  padding: 0;
 }
 
-.juego:hover{
-  background-color:#4a4da5;
+.juego:hover {
+  background: linear-gradient(135deg, #4a4da5, #3f418a);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(87, 89, 205, 0.5);
+}
+
+.juego-link {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 25px;
 }
 
 @media (max-width: 1200px) {
-  .popup{
+  .popup {
     align-items: flex-start;
     overflow-y: auto;
   }
 
-  .popup-content{
-    margin-top: 10%; 
+  .popup-content {
+    margin-top: 10%;
     max-height: none;
     height: auto;
     overflow-y: visible;
     padding-bottom: 50px;
   }
 
-  .instrucciones-btn{
+  .instrucciones-btn {
     width: 250px;
     height: 70px;
     font-size: 22px;
-}
+  }
+
   .instrucciones h2 {
     font-size: 3vw;
     font-weight: bold;
@@ -208,7 +263,7 @@
   }
 
   .juegos {
-    flex-direction: column; 
+    flex-direction: column;
     gap: 30px;
     align-items: center;
   }
@@ -224,7 +279,6 @@
     flex-direction: column;
     align-items: center;
   }
-  
 
   .modo {
     width: 80%;
@@ -243,11 +297,70 @@
     margin-top: 5px;
   }
 
-  .comodines{
+  .comodines {
     margin-top: 50px;
   }
 }
 
+@media (max-width: 768px) {
+  .instrucciones-btn {
+    top: 100px; /* Ajustado para móvil */
+    left: 15px;
+    width: 200px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .popup {
+    padding-top: 50px; /* Ajustado para móvil */
+  }
+
+  .popup-content {
+    padding: 20px;
+    margin-top: 10px;
+  }
+
+  .close-btn {
+    top: 25px; /* Ajustado para móvil */
+    right: 15px;
+  }
+
+  .instrucciones h2 {
+    font-size: 24px; /* Tamaño más pequeño en móvil */
+  }
+
+  .instrucciones p {
+    font-size: 16px; /* Tamaño más pequeño en móvil */
+  }
+
+  .juego {
+    min-height: 150px;
+    font-size: 32px;
+  }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .instrucciones-btn {
+    width: 180px;
+    height: 50px;
+    font-size: 18px;
+    top: 70px;
+  }
+
+  .popup {
+    padding-top: 40px;
+  }
+
+  .instrucciones h2 {
+    font-size: 20px;
+  }
+
+  .instrucciones p {
+    font-size: 14px;
+    margin-top: 15px;
+  }
+}
 </style>
 
 <script>
