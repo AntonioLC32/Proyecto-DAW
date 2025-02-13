@@ -7,7 +7,7 @@
           <img src="../assets/logo.png" alt="Logo" />
         </router-link>
       </div>
-      <h1 class="titulo">
+      <h1 class="titulo titulo--default">
         <router-link to="/" class="nav-link"> QuizMania </router-link>
       </h1>
       <nav class="nav">
@@ -15,7 +15,7 @@
           <li class="nav-item">
             <router-link to="/perfil" class="nav-link">
               <img
-                src="https://cdn-icons-png.flaticon.com/512/6522/6522581.png"
+                :src="getImageUrl(perfil)"
                 alt="Foto de perfil"
                 class="profile-pic"
               />
@@ -131,6 +131,7 @@ export default {
       showSidebar: false,
       timer: 60,
       timerInterval: null,
+      perfil: "perfil.jpg",
       nombreCategoria: "Música",
       imagenCategoria: "musica.png",
       ronda: 1,
@@ -190,10 +191,10 @@ export default {
 
 <style scoped>
 .header {
-  font-family: "Roboto", sans-serif;
+  position: relative; /* Permite posicionar elementos hijos de forma absoluta */
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 0.5rem 2rem;
   background-color: #8d89f9;
   color: #fff;
@@ -209,20 +210,22 @@ export default {
 .titulo {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
-  margin: 0;
-  transition: transform 0.3s ease;
   font-size: 3rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.titulo--default {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  transition: transform 0.3s ease;
 }
 
 .titulo .nav-link {
   font-size: inherit;
   color: inherit;
   text-decoration: none;
-}
-
-.titulo:hover {
-  transform: scale(1.05);
 }
 
 .nav-link img {

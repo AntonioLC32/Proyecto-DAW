@@ -84,6 +84,7 @@
 
 .aJugar-nav {
   color: #fff;
+  text-decoration: none;
 }
 
 .aJugar-btn:hover {

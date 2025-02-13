@@ -15,8 +15,23 @@
             <span class="close" @click="cerrarPopup">&times;</span>
             <h2>{{ categoriaSeleccionada.nombre }}</h2>
             <img
-              :src="getImageUrl(categoriaSeleccionada.imagen)"
+              :src="
+                nuevaImagenPreview || getImageUrl(categoriaSeleccionada.imagen)
+              "
               :alt="categoriaSeleccionada.nombre"
+            />
+            <button
+              @click="$refs.fileInput.click()"
+              class="popup-btn cambiar-imagen-btn"
+            >
+              CAMBIAR IMAGEN
+            </button>
+            <input
+              type="file"
+              ref="fileInput"
+              hidden
+              accept="image/*"
+              @change="handleImageUpload"
             />
             <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
           </div>
@@ -44,6 +59,7 @@ export default {
   },
   data() {
     return {
+      nuevaImagenPreview: null,
       popupVisible: false,
       categoriaSeleccionada: {},
       headers: [
@@ -210,10 +226,29 @@ export default {
       this.categoriaSeleccionada = { ...categoria };
       this.popupVisible = true;
     },
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith("image/")) {
+        if (this.nuevaImagenPreview) {
+          URL.revokeObjectURL(this.nuevaImagenPreview);
+        }
+        this.nuevaImagenPreview = URL.createObjectURL(file);
+      } else {
+        alert("Por favor selecciona un archivo de imagen válido.");
+      }
+    },
     cerrarPopup() {
       this.popupVisible = false;
+      if (this.nuevaImagenPreview) {
+        URL.revokeObjectURL(this.nuevaImagenPreview);
+        this.nuevaImagenPreview = null;
+      }
     },
     guardarCambios() {
+      if (this.nuevaImagenPreview) {
+        URL.revokeObjectURL(this.nuevaImagenPreview);
+        this.nuevaImagenPreview = null;
+      }
       this.popupVisible = false;
     },
     getImageUrl(path) {
@@ -387,6 +422,19 @@ export default {
   background-color: #5b4bc4;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.popup-btn.cambiar-imagen-btn {
+  background-color: #4a4aa6;
+  margin-top: 15px;
+}
+
+.popup-btn.cambiar-imagen-btn:hover {
+  background-color: #3a3a86;
+}
+
+.popup-content {
+  gap: 20px;
 }
 
 @media (max-width: 1400px) {

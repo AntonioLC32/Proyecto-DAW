@@ -28,7 +28,7 @@
       <li>
         <router-link to="/">
           <i class="fa fa-power-off"></i>
-          <span class="nav-text">LOGOUT</span>
+          <span class="nav-text">SALIR</span>
         </router-link>
       </li>
     </ul>
