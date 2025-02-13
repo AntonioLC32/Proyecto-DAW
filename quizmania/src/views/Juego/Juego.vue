@@ -4,16 +4,16 @@
       <div class="left">
         <div class="encase">
           <div class="pregunta">
-            <p>¿Quién hizo la canción Thriller?</p>
+            <p>{{ preguntas[questionIndex].pregunta }}</p>
           </div>
 
           <button
             class="respuesta"
-            v-for="opcion in opcionesVisibles"
+            v-for="opcion in preguntas[questionIndex].opciones"
             :key="opcion"
             :class="{
-              correcta: seleccionado && opcion === 'Michael Jackson',
-              incorrecta: seleccionado && opcion !== 'Michael Jackson'
+              correcta: isRespuestaCorrecta(opcion),
+              incorrecta: isRespuestaIncorrecta(opcion),
             }"
             @click="seleccionarRespuesta(opcion)"
           >
@@ -30,7 +30,7 @@
                 height="70px"
               />
             </a>
-            <a href="/selecciontema">
+            <a href="#" @click.prevent="siguientePregunta">
               <img
                 src="../../assets/siguiente.png"
                 alt="Siguiente"
@@ -44,20 +44,10 @@
       <div class="right">
         <div class="encase gap-5">
           <img
+            v-for="(corazon, index) in vidas"
+            :key="index"
             src="../../assets/corazon.png"
-            alt=""
-            width="80px"
-            height="80px"
-          />
-          <img
-            src="../../assets/corazon.png"
-            alt=""
-            width="80px"
-            height="80px"
-          />
-          <img
-            src="../../assets/corazon.png"
-            alt=""
+            alt="Corazón"
             width="80px"
             height="80px"
           />
@@ -72,54 +62,84 @@ export default {
   name: "PreguntaThriller",
   data() {
     return {
-      opciones: [
-        "Jason Derulo",
-        "Bon Jovi",
-        "Miley Cyrus",
-        "Michael Jackson"
+      preguntas: [
+        {
+          pregunta: "¿Quién hizo la canción Thriller?",
+          opciones: [
+            "Jason Derulo",
+            "Bon Jovi",
+            "Miley Cyrus",
+            "Michael Jackson",
+          ],
+          respuestaCorrecta: "Michael Jackson",
+        },
       ],
-      // Se hace una copia del arreglo original para poder eliminar opciones sin modificar el original
-      opcionesVisibles: [
-        "Jason Derulo",
-        "Bon Jovi",
-        "Miley Cyrus",
-        "Michael Jackson"
-      ],
+      questionIndex: 0, // Índice de la pregunta actual
       respuestaSeleccionada: null,
       seleccionado: false,
       pistaUsada: false,
-      progreso: 50
+      progreso: 50,
+      vidas: 3,
     };
+  },
+  computed: {
+    isRespuestaCorrecta() {
+      return (opcion) =>
+        this.seleccionado &&
+        this.respuestaSeleccionada ===
+          this.preguntas[this.questionIndex].respuestaCorrecta &&
+        opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
+    },
+    isRespuestaIncorrecta() {
+      return (opcion) =>
+        this.seleccionado &&
+        this.respuestaSeleccionada !==
+          this.preguntas[this.questionIndex].respuestaCorrecta &&
+        this.respuestaSeleccionada === opcion;
+    },
   },
   methods: {
     seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
+
+        // Reducimos vidas si la respuesta es incorrecta
+        if (opcion !== this.preguntas[this.questionIndex].respuestaCorrecta) {
+          this.vidas = Math.max(0, this.vidas - 1); // Aseguramos que no baje de 0
+        }
       }
     },
     usarPista() {
       if (!this.pistaUsada) {
-        // Filtra las opciones que no son la respuesta correcta
-        const incorrectas = this.opcionesVisibles.filter(
-          opcion => opcion !== "Michael Jackson"
+        const incorrectas = this.preguntas[this.questionIndex].opciones.filter(
+          (opcion) =>
+            opcion !== this.preguntas[this.questionIndex].respuestaCorrecta
         );
+
         if (incorrectas.length > 0) {
-          // Elige una opción incorrecta aleatoriamente para eliminarla
-          const eliminarIndex = this.opcionesVisibles.indexOf(
+          const eliminarIndex = this.preguntas[
+            this.questionIndex
+          ].opciones.indexOf(
             incorrectas[Math.floor(Math.random() * incorrectas.length)]
           );
           if (eliminarIndex !== -1) {
-            this.opcionesVisibles.splice(eliminarIndex, 1);
+            this.preguntas[this.questionIndex].opciones.splice(
+              eliminarIndex,
+              1
+            );
           }
         }
+
         this.pistaUsada = true;
       }
-    }
-  }
+    },
+    siguientePregunta() {
+      this.$router.push("/selecciontema");
+    },
+  },
 };
 </script>
-
 
 <style scoped>
 * {
@@ -148,10 +168,10 @@ export default {
   width: 20%;
   position: absolute;
   right: 10%;
-  top: 15%; /* Ajusta la posición vertical para subir los corazones */
+  top: 15%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centra los corazones con respecto al contenedor */
+  align-items: center;
   gap: 10px;
 }
 
@@ -159,7 +179,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Centra verticalmente los corazones */
+  justify-content: center;
 }
 
 .encase {
@@ -232,7 +252,6 @@ section {
   filter: drop-shadow(0 10px 0px #ff070735);
 }
 
-/* Contenedor de progreso y botones */
 .misc {
   display: flex;
   flex-direction: row;
@@ -252,7 +271,6 @@ section {
   transform: scale(1.1);
 }
 
-/* Estilo del progreso */
 .progreso {
   display: flex;
   align-items: center;
@@ -267,21 +285,24 @@ section {
 }
 
 /* --- MEDIA QUERIES --- */
-
-/* Pantallas medianas (hasta 1024px) */
 @media (max-width: 1024px) {
   .pregunta {
     width: 100%;
     padding: 120px;
   }
-  .right {
-    padding-left: 10%;
+  .left {
+    width: 70%;
   }
 
-  
+  .right .encase {
+    padding-left: 200px;
+  }
+  .right img {
+    width: 60px;
+    height: 60px;
+  }
 }
 
-/* Tablets (hasta 768px) */
 @media (max-width: 768px) {
   .division {
     flex-direction: column;
@@ -308,12 +329,16 @@ section {
     width: 100%;
   }
 
+  .right img {
+    width: 60px;
+    height: 60px;
+  }
+
   .pregunta {
     width: 95%;
     padding: 40px;
     font-size: 22px;
     margin-top: 180px !important;
-
   }
 
   .respuesta {
@@ -329,7 +354,6 @@ section {
   }
 }
 
-/* Móviles (hasta 480px) */
 @media (max-width: 480px) {
   .pregunta {
     font-size: 16px;
@@ -340,7 +364,6 @@ section {
   .respuesta {
     font-size: 14px;
     padding: 10px;
-
   }
 
   .right {
@@ -349,13 +372,13 @@ section {
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
-    
   }
 
-  .right img {
+  .right .encase img {
     width: 50px;
     height: 50px;
   }
+
   .right .encase {
     display: flex;
     flex-direction: row;
