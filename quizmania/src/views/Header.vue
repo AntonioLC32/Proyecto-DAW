@@ -1,6 +1,5 @@
 <template>
   <div v-if="!['/juego', '/selecciontema'].includes($route.path)">
-    <!-- Header se mantiene igual -->
     <header class="header">
       <div class="logo">
         <router-link to="/" class="nav-link">
@@ -43,8 +42,6 @@
         </ul>
       </nav>
     </header>
-
-    <!-- Sidebar con logout fijo abajo -->
     <div class="sidebar" :class="{ 'sidebar-open': showSidebar }">
       <nav class="sidebar-nav">
         <ul class="sidebar-list">
@@ -65,7 +62,6 @@
           </li>
         </ul>
       </nav>
-      <!-- Botón de logout fijo abajo -->
       <div class="logout-container">
         <button class="logout-button" @click="handleLogout">
           <svg
@@ -86,11 +82,9 @@
         </button>
       </div>
     </div>
-
-    <!-- Overlay se mantiene igual -->
     <div v-if="showSidebar" class="overlay" @click="toggleSidebar"></div>
   </div>
-  <div v-else-if="'/juego'.includes($route.path)">
+  <div v-else-if="$route.path === '/juego'">
     <header class="header header--centered">
       <div class="logo">
         <img src="../assets/logo.png" alt="Logo" />
@@ -110,8 +104,7 @@
       </div>
     </header>
   </div>
-
-  <div v-else-if="'/selecciontema'.includes($route.path)">
+  <div v-else-if="$route.path === '/selecciontema'">
     <header class="header header--centered">
       <div class="logo">
         <img src="../assets/logo.png" alt="Logo" />
@@ -161,6 +154,19 @@ export default {
       clearInterval(this.timerInterval);
     }
   },
+  watch: {
+    "$route.path"(newPath) {
+      if (newPath === "/juego" && !this.timerInterval) {
+        this.timer = 60;
+        this.startTimer();
+      }
+      if (newPath !== "/juego" && this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+        this.timer = 60;
+      }
+    },
+  },
   methods: {
     getImageUrl(path) {
       return new URL(`../assets/${path}`, import.meta.url).href;
@@ -171,6 +177,7 @@ export default {
           this.timer--;
         } else {
           clearInterval(this.timerInterval);
+          this.timerInterval = null;
         }
       }, 1000);
     },
@@ -179,11 +186,7 @@ export default {
       document.body.style.overflow = this.showSidebar ? "hidden" : "auto";
     },
     handleLogout() {
-      // Aquí puedes agregar la lógica para cerrar sesión
       console.log("Cerrando sesión...");
-      // Por ejemplo:
-      // this.$store.dispatch('logout');
-      // this.$router.push('/login');
     },
   },
 };
@@ -191,7 +194,7 @@ export default {
 
 <style scoped>
 .header {
-  position: relative; /* Permite posicionar elementos hijos de forma absoluta */
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -206,14 +209,12 @@ export default {
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .titulo {
   font-family: "Montserrat", sans-serif;
   font-weight: 700;
   font-size: 3rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 .titulo--default {
   position: absolute;
   left: 50%;
@@ -221,13 +222,11 @@ export default {
   margin: 0;
   transition: transform 0.3s ease;
 }
-
 .titulo .nav-link {
   font-size: inherit;
   color: inherit;
   text-decoration: none;
 }
-
 .nav-link img {
   width: 32px;
   height: 32px;
@@ -235,22 +234,18 @@ export default {
   border-radius: 50%;
   transition: transform 0.3s ease;
 }
-
 .nav-link img:hover {
   transform: scale(1.1);
 }
-
 .logo img {
   height: 75px;
   width: 75px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
-
 .logo img:hover {
   transform: scale(1.05);
 }
-
 .nav-list {
   list-style: none;
   display: flex;
@@ -259,11 +254,9 @@ export default {
   padding: 0;
   gap: 1.5rem;
 }
-
 .nav-item {
   margin-left: 0;
 }
-
 .nav-link {
   color: #fff;
   text-decoration: none;
@@ -271,7 +264,6 @@ export default {
   display: flex;
   align-items: center;
 }
-
 .btn-sidebar {
   background-color: transparent;
   border: none;
@@ -281,22 +273,18 @@ export default {
   align-items: center;
   transition: transform 0.3s ease;
 }
-
 .btn-sidebar:hover {
   transform: scale(1.1);
 }
-
 .hamburger-icon {
   width: 32px;
   height: 32px;
   color: white;
   transition: transform 0.3s ease;
 }
-
 .hamburger-icon.rotate {
   transform: rotate(90deg);
 }
-
 .sidebar {
   font-family: "Roboto", sans-serif;
   position: fixed;
@@ -311,26 +299,21 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
 .sidebar-open {
   right: 0;
 }
-
 .sidebar-nav {
   flex-grow: 1;
   overflow-y: auto;
 }
-
 .sidebar-list {
   list-style: none;
   padding: 1rem 0;
   margin: 0;
 }
-
 .sidebar-item {
   padding: 0.5rem 1.5rem;
 }
-
 .sidebar-link {
   color: white;
   text-decoration: none;
@@ -340,11 +323,9 @@ export default {
   border-radius: 8px;
   transition: all 0.3s ease;
 }
-
 .sidebar-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
 .logout-container {
   padding: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -354,7 +335,6 @@ export default {
   right: 0;
   background-color: #5759cd;
 }
-
 .logout-button {
   width: 100%;
   padding: 0.75rem;
@@ -370,16 +350,13 @@ export default {
   gap: 0.5rem;
   transition: all 0.3s ease;
 }
-
 .logout-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
-
 .logout-icon {
   width: 20px;
   height: 20px;
 }
-
 .overlay {
   position: fixed;
   top: 60px;
@@ -389,7 +366,6 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 98;
 }
-
 .juego-container {
   display: flex;
   align-items: center;
@@ -397,62 +373,51 @@ export default {
   gap: 2rem;
   width: 100%;
 }
-
 .timer {
   font-size: 2rem;
   font-weight: bold;
   font-family: "Montserrat", sans-serif;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-
 .category-info {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
 .category-title {
   font-size: 2rem;
   margin: 0;
 }
-
 .category-image {
   height: 50px;
   width: 50px;
   object-fit: contain;
 }
-
 .header--centered {
   justify-content: center;
 }
-
 .header--centered .logo {
   position: absolute;
   left: 2rem;
 }
-
 .seleccion-container,
 .juego-container {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 @media (max-width: 768px) {
   .header {
     padding: 0.5rem 1rem;
   }
-
   .logo img {
     height: 60px;
     width: 60px;
   }
-
   .titulo {
     font-size: 2rem;
   }
 }
-
 @media (max-width: 480px) {
   .titulo {
     font-size: 2rem;
