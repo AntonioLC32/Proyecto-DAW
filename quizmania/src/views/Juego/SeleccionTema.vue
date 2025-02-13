@@ -75,9 +75,65 @@
         </div>
       </div>
       <button @click="spin" class="boton_girar">GIRA</button>
-      <br>
+      <br />
       <div v-if="selectedTheme" class="selected-theme">
         Tema seleccionado: {{ selectedTheme }}
+      </div>
+
+      <div>
+        <!-- Button trigger modal -->
+        <button
+          type="button"
+          class="btn button_rendirte"
+          data-bs-toggle="modal"
+          data-bs-target="#modalRendirte"
+        >
+          <img
+            :src="getImageUrl('bandera-blanca.png')"
+            alt="Rendirte Image"
+            id="bandera"
+          />
+        </button>
+
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="modalRendirte"
+          ref="modalRendirte"
+          tabindex="-1"
+          aria-labelledby="modalRendirteLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header border-bottom-0">
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div
+                class="modal-body d-flex flex-column align-items-center mb-3"
+              >
+                <h5
+                  class="modal-title text-center mb-3"
+                  id="modalRendirteLabel"
+                >
+                  <b>¿Estás seguro que <br />quieres rendirte?</b>
+                </h5>
+                <button
+                  @click="exit"
+                  type="button"
+                  class="btn button_rendirte_aceptar text-white text-uppercase"
+                >
+                  <b>Aceptar</b>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -114,6 +170,16 @@ export default {
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
     },
+    exit() {
+      // Close the modal using Bootstrap's JavaScript API
+      const modal = bootstrap.Modal.getInstance(this.$refs.modalRendirte);
+      if (modal) {
+        modal.hide(); // Hide the modal
+      }
+
+      // Navigate to the home route
+      this.$router.push("/");
+    },
     spin() {
       if (this.spinning) return;
 
@@ -142,7 +208,7 @@ export default {
         this.selectedTheme = this.themes[this.selectedIndex].name;
         setTimeout(() => {
           this.$router.push("/juego");
-        },3500);
+        }, 3500);
       }, 4000);
     },
   },
@@ -153,6 +219,30 @@ export default {
 * {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
+}
+
+.button_rendirte {
+  background-color: #5759cd;
+  padding: 15px 70px;
+  border-radius: 8px;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 999;
+}
+
+.button_rendirte_aceptar {
+  background-color: #5759cd;
+  padding: 15px 70px;
+  border-radius: 8px;
+}
+#bandera {
+  height: 40px;
+  width: 40px;
+}
+
+.modal-body {
+  font-weight: 700;
 }
 
 section {
@@ -261,7 +351,6 @@ section {
 }
 
 @media (max-width: 1024px) {
-
   .temas_completados img {
     height: 60px;
     width: 60px;
@@ -269,7 +358,6 @@ section {
 }
 
 @media (max-width: 768px) {
-
 }
 
 @media (max-width: 480px) {

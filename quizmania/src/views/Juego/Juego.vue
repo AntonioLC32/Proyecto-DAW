@@ -108,6 +108,9 @@ export default {
         if (opcion !== this.preguntas[this.questionIndex].respuestaCorrecta) {
           this.vidas = Math.max(0, this.vidas - 1); // Aseguramos que no baje de 0
         }
+        setTimeout(() => {
+          this.$router.push("/selecciontema");
+        },4000);
       }
     },
     usarPista() {
@@ -300,6 +303,11 @@ section {
   .right img {
     width: 60px;
     height: 60px;
+  }
+
+  .temas_completados img {
+    height: 80px;
+    width: 80px;
   }
 }
 
