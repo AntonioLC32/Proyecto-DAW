@@ -14,117 +14,117 @@ id_pregunta;texto;id_tarjeta
 13;¿Quién pinto la mona lisa?;13
 14;¿Qué pintor es conocido por su estilo surrealista y su famoso cuadro "La persistencia de la memoria"?;14
 15;¿Quién fue el autor de "En busca del tiempo perdido", una de las obras más importantes de la literatura francesa?;15
-16;;16
-17;;17
-18;;18
-19;;19
-20;;20
-21;;21
-22;¿Cuál es el valor de 92?;22
+16;¿Quién interpretó a Tony Stark (Iron Man) en las películas del Universo Cinematográfico de Marvel?;16
+17;¿Qué director es reconocido por dirigir la trilogía de "El Señor de los Anillos"?;17
+18;¿Cuál es el título de la serie alemana de ciencia ficción y misterio que involucra viajes en el tiempo y una intrincada red de conexiones familiares?;18
+19;¿Qué sistema operativo utiliza el iPhone?;19
+20;¿Qué significa HTML en el contexto del desarrollo web?;20
+21;En ciberseguridad, ¿qué técnica consiste en interceptar y, en ocasiones, alterar la comunicación entre dos partes sin que estas lo detecten?;21
+22;¿Cuál es el valor de 9²?;22
 23;Si un triángulo tiene un ángulo de 90° y los otros dos ángulos miden 45° cada uno, ¿cómo se llama este triángulo?;23
 24;¿Cuál es el valor de la expresión 2/5×3/4?;24
-25;;25
-26;;26
-27;;27
+25;¿Cuál es la capital de Francia?;25
+26;¿Qué autor escribió "Cien años de soledad"?;26
+27;¿Cuál fue el primer país en conceder el derecho al voto a las mujeres?;27
 28;¿Quién es conocido como el "Rey del Pop"?;28
 29;¿Qué banda lanzó el álbum "The Dark Side of the Moon" en 1973?;29
 30;¿Cuál de las siguientes obras fue compuesta por Igor Stravinsky?;30
-31;;1
-32;;2
-33;;3
-34;;4
-35;;5
-36;;6
-37;;7
-38;;8
-39;;9
-40;;10
-41;;11
-42;;12
-43;;13
-44;;14
-45;;15
-46;;16
-47;;17
-48;;18
-49;;19
-50;;20
-51;;21
-52;;22
-53;;23
-54;;24
-55;;25
-56;;26
-57;;27
+31;¿Cuál es la fórmula química del agua?;1
+32;¿Qué es un neutrino?;2
+33;¿Cuál es el valor aproximado de la constante de Planck (h)?;3
+34;¿Quién fue el primer presidente de los Estados Unidos?;4
+35;¿En qué año se derribó el Muro de Berlín?;5
+36;¿Qué tratado puso fin oficialmente a la Primera Guerra Mundial?;6
+37;¿Cuál es la capital de Japón?;7
+38;¿Cuál es el país más extenso del mundo en términos de superficie?;8
+39;¿Cuál es el punto de la Tierra que, medido desde el centro del planeta, se encuentra más alejado?;9
+40;¿Cuántos jugadores integran un equipo de fútbol durante un partido?;10
+41;¿Quién ostenta el récord de mayor cantidad de títulos de Grand Slam en el tenis masculino en la era Open?;11
+42;¿Qué selección nacional ha ganado el mayor número de títulos en la historia de la Copa América?;12
+43;¿Quién escribió la novela 1984?;13
+44;¿Qué movimiento artístico, surgido en Francia a finales del siglo XIX, se caracteriza por capturar la impresión visual de un instante, especialmente en cuanto a la luz y el color?;14
+45;¿Cuál es la obra literaria de James Joyce considerada un hito del modernismo, que narra un solo día en la vida de los habitantes de Dublín?;15
+46;¿En qué película animada se narra la aventura de un pez payaso en busca de su hijo?;16
+47;¿Qué director es conocido por sus películas de culto como "Pulp Fiction" y "Kill Bill"?;17
+48;¿Qué película obtuvo el récord de 11 premios Oscar en la ceremonia de 2004?;18
+49;¿Qué empresa desarrolló el sistema operativo Windows?;19
+50;¿Cuál fue la primera red social en alcanzar los 1.000 millones de usuarios activos?;20
+51;¿Qué tipo de inteligencia artificial se basa en redes neuronales profundas para aprender de grandes cantidades de datos?;21
+52;¿Cuánto es 7 × 8?;22
+53;¿Cuál es el resultado de la raíz cuadrada de 196?;23
+54;¿Cuál es el valor de ln(e⁵)?;24
+55;¿Qué país es conocido como la "tierra del sol naciente"?;25
+56;¿En qué año se fundó la Organización de las Naciones Unidas (ONU)?;26
+57;¿En qué año se fundó la Organización Mundial de la Salud (OMS)?;;27
 58;¿Qué instrumento musical tiene teclas blancas y negras?;28
 59;¿Cuál de estos géneros musicales es originario de Jamaica?;29
 60;¿Quién fue el compositor de la famosa ópera "La Traviata"?;30
-61;;1
-62;;2
-63;;3
-64;;4
-65;;5
-66;;6
-67;;7
-68;;8
-69;;9
-70;;10
-71;;11
-72;;12
-73;;13
-74;;14
-75;;15
-76;;16
-77;;17
-78;;18
-79;;19
-80;;20
-81;;21
-82;;22
-83;;23
+61;¿Cuál es el metal más abundante en la corteza terrestre?;1
+62;¿Cuál de las siguientes unidades se usa para medir la intensidad de corriente eléctrica?;2
+63;¿Qué científica recibió dos premios Nobel en distintas disciplinas?;3
+64;¿En qué país tuvo lugar la Revolución Industrial?;4
+65;¿Qué evento marcó el inicio de la Segunda Guerra Mundial?;5
+66;¿Quién fue el primer emperador de China?;6
+67;¿En qué continente se encuentra Egipto?;7
+68;¿Cuál es el país con más husos horarios en el mundo, considerando sus territorios de ultramar?;8
+69;¿Cuál es el lago más profundo del mundo?;9
+70;¿Cuántos anillos olímpicos hay en la bandera de los Juegos Olímpicos?;10
+71;¿En qué país se originó el baloncesto?;11
+72;¿Cuántas veces ha ganado la Selección de Rugby de Nueva Zelanda la Copa del Mundo (hasta 2023)?;12
+73;¿Quién pintó el fresco de la Capilla Sixtina en el Vaticano?;13
+74;¿Cuál de estas novelas fue escrita por Jane Austen?;14
+75;¿Quién compuso la ópera El barbero de Sevilla?;15
+76;¿Cómo se llama el mejor amigo de Shrek en la película Shrek?;16
+77;¿En qué serie aparece el personaje Walter White, un profesor de química convertido en narcotraficante?;17
+78;¿Cuál de estos directores ha ganado más premios Oscar a Mejor Dirección?;18
+79;¿Qué significa la sigla "USB" en tecnología?;19
+80;¿Qué empresa desarrolló el sistema operativo Android?;20
+81;¿Qué científico es considerado el padre de la computación moderna?;21
+82;¿Cuál es el resultado de la siguiente operación siguiendo el orden de las operaciones? 3+5×2;22
+83;¿Cuál es el resultado de la siguiente ecuación? 3(x−2)=2x+4;23
 84;;24
-85;;25
-86;;26
-87;;27
+85;¿Cuál es el idioma con mayor cantidad de hablantes nativos en el mundo?;25
+86;¿Qué civilización construyó Machu Picchu?;26
+87;¿Qué tratado, firmado en 1648, puso fin a la Guerra de los Treinta Años?;27
 88;¿Qué instrumento musical se toca soplando aire a través de una lengüeta?;28
 89;¿Quién fue el cantante principal de la banda de rock Nirvana?;29
 90;¿Qué compositor alemán compuso "El Anillo del Nibelungo"?;30
-91;;1
-92;;2
-93;;3
-94;;4
-95;;5
-96;;6
-97;;7
-98;;8
-99;;9
-100;;10
-101;;11
-102;;12
-103;;13
-104;;14
-105;;15
-106;;16
-107;;17
-108;;18
-109;;19
-110;;20
-111;;21
-112;;22
-113;;23
-114;;24
-115;;25
-116;;26
-117;;27
-118;;28
-119;;29
-120;;30
-121;;1
-122;;2
-123;;3
-124;;4
-125;;5
-126;;6
+91;¿Cuál es el órgano más grande del cuerpo humano?;1
+92;¿Cuál es el nombre de la partícula subatómica con carga negativa?;2
+93;¿Cuál es la ecuación que representa la Teoría de la Relatividad Especial de Einstein?;3
+94;¿En qué año se firmó la Declaración de Independencia de los Estados Unidos?;4
+95;¿Cuál de las siguientes batallas se considera un punto de inflexión en el Frente Oriental durante la Segunda Guerra Mundial?;5
+96;¿Qué reforma implementada por el emperador Diocleciano reorganizó el Imperio Romano en un sistema conocido como Tetrarquía?;6
+97;¿Cuál es la capital de Australia?;7
+98;¿Cuál es el río más largo de Europa?;8
+99;¿Qué país posee la mayor cantidad de islas en el mundo?;9
+100;¿Qué país ha ganado más Copas del Mundo de fútbol?;10
+101;¿Qué nadador ostenta el récord de mayor cantidad de medallas olímpicas ganadas?;11
+102;¿En qué año se celebró la primera edición de la Copa del Mundo de Rugby?;12
+103;¿Quién escribió Don Quijote de la Mancha?;13
+104;¿Cuál es el movimiento artístico asociado con Pablo Picasso y Georges Braque?;14
+105;¿Cuál es la epopeya más antigua de la literatura mundial conocida?;15
+106;¿Cómo se llama el superhéroe alter ego de Bruce Wayne?;16
+107;¿En qué año se estrenó la primera película de Harry Potter?;17
+108;¿Quién compuso la banda sonora de la trilogía de El Señor de los Anillos?;18
+109;¿Qué es un SSD en el ámbito de la informática?;19
+110;¿Cuál de los siguientes protocolos se utiliza para la transferencia segura de archivos a través de Internet?;20
+111;¿En qué año se lanzó la primera versión del lenguaje de programación Python?;21
+112;¿Cuánto es 15 - 7?;22
+113;¿Cuál es el valor de 2⁵?;23
+114;¿Cuántas combinaciones se pueden formar al elegir 3 elementos de un conjunto de 7?;24
+115;¿Qué país es famoso por sus tulipanes y molinos de viento?;25
+116;¿Cuál es el animal nacional de Escocia?;26
+117;¿Cuál es la obra literaria considerada la primera novela del mundo, escrita durante el período Heian en Japón?;27
+118;¿Cuál es la banda británica conocida por éxitos como "Hey Jude" y "Let It Be"?;28
+119;¿Qué artista de reggae es reconocido mundialmente por temas como "No Woman, No Cry"?;29
+120;¿Cuál fue el primer videoclip musical transmitido en MTV?;30
+121;¿Qué planeta es conocido como el "planeta rojo"?;1
+122;¿Cuál es la velocidad aproximada de la luz en el vacío?;2
+123;En mecánica cuántica, ¿qué fenómeno permite que una partícula atraviese una barrera de potencial sin poseer la energía clásica suficiente?;3
+124;¿Qué civilización construyó las pirámides de Giza?;4
+125;¿Qué civilización construyó la ciudad de Tenochtitlán?;5
+126;¿En qué año cayó Constantinopla en manos del Imperio Otomano?;6
 127;;7
 128;;8
 129;;9
