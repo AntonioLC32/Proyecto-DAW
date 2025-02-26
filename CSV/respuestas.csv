@@ -503,114 +503,114 @@ id_respuesta;texto;es_correcta;id_pregunta
 502;1453;True;126
 503;1517;False;126
 504;1683;False;126
-505;;False;127
-506;;False;127
-507;;False;127
-508;;False;127
-509;;False;128
-510;;False;128
-511;;False;128
-512;;False;128
-513;;False;129
-514;;False;129
-515;;False;129
-516;;False;129
-517;;False;130
-518;;False;130
-519;;False;130
-520;;False;130
-521;;False;131
-522;;False;131
-523;;False;131
-524;;False;131
-525;;False;132
-526;;False;132
-527;;False;132
-528;;False;132
-529;;False;133
-530;;False;133
-531;;False;133
-532;;False;133
-533;;False;134
-534;;False;134
-535;;False;134
-536;;False;134
-537;;False;135
-538;;False;135
-539;;False;135
-540;;False;135
-541;;False;136
-542;;False;136
-543;;False;136
-544;;False;136
-545;;False;137
-546;;False;137
-547;;False;137
-548;;False;137
-549;;False;138
-550;;False;138
-551;;False;138
-552;;False;138
-553;;False;139
-554;;False;139
-555;;False;139
-556;;False;139
-557;;False;140
-558;;False;140
-559;;False;140
-560;;False;140
-561;;False;141
-562;;False;141
-563;;False;141
-564;;False;141
-565;;False;142
-566;;False;142
-567;;False;142
-568;;False;142
-569;;False;143
-570;;False;143
-571;;False;143
-572;;False;143
-573;;False;144
-574;;False;144
-575;;False;144
-576;;False;144
-577;;False;145
-578;;False;145
-579;;False;145
-580;;False;145
-581;;False;146
-582;;False;146
-583;;False;146
-584;;False;146
-585;;False;147
-586;;False;147
-587;;False;147
-588;;False;147
-589;;False;148
-590;;False;148
-591;;False;148
-592;;False;148
-593;;False;149
-594;;False;149
-595;;False;149
-596;;False;149
-597;;False;150
-598;;False;150
-599;;False;150
-600;;False;150
-601;;False;151
-602;;False;151
-603;;False;151
-604;;False;151
-605;;False;152
-606;;False;152
-607;;False;152
-608;;False;152
-609;;False;153
-610;;False;153
-611;;False;153
-612;;False;153
+505;Toronto;False;127
+506;Montreal;False;127
+507;Ottawa;True;127
+508;Vancouver;False;127
+509;Lago Superior;True;128
+510;Lago Victoria;False;128
+511;Lago Baikal;False;128
+512;Lago Michigan;False;128
+513;Montañas Rocosas;False;129
+514;Himalaya;False;129
+515;Alpes;False;129
+516;Los Andes;True;129
+517;4;False;130
+518;5;False;130
+519;6;True;130
+520;7;False;130
+521;Rusia;False;131
+522;Noruega;True;131
+523;Estados Unidos;False;131
+524;Dinamarca;False;131
+525;1919;False;132
+526;1925;False;132
+527;1920;True;132
+528;1930;False;132
+529;Vincent van Gogh;True;133
+530;Pablo Picasso;False;133
+531;Claude Monet;False;133
+532;Salvador Dalí;False;133
+533;Charles Dickens;False;134
+534;Oscar Wilde;True;134
+535;Mark Twain;False;134
+536;Edgar Allan Poe;False;134
+537;Gabriela Mistral;False;135
+538;Pablo Neruda;True;135
+539;Nicanor Parra;False;135
+540;Vicente Huidobro;False;135
+541;Brad Pitt;False;136
+542;Johnny Depp;False;136
+543;Leonardo DiCaprio;True;136
+544;Tom Cruise;False;136
+545;Wes Anderson;True;137
+546;Quentin Tarantino;False;137
+547;Martin Scorsese;False;137
+548;Steven Spielberg;False;137
+549;"Mar adentro";False;138
+550;"Todo sobre mi madre";True;138
+551;"Volver";False;138
+552;"El laberinto del fauno";False;138
+553;Read Access Memory;False;139
+554;Random Access Memory;True;139
+555;Rapid Application Mode;False;139
+556;Real-time Array Memory;False;139
+557;Cable Ethernet;False;140
+558;Router;False;140
+559;Adaptador Wi-Fi;True;140
+560;Switch;False;140
+561;Un lenguaje de programación para aplicaciones web;False;141
+562;Un sistema operativo basado en nodos distribuidos;False;141
+563;Una cadena de bloques descentralizada utilizada para registrar transacciones de criptomonedas;True;141
+564;Una base de datos centralizada para almacenar registros financieros;False;141
+565;14;False;142
+566;15;True;142
+567;16;False;142
+568;17;False;142
+569;52;False;143
+570;54;True;143
+571;56;False;143
+572;59;False;143
+573;30;True;144
+574;28;False;144
+575;32;False;144
+576;31;False;144
+577;Leonardo da Vinci;False;145
+578;Johannes Gutenberg;True;145
+579;Thomas Edison;False;145
+580;Galileo Galilei;False;145
+581;México;False;146
+582;Argentina;True;146
+583;España;False;146
+584;Brasil;False;146
+585;1492;False;147
+586;1494;True;147
+587;1500;False;147
+588;1517;False;147
+589;Dr. Dre;False;148
+590;50 Cent;False;148
+591;Eminem;True;148
+592;Snoop Dogg;False;148
+593;The Rolling Stones;False;149
+594;The Eagles;True;149
+595;Fleetwood Mac;False;149
+596;Led Zeppelin;False;149
+597;Giuseppe Verdi;False;150
+598;Ludwig van Beethoven;False;150
+599;Wolfgang Amadeus Mozart;True;150
+600;Richard Wagner;False;150
+601;Oro;True;151
+602;Osmio;False;151
+603;Oxalato;False;151
+604;Oxígeno;True;151
+605;Joule;False;152
+606;Newton;True;152
+607;Pascal;False;152
+608;Watt;False;152
+609;Fuerza gravitatoria;False;153
+610;Fuerza electromagnética;False;153
+611;Fuerza nuclear fuerte;False;153
+612;Fuerza centrífuga;True;153
 613;;False;154
 614;;False;154
 615;;False;154
