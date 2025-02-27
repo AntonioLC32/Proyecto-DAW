@@ -22,92 +22,20 @@
           </div>
 
           <div class="filtro-categorias">
-            <label class="category-item">
+            <label class="category-item" v-for="categoria in listaCategorias" :key="categoria">
               <input
                 type="checkbox"
-                v-model="Ciencia"
-                @change="filtrarCategorias"
+                :value="categoria"
+                v-model="categoriasSeleccionadas"
               />
-              <span>Ciencia</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Historia"
-                @change="filtrarCategorias"
-              />
-              <span>Historia</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Geografia"
-                @change="filtrarCategorias"
-              />
-              <span>Geografía</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Deportes"
-                @change="filtrarCategorias"
-              />
-              <span>Deportes</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="AyL"
-                @change="filtrarCategorias"
-              />
-              <span>Arte y Literatura</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Entretenimiento"
-                @change="filtrarCategorias"
-              />
-              <span>Entretenimiento</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Tecnologia"
-                @change="filtrarCategorias"
-              />
-              <span>Tecnología</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Matematicas"
-                @change="filtrarCategorias"
-              />
-              <span>Matemáticas</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="CulturaGeneral"
-                @change="filtrarCategorias"
-              />
-              <span>Cultura General</span>
-            </label>
-            <label class="category-item">
-              <input
-                type="checkbox"
-                v-model="Musica"
-                @change="filtrarCategorias"
-              />
-              <span>Música</span>
+              <span>{{ categoria }}</span>
             </label>
           </div>
         </section>
 
         <section class="tabla">
           <!-- Se asume que el componente Table emite el evento "editar" pasando la fila -->
-          <Table :headers="headers" :rows="rows" @editar="abrirPopup" />
+          <Table :headers="headers" :rows="rowsFiltradas" @editar="abrirPopup" />
         </section>
       </div>
 
@@ -223,6 +151,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import Table from "./Table.vue";
 
 export default {
@@ -258,12 +187,13 @@ export default {
         { key: "categoria", label: "CATEGORÍA" },
         { key: "acciones", label: "ACCIONES" },
       ],
+      categoriasSeleccionadas: [],
       rows: [
         {
           id: 1,
           pregunta: "¿Quién pintó la Mona Lisa?",
           dificultad: "Fácil",
-          categoria: "Arte",
+          categoria: "Arte y Literatura",
           opciones: "Opción 1|Opción 2|Opción 3",
           correcta: "Opción 1",
           acciones: {
@@ -468,9 +398,18 @@ export default {
           },
         },
       ],
+      listaCategorias: ["Arte y Literatura", "Geografía", "Ciencia", "Deportes", "Matemáticas", "Historia", "Música", "Tecnología", "Entretenimiento", "Cultura General"],
       popupVisible: false,
       preguntaSeleccionada: {},
     };
+  },
+  computed: {
+    rowsFiltradas() {
+      if (this.categoriasSeleccionadas.length === 0) {
+        return this.rows; // Si no hay filtros, muestra todas las preguntas
+      }
+      return this.rows.filter(row => this.categoriasSeleccionadas.includes(row.categoria));
+    },
   },
   methods: {
     abrirPopup(pregunta) {
@@ -483,8 +422,14 @@ export default {
     guardarCambios() {
       this.popupVisible = false;
     },
-    buscarPregunta() {},
-    filtrarCategorias() {},
+    buscarPregunta() {
+      console.log("Buscando:", this.input);
+      // Aquí podrías agregar lógica adicional para buscar preguntas por texto
+    },
+    filtrarCategorias() {
+      // Actualiza el campo de búsqueda con las categorías seleccionadas
+
+    },
     addPregunta() {},
   },
 };

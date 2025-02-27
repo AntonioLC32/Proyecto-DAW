@@ -2,9 +2,9 @@
   <section class="game-landing">
     <div class="hero">
       <div class="hero-content">
-        <button class="play-button">
-          <router-link to="/quizmania" class="play-link">¡A JUGAR!</router-link>
-        </button>
+        <router-link to="/quizmania" class="play-link">
+            ¡A JUGAR!
+        </router-link>
       </div>
       <img
         src="../assets/background_inicio.png"
@@ -90,7 +90,14 @@
   z-index: 2;
 }
 
-.play-button {
+.play-link {
+  color: white;
+  text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  
   background: linear-gradient(135deg, #6366f1, #4f46e5);
   padding: 1.5rem 3rem;
   border: none;
@@ -100,19 +107,10 @@
   cursor: pointer;
 }
 
-.play-button:hover {
+.play-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 25px rgba(79, 70, 229, 0.4);
   background: linear-gradient(135deg, #4f46e5, #4338ca);
-}
-
-.play-link {
-  color: white;
-  text-decoration: none;
-  font-size: 2.5rem;
-  font-weight: 700;
-  font-family: "Montserrat", sans-serif;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .game-modes {
