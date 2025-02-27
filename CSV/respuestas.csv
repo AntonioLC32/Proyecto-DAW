@@ -611,150 +611,150 @@ id_respuesta;texto;es_correcta;id_pregunta
 610;Fuerza electromagnética;False;153
 611;Fuerza nuclear fuerte;False;153
 612;Fuerza centrífuga;True;153
-613;;False;154
-614;;False;154
-615;;False;154
-616;;False;154
-617;;False;155
-618;;False;155
-619;;False;155
-620;;False;155
-621;;False;156
-622;;False;156
-623;;False;156
-624;;False;156
-625;;False;157
-626;;False;157
-627;;False;157
-628;;False;157
-629;;False;158
-630;;False;158
-631;;False;158
-632;;False;158
-633;;False;159
-634;;False;159
-635;;False;159
-636;;False;159
-637;;False;160
-638;;False;160
-639;;False;160
-640;;False;160
-641;;False;161
-642;;False;161
-643;;False;161
-644;;False;161
-645;;False;162
-646;;False;162
-647;;False;162
-648;;False;162
-649;;False;163
-650;;False;163
-651;;False;163
-652;;False;163
-653;;False;164
-654;;False;164
-655;;False;164
-656;;False;164
-657;;False;165
-658;;False;165
-659;;False;165
-660;;False;165
-661;;False;166
-662;;False;166
-663;;False;166
-664;;False;166
-665;;False;167
-666;;False;167
-667;;False;167
-668;;False;167
-669;;False;168
-670;;False;168
-671;;False;168
-672;;False;168
-673;;False;169
-674;;False;169
-675;;False;169
-676;;False;169
-677;;False;170
-678;;False;170
-679;;False;170
-680;;False;170
-681;;False;171
-682;;False;171
-683;;False;171
-684;;False;171
-685;;False;172
-686;;False;172
-687;;False;172
-688;;False;172
-689;;False;173
-690;;False;173
-691;;False;173
-692;;False;173
-693;;False;174
-694;;False;174
-695;;False;174
-696;;False;174
-697;;False;175
-698;;False;175
-699;;False;175
-700;;False;175
-701;;False;176
-702;;False;176
-703;;False;176
-704;;False;176
-705;;False;177
-706;;False;177
-707;;False;177
-708;;False;177
-709;;False;178
-710;;False;178
-711;;False;178
-712;;False;178
-713;;False;179
-714;;False;179
-715;;False;179
-716;;False;179
-717;;False;180
-718;;False;180
-719;;False;180
-720;;False;180
-721;;False;181
-722;;False;181
-723;;False;181
-724;;False;181
-725;;False;182
-726;;False;182
-727;;False;182
-728;;False;182
-729;;False;183
-730;;False;183
-731;;False;183
-732;;False;183
-733;;False;184
-734;;False;184
-735;;False;184
-736;;False;184
-737;;False;185
-738;;False;185
-739;;False;185
-740;;False;185
-741;;False;186
-742;;False;186
-743;;False;186
-744;;False;186
-745;;False;187
-746;;False;187
-747;;False;187
-748;;False;187
-749;;False;188
-750;;False;188
-751;;False;188
-752;;False;188
-753;;False;189
-754;;False;189
-755;;False;189
-756;;False;189
+613;Vladimir Lenin;True;154
+614;Josef Stalin;False;154
+615;León Trotsky;False;154
+616;Nicolás II;False;154
+617;1987;False;155
+618;1989;True;155
+619;1991;False;155
+620;1993;False;155
+621;El asesinato del archiduque Francisco Fernando;True;156
+622;La invasión de Polonia;False;156
+623;El hundimiento del Lusitania;False;156
+624;La Revolución Rusa;False;156
+625;India;True;157
+626;China;False;157
+627;Indonesia;False;157
+628;Estados Unidos;False;157
+629;Desierto del Sahara;True;158
+630;Desierto de Gobi;False;158
+631;Desierto de Arabia;False;158
+632;Desierto del Kalahari;False;158
+633;Península Escandinava;False;159
+634;Península Ibérica;False;159
+635;Península Arábiga;True;159
+636;Península Indochina;False;159
+637;13;False;160
+638;15;True;160
+639;17;False;160
+640;11;False;160
+641;1948;False;161
+642;1950;True;161
+643;1952;False;161
+644;1954;False;161
+645;1956;False;162
+646;1960;True;162
+647;1964;False;162
+648;1968;False;162
+649;Salvador Dalí;False;163
+650;Francisco de Goya;False;163
+651;Pablo Picasso;True;163
+652;Joan Miró;False;163
+653;Hamlet;True;164
+654;Macbeth;False;164
+655;Romeo y Julieta;False;164
+656;Othello;False;164
+657;Julio Cortázar;True;165
+658;Gabriel García Márquez;False;165
+659;Mario Vargas Llosa;False;165
+660;Carlos Fuentes;False;165
+661;Cars;False;166
+662;Toy Story;True;166
+663;Monsters, Inc.;False;166
+664;Up;False;166
+665;Pulp Fiction;False;167
+666;The Shawshank Redemption;True;167
+667;Forrest Gump;False;167
+668;Se7en;False;167
+669;1900;False;168
+670;1910;False;168
+671;1927;True;168
+672;1941;False;168
+673;GPU;False;169
+674;CPU;True;169
+675;RAM;False;169
+676;SSD;False;169
+677;C#;False;170
+678;Java;True;170
+679;Python;False;170
+680;JavaScript;False;170
+681;Automatic Programming Interface;False;171
+682;Application Performance Index;False;171
+683;Application Programming Interface;True;171
+684;Advanced Process Integration;False;171
+685;3;False;172
+686;4;True;172
+687;5;False;172
+688;6;False;172
+689;10;False;173
+690;15;True;173
+691;20;False;173
+692;25;False;173
+693;31;False;174
+694;33;True;174
+695;35;False;174
+696;37;False;174
+697;Italia;False;175
+698;España;True;175
+699;México;False;175
+700;Argentina;False;175
+701;Dólar;False;176
+702;Yuan;False;176
+703;Yen;True;176
+704;Won;False;176
+705;Catedral de Chartres;False;177
+706;Catedral de Reims;False;177
+707;Catedral de Amiens;False;177
+708;Catedral de Notre-Dame;FalTruese;177
+709;Rock;False;178
+710;Pop;False;178
+711;Jazz;True;178
+712;Blues;False;178
+713;Whitney Houston;False;179
+714;Aretha Franklin;True;179
+715;Tina Turner;False;179
+716;Mariah Carey;False;179
+717;Miles Davis;False;180
+718;John Coltrane;False;180
+719;Ornette Coleman;True;180
+720;Charles Mingus;False;180
+721;Pulmones;False;181
+722;Hígado;False;181
+723;Corazón;True;181
+724;Riñón;False;181
+725;Mercurio;True;182
+726;Plomo;False;182
+727;Aluminio;False;182
+728;Hierro;False;182
+729;Quimiosíntesis;False;183
+730;Fotosíntesis;True;183
+731;Fermentación;False;183
+732;Respiración celular;False;183
+733;1066;True;184
+734;1215;False;184
+735;1415;False;184
+736;1815;False;184
+737;Julio César;False;185
+738;Augusto;True;185
+739;Nerón;False;185
+740;Trajano;False;185
+741;Martín Lutero;True;186
+742;Juan Calvino;False;186
+743;Enrique VIII;False;186
+744;Ulrico Zuinglio;False;186
+745;Argentina;False;187
+746;Brasil;True;187
+747;Perú;False;187
+748;Colombia;False;187
+749;Atlántico;False;188
+750;Índico;False;188
+751;Pacífico;True;188
+752;Ártico;False;188
+753;Fosa de las Marianas;True;189
+754;Fosa de Puerto Rico;False;189
+755;Fosa de Tonga;False;189
+756;Fosa de Filipinas;False;189
 757;;False;190
 758;;False;190
 759;;False;190
@@ -799,4 +799,43 @@ id_respuesta;texto;es_correcta;id_pregunta
 798;;False;200
 799;;False;200
 800;;False;200
-
+801;;False;201
+802;;False;201
+803;;False;201
+804;;False;201
+805;;False;202
+806;;False;202
+807;;False;202
+808;;False;202
+809;;False;203
+810;;False;203
+811;;False;203
+812;;False;203
+813;;False;204
+814;;False;204
+815;;False;204
+816;;False;204
+817;;False;205
+818;;False;205
+819;;False;205
+820;;False;205
+821;;False;206
+822;;False;206
+823;;False;206
+824;;False;206
+825;;False;207
+826;;False;207
+827;;False;207
+828;;False;207
+829;;False;208
+830;;False;208
+831;;False;208
+832;;False;208
+833;;False;209
+834;;False;209
+835;;False;209
+836;;False;209
+837;;False;210
+838;;False;210
+839;;False;210
+840;;False;210
