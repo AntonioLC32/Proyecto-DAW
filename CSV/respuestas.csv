@@ -755,87 +755,87 @@ id_respuesta;texto;es_correcta;id_pregunta
 754;Fosa de Puerto Rico;False;189
 755;Fosa de Tonga;False;189
 756;Fosa de Filipinas;False;189
-757;;False;190
-758;;False;190
-759;;False;190
-760;;False;190
-761;;False;191
-762;;False;191
-763;;False;191
-764;;False;191
-765;;False;192
-766;;False;192
-767;;False;192
-768;;False;192
-769;;False;193
-770;;False;193
-771;;False;193
-772;;False;193
-773;;False;194
-774;;False;194
-775;;False;194
-776;;False;194
-777;;False;195
-778;;False;195
-779;;False;195
-780;;False;195
-781;;False;196
-782;;False;196
-783;;False;196
-784;;False;196
-785;;False;197
-786;;False;197
-787;;False;197
-788;;False;197
-789;;False;198
-790;;False;198
-791;;False;198
-792;;False;198
-793;;False;199
-794;;False;199
-795;;False;199
-796;;False;199
-797;;False;200
-798;;False;200
-799;;False;200
-800;;False;200
-801;;False;201
-802;;False;201
-803;;False;201
-804;;False;201
-805;;False;202
-806;;False;202
-807;;False;202
-808;;False;202
-809;;False;203
-810;;False;203
-811;;False;203
-812;;False;203
-813;;False;204
-814;;False;204
-815;;False;204
-816;;False;204
-817;;False;205
-818;;False;205
-819;;False;205
-820;;False;205
-821;;False;206
-822;;False;206
-823;;False;206
-824;;False;206
-825;;False;207
-826;;False;207
-827;;False;207
-828;;False;207
-829;;False;208
-830;;False;208
-831;;False;208
-832;;False;208
-833;;False;209
-834;;False;209
-835;;False;209
-836;;False;209
-837;;False;210
-838;;False;210
-839;;False;210
-840;;False;210
+757;Fútbol;False;190
+758;Tenis;True;190
+759;Bádminton;False;190
+760;Baloncesto;False;190
+761;40;False;191
+762;42;False;191
+763;48;True;191
+764;60;False;191
+765;Michael Schumacher;False;192
+766;Lewis Hamilton;True;192
+767;Ayrton Senna;False;192
+768;Sebastian Vettel;False;192
+769;Antoine de Saint-Exupéry;True;193
+770;Víctor Hugo;False;193
+771;Jules Verne;False;193
+772;Gabriel García Márquez;False;193
+773;El gran Gatsby;True;194
+774;Matar a un ruiseñor;False;194
+775;1984;False;194
+776;Fahrenheit 451;False;194
+777;William Shakespeare;False;195
+778;John Milton;True;195
+779;Geoffrey Chaucer;False;195
+780;John Donne;False;195
+781;Moana;False;196
+782;Enredados;False;196
+783;Frozen;True;196
+784;La Bella y la Bestia;False;196
+785;Inception;True;197
+786;Interstellar;False;197
+787;The Prestige;False;197
+788;Memento;False;197
+789;El viaje de Chihiro;True;198
+790;La princesa Mononoke;False;198
+791;Mi vecino Totoro;False;198
+792;El castillo ambulante;False;198
+793;Bluetooth;False;199
+794;NFC;True;199
+795;Wi-Fi;False;199
+796;Infrarrojo;False;199
+797;Internet of Technology;False;200
+798;Internet of Things;True;200
+799;Interconnection of Tools;False;200
+800;Innovation of Technology;False;200
+801;Hypervisor;True;201
+802;Docker;False;201
+803;Kubernetes;False;201
+804;VPN;False;201
+805;18;False;202
+806;20;True;202
+807;22;False;202
+808;24;False;202
+809;20;False;203
+810;21;False;203
+811;22;True;203
+812;24;False;203
+813;100°;False;204
+814;105°;False;204
+815;110°;True;204
+816;115°;False;204
+817;La Antártida;True;205
+818;Siberia;False;205
+819;Groenlandia;False;205
+820;El Ártico;False;205
+821;Olimpia;True;206
+822;Atenas;False;206
+823;Delfos;False;206
+824;Esparta;False;206
+825;La Marsellesa;True;207
+826;La Liberté;False;207
+827;Le Chant du Départ;False;207
+828;La Carmagnole;False;207
+829;Robert Johnson;False;208
+830;B.B. King;False;208
+831;Muddy Waters;False;208
+832;W. C. Handy;True;208
+833;Saxofón;False;209
+834;Clarinete;False;209
+835;Trompeta;True;209
+836;Flauta;False;209
+837;Duke Ellington;False;210
+838;George Gershwin;True;210
+839;Scott Joplin;False;210
+840;Leonard Bernstein;False;210
