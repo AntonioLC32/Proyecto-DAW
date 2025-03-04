@@ -151,6 +151,7 @@ export default {
   font-weight: bold;
   font-size: 16px;
   height: 350px;
+  padding-bottom:50px;
 }
 
 @media (max-width: 900px) {
