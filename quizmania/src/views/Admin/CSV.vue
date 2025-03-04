@@ -8,9 +8,10 @@
       <button @click="dismissError">x</button>
     </div>
 
-    <div>
-      <button @click="testConnection">Probar conexión</button>
-      <p v-if="serverMessage">{{ serverMessage }}</p>
+    <!-- Mensaje de éxito -->
+    <div v-if="successMessage" class="success-message">
+      {{ successMessage }}
+      <button @click="dismissSuccess">x</button>
     </div>
 
     <div class="csv-cards">
@@ -35,39 +36,69 @@ export default {
   data() {
     return {
       csvFiles: [
-        { name: "Categorías", description: "Importa datos de categorías" },
-        { name: "Tarjetas", description: "Importa datos de tarjetas" },
-        { name: "Preguntas", description: "Importa datos de preguntas" },
-        { name: "Respuestas", description: "Importa datos de respuestas" },
+        {
+          name: "Categorías",
+          action: "importCsvCategorias",
+          description: "Importa datos de categorías",
+        },
+        {
+          name: "Tarjetas",
+          action: "importCsvTarjetas",
+          description: "Importa datos de tarjetas",
+        },
+        {
+          name: "Preguntas",
+          action: "importCsvPreguntas",
+          description: "Importa datos de preguntas",
+        },
+        {
+          name: "Respuestas",
+          action: "importCsvRespuestas",
+          description: "Importa datos de respuestas",
+        },
       ],
-      errorMessage: "", // Aquí se almacenará el mensaje de error
-      serverMessage: "", // Aquí se almacenará el mensaje del servidor
+      errorMessage: "",
+      successMessage: "",
     };
   },
   methods: {
-    importCsv(csv) {
-      // Simulación: Si el CSV es "Tarjetas", se muestra un mensaje de error.
-      if (csv.name === "Tarjetas") {
-        this.errorMessage = `Error: No se pudo importar ${csv.name}.`;
-      } else {
-        this.errorMessage = "";
-        console.log(`Simulando la importación de ${csv.name}`);
+    async importCsv(csv) {
+      try {
+        const response = await fetch(`/api/index.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: csv.action }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if (data.status === "success") {
+            this.successMessage = data.mensaje;
+            this.errorMessage = "";
+          } else {
+            this.errorMessage = data.mensaje;
+            this.successMessage = "";
+          }
+        } else {
+          this.errorMessage = "Hubo un error en la respuesta del servidor.";
+          this.successMessage = "";
+          console.error("Error en la respuesta del servidor:", data);
+        }
+      } catch (error) {
+        this.errorMessage = "Error al importar el archivo CSV.";
+        this.successMessage = "";
+        console.error("Error en la solicitud:", error);
       }
     },
+
     dismissError() {
       this.errorMessage = "";
     },
-
-    testConnection() {
-      fetch("/api/index.php") // En vez de "http://localhost/Proyecto-DAW/backend/index.php"
-        .then((response) => response.json())
-        .then((data) => {
-          this.serverMessage = data.mensaje; // Muestra el mensaje desde el backend
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          this.serverMessage = "Hubo un error al conectar con el servidor.";
-        });
+    dismissSuccess() {
+      this.successMessage = "";
     },
   },
 };
@@ -91,20 +122,30 @@ export default {
   font-weight: bold;
 }
 
-.error-message {
+.error-message,
+.success-message {
   max-width: 800px;
-  background-color: #ffcccc;
-  color: #a94442;
   padding: 10px;
-  border: 1px solid #a94442;
   border-radius: 5px;
-  margin: 0 auto;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   text-align: center;
   position: relative;
 }
 
-.error-message button {
+.error-message {
+  background-color: #ffcccc;
+  color: #a94442;
+  border: 1px solid #a94442;
+}
+
+.success-message {
+  background-color: #ccffcc;
+  color: #155724;
+  border: 1px solid #155724;
+}
+
+.error-message button,
+.success-message button {
   position: absolute;
   right: 10px;
   top: 50%;
@@ -113,10 +154,8 @@ export default {
   border: none;
   font-size: 16px;
   cursor: pointer;
-  color: #a94442;
 }
 
-/* Contenedor para las tarjetas */
 .csv-cards {
   display: flex;
   flex-wrap: wrap;
@@ -124,7 +163,6 @@ export default {
   justify-content: center;
 }
 
-/* Estilos para cada tarjeta */
 .csv-card {
   background: #fff;
   border-radius: 10px;
@@ -160,18 +198,5 @@ export default {
   margin: 5px 0 0;
   font-size: 14px;
   color: #666;
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-  .csv-card {
-    flex: 1 1 45%;
-  }
-}
-
-@media (max-width: 480px) {
-  .csv-card {
-    flex: 1 1 100%;
-  }
 }
 </style>

@@ -1,14 +1,22 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *'); // Permite peticiones desde cualquier dominio
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS'); // Métodos permitidos
-header('Access-Control-Allow-Headers: Content-Type, Authorization'); // Cabeceras permitidas
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Respuesta simple
-$response = [
-  'status' => 'success',
-  'mensaje' => 'Conexión exitosa desde PHP!'
-];
+require 'config/db.php';
 
-echo json_encode($response);
+$input = json_decode(file_get_contents("php://input"), true);
+$action = isset($input['action']) ? $input['action'] : '';
+
+switch ($action) {
+    case 'importCsvCategorias':
+        require 'categorias/insert.php';
+        importCSVCategorias();
+        break;
+    
+    default:
+        echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);
+        break;
+}
 ?>
