@@ -1,11 +1,11 @@
-id_categoria;nombre
-1;Ciencia
-2;Historia
-3;Geografía
-4;Deportes
-5;Arte y Literatura
-6;Entretenimiento
-7;Tecnología
-8;Matemáticas
-9;Cultura General
-10;Música
+id_categoria;nombre;imagen
+1;Ciencia;assets/ciencias.png
+2;Historia;assets/historia.png
+3;Geografía;assets/geografia.png
+4;Deportes;assets/deportes.png
+5;Arte y Literatura;assets/arte.png
+6;Entretenimiento;assets/entre.png
+7;Tecnología;assets/tecno.png
+8;Matemáticas;assets/mates.png
+9;Cultura General;assets/cultura.png
+10;Música;assets/musica.png
