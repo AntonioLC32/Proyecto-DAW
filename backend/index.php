@@ -12,7 +12,21 @@ switch ($action) {
         require 'categorias/insert.php';
         importCSVCategorias();
         break;
+
+    case 'importCsvTarjetas':
+        require 'tarjetas/insert.php';
+        importCSVTarjetas();
+        break;
+
+    case 'importCsvPreguntas':
+        require 'preguntas/insert.php';
+        importCSVPreguntas();
+        break;
     
+    case 'importCsvRespuestas':
+        require 'respuestas/insert.php';
+        importCSVRespuestas();
+        break;
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);

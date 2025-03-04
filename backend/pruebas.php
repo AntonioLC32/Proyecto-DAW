@@ -1,7 +1,5 @@
 <?php
 
-require 'categorias/insert.php';
-        importCSVCategorias();
-
-
+require 'respuestas/insert.php';
+importCSVRespuestas();
 ?>

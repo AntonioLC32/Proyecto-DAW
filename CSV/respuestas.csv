@@ -706,7 +706,7 @@ id_respuesta;texto;es_correcta;id_pregunta
 705;Catedral de Chartres;False;177
 706;Catedral de Reims;False;177
 707;Catedral de Amiens;False;177
-708;Catedral de Notre-Dame;FalTruese;177
+708;Catedral de Notre-Dame;True;177
 709;Rock;False;178
 710;Pop;False;178
 711;Jazz;True;178
