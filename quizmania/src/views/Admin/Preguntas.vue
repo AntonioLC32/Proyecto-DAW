@@ -405,10 +405,17 @@ export default {
   },
   computed: {
     rowsFiltradas() {
-      if (this.categoriasSeleccionadas.length === 0) {
-        return this.rows; // Si no hay filtros, muestra todas las preguntas
-      }
-      return this.rows.filter(row => this.categoriasSeleccionadas.includes(row.categoria));
+      return this.rows.filter((row) => {
+        // Filtrar por búsqueda de texto
+        const textoBusqueda = this.input.toLowerCase().trim();
+        const coincideTexto = textoBusqueda === "" || row.pregunta.toLowerCase().includes(textoBusqueda);
+
+        // Filtrar por categorías seleccionadas
+        const coincideCategoria = this.categoriasSeleccionadas.length === 0 || this.categoriasSeleccionadas.includes(row.categoria);
+
+        // Solo devuelve los elementos que coincidan con ambos filtros
+        return coincideTexto && coincideCategoria;
+      });
     },
   },
   methods: {
@@ -465,6 +472,7 @@ export default {
   display: flex;
   gap: 20px;
   align-items: stretch;
+  min-height: 83vh;
 }
 
 .left-column {
@@ -475,6 +483,8 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
 .searchBar {
@@ -555,7 +565,6 @@ export default {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex: 1;
   display: flex;
