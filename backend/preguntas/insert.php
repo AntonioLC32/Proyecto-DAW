@@ -79,4 +79,62 @@ function importCSVPreguntas() {
     echo json_encode($respuesta);
 }
 
+
+function insertPregunta($data) {
+    global $conn;
+
+    $texto = $data['texto'] ?? '';
+    $categoriaNombre = $data['categoria'] ?? '';
+    $dificultad = $data['dificultad'] ?? '';
+    $respuestas = $data['respuestas'] ?? [];
+    $respuesta_correcta = $data['respuesta_correcta'] ?? '';
+
+    try {
+        $conn->begin_transaction();
+
+        // Obtener ID de categoría
+        $stmtCategoria = $conn->prepare("SELECT id_categoría FROM Categoría WHERE nombre = ?");
+        $stmtCategoria->bind_param("s", $categoriaNombre);
+        $stmtCategoria->execute();
+        $categoria = $stmtCategoria->get_result()->fetch_assoc();
+        
+        if (!$categoria) {
+            throw new Exception("Categoría no encontrada");
+        }
+        $id_categoria = $categoria['id_categoría'];
+
+        // Obtener tarjeta correspondiente
+        $stmtTarjeta = $conn->prepare("SELECT id_tarjeta FROM Tarjeta WHERE id_categoría = ? AND dificultad = ?");
+        $stmtTarjeta->bind_param("is", $id_categoria, $dificultad);
+        $stmtTarjeta->execute();
+        $tarjeta = $stmtTarjeta->get_result()->fetch_assoc();
+        
+        if (!$tarjeta) {
+            throw new Exception("Tarjeta no encontrada");
+        }
+        $id_tarjeta = $tarjeta['id_tarjeta'];
+
+        // Insertar pregunta
+        $stmtPregunta = $conn->prepare("INSERT INTO Pregunta (texto, id_tarjeta) VALUES (?, ?)");
+        $stmtPregunta->bind_param("si", $texto, $id_tarjeta);
+        $stmtPregunta->execute();
+        $id_pregunta = $stmtPregunta->insert_id;
+
+        // Insertar respuestas
+        foreach ($respuestas as $respuesta) {
+            $es_correcta = (trim($respuesta) === $respuesta_correcta) ? 1 : 0;
+            $stmtRespuesta = $conn->prepare("INSERT INTO Respuesta (texto, es_correcta, id_pregunta) VALUES (?, ?, ?)");
+            $respuesta_trim = trim($respuesta);
+            $stmtRespuesta->bind_param("sii", $respuesta_trim, $es_correcta, $id_pregunta);
+            $stmtRespuesta->execute();
+        }
+
+        $conn->commit();
+        echo json_encode(['status' => 'success', 'mensaje' => 'Pregunta creada']);
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['status' => 'error', 'mensaje' => $e->getMessage()]);
+    }
+}
+
 ?>

@@ -2,6 +2,13 @@
   <div class="preguntas">
     <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
 
+    <div class="mensajes">
+      <div v-if="mensaje" :class="['mensaje', mensajeTipo]">
+        {{ mensaje }}
+        <span class="cerrar-mensaje" @click="mensaje = ''">&times;</span>
+      </div>
+    </div>
+
     <!-- Contenedor principal que agrupa ambas columnas -->
     <div class="content-wrapper">
       <!-- Columna izquierda: búsqueda, filtros y tabla -->
@@ -189,6 +196,8 @@ export default {
       categoriasSeleccionadas: [],
       popupVisible: false,
       preguntaSeleccionada: {},
+      mensaje: "",
+      mensajeTipo: "success",
     };
   },
   computed: {
@@ -261,13 +270,13 @@ export default {
     },
     async addPregunta() {
       try {
-        const response = await fetch("/api/crear_pregunta.php", {
+        const response = await fetch("/api/index.php?action=insertPregunta", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            pregunta: this.pregunta,
+            texto: this.pregunta,
             dificultad: this.dificultad,
             categoria: this.categoria,
             respuestas: this.respuestas.split("|"),
@@ -275,17 +284,28 @@ export default {
           }),
         });
 
-        if (response.ok) {
-          this.fetchPreguntas(); // Recargar datos
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "¡Pregunta añadida exitosamente!";
+          this.mensajeTipo = "success";
+          this.fetchPreguntas();
           // Resetear formulario
           this.pregunta = "";
           this.dificultad = "";
           this.categoria = "";
           this.respuestas = "";
           this.correcta = "";
+        } else {
+          this.mensaje = data.mensaje || "Error al crear la pregunta";
+          this.mensajeTipo = "error";
         }
       } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
         console.error("Error al añadir pregunta:", error);
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
       }
     },
   },
@@ -316,6 +336,56 @@ export default {
   color: #fff;
   text-align: center;
   font-weight: bold;
+}
+
+.mensajes {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 300px;
+}
+
+.mensaje {
+  padding: 15px 35px 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+.mensaje.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.mensaje.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.cerrar-mensaje {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .content-wrapper {

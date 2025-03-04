@@ -33,6 +33,11 @@ switch ($action) {
         obtenerPreguntas();
         break;
 
+    case 'insertPregunta':
+        require 'preguntas/insert.php';
+        insertPregunta($input);
+        break;
+
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);
