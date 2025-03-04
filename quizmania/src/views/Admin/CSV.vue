@@ -8,6 +8,11 @@
       <button @click="dismissError">x</button>
     </div>
 
+    <div>
+      <button @click="testConnection">Probar conexión</button>
+      <p v-if="serverMessage">{{ serverMessage }}</p>
+    </div>
+
     <div class="csv-cards">
       <div
         v-for="(csv, index) in csvFiles"
@@ -36,6 +41,7 @@ export default {
         { name: "Respuestas", description: "Importa datos de respuestas" },
       ],
       errorMessage: "", // Aquí se almacenará el mensaje de error
+      serverMessage: "", // Aquí se almacenará el mensaje del servidor
     };
   },
   methods: {
@@ -50,6 +56,18 @@ export default {
     },
     dismissError() {
       this.errorMessage = "";
+    },
+
+    testConnection() {
+      fetch("/api/index.php") // En vez de "http://localhost/Proyecto-DAW/backend/index.php"
+        .then((response) => response.json())
+        .then((data) => {
+          this.serverMessage = data.mensaje; // Muestra el mensaje desde el backend
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          this.serverMessage = "Hubo un error al conectar con el servidor.";
+        });
     },
   },
 };
