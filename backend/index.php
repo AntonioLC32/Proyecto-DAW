@@ -1,11 +1,11 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
 $input = json_decode(file_get_contents("php://input"), true);
-$action = $input['action'] ?? '';
+$action = $input['action'] ?? $_GET['action'] ?? '';
 
 switch ($action) {
     case 'importCsvCategorias':
@@ -27,6 +27,12 @@ switch ($action) {
         require 'respuestas/insert.php';
         importCSVRespuestas();
         break;
+
+    case 'obtenerPreguntas':
+        require 'preguntas/select.php';
+        obtenerPreguntas();
+        break;
+
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);

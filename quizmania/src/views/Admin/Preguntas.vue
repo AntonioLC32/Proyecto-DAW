@@ -22,7 +22,11 @@
           </div>
 
           <div class="filtro-categorias">
-            <label class="category-item" v-for="categoria in listaCategorias" :key="categoria">
+            <label
+              class="category-item"
+              v-for="categoria in listaCategorias"
+              :key="categoria"
+            >
               <input
                 type="checkbox"
                 :value="categoria"
@@ -35,7 +39,11 @@
 
         <section class="tabla">
           <!-- Se asume que el componente Table emite el evento "editar" pasando la fila -->
-          <Table :headers="headers" :rows="rowsFiltradas" @editar="abrirPopup" />
+          <Table
+            :headers="headers"
+            :rows="rowsFiltradas"
+            @editar="abrirPopup"
+          />
         </section>
       </div>
 
@@ -163,16 +171,6 @@ export default {
     return {
       // Variables de búsqueda y filtros
       input: "",
-      Ciencia: false,
-      Historia: false,
-      Geografia: false,
-      Deportes: false,
-      AyL: false,
-      Entretenimiento: false,
-      Tecnologia: false,
-      Matematicas: false,
-      CulturaGeneral: false,
-      Musica: false,
       // Variables para el formulario
       pregunta: "",
       dificultad: "",
@@ -187,218 +185,8 @@ export default {
         { key: "categoria", label: "CATEGORÍA" },
         { key: "acciones", label: "ACCIONES" },
       ],
+      rows: [], // Datos iniciales vacíos
       categoriasSeleccionadas: [],
-      rows: [
-        {
-          id: 1,
-          pregunta: "¿Quién pintó la Mona Lisa?",
-          dificultad: "Fácil",
-          categoria: "Arte y Literatura",
-          opciones: "Opción 1|Opción 2|Opción 3",
-          correcta: "Opción 1",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 2,
-          pregunta: "¿Cuál es la capital de Francia?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 3,
-          pregunta: "¿En qué año llegó el hombre a la luna?",
-          dificultad: "Media",
-          categoria: "Historia",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 4,
-          pregunta: "¿Cuál es la capital de Italia?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 5,
-          pregunta: "¿Cuál es el planeta más cercano al Sol?",
-          dificultad: "Difícil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 6,
-          pregunta: "¿Cuál es la capital de Australia?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 7,
-          pregunta: "¿Cuál es la capital de Japón?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 8,
-          pregunta: "¿Cuál es la capital de Brasil?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 9,
-          pregunta: "¿Cuál es la capital de España?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 10,
-          pregunta: "¿Cuál es la capital de Argentina?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 11,
-          pregunta: "¿Cuál es la capital de Colombia?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 12,
-          pregunta: "¿Cuál es la capital de México?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 13,
-          pregunta: "¿Cuál es la capital de Perú?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 14,
-          pregunta: "¿Cuál es la capital de Chile?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 15,
-          pregunta: "¿Cuál es la capital de Venezuela?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-        {
-          id: 16,
-          pregunta: "¿Cuál es la capital de Uruguay?",
-          dificultad: "Fácil",
-          categoria: "Geografía",
-          opciones: "París|Londres|Berlín|Roma",
-          correcta: "París",
-          acciones: {
-            editar: true,
-            eliminar: true,
-            info: false,
-          },
-        },
-      ],
-      listaCategorias: ["Arte y Literatura", "Geografía", "Ciencia", "Deportes", "Matemáticas", "Historia", "Música", "Tecnología", "Entretenimiento", "Cultura General"],
       popupVisible: false,
       preguntaSeleccionada: {},
     };
@@ -406,19 +194,43 @@ export default {
   computed: {
     rowsFiltradas() {
       return this.rows.filter((row) => {
-        // Filtrar por búsqueda de texto
         const textoBusqueda = this.input.toLowerCase().trim();
-        const coincideTexto = textoBusqueda === "" || row.pregunta.toLowerCase().includes(textoBusqueda);
-
-        // Filtrar por categorías seleccionadas
-        const coincideCategoria = this.categoriasSeleccionadas.length === 0 || this.categoriasSeleccionadas.includes(row.categoria);
-
-        // Solo devuelve los elementos que coincidan con ambos filtros
+        const coincideTexto =
+          textoBusqueda === "" ||
+          row.pregunta.toLowerCase().includes(textoBusqueda);
+        const coincideCategoria =
+          this.categoriasSeleccionadas.length === 0 ||
+          this.categoriasSeleccionadas.includes(row.categoria);
         return coincideTexto && coincideCategoria;
       });
     },
+    listaCategorias() {
+      return [...new Set(this.rows.map((item) => item.categoria))];
+    },
+  },
+  mounted() {
+    this.fetchPreguntas();
   },
   methods: {
+    async fetchPreguntas() {
+      try {
+        const response = await fetch("/api/index.php?action=obtenerPreguntas");
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.rows = data.data.map((pregunta) => ({
+            ...pregunta,
+            acciones: {
+              editar: true,
+              eliminar: true,
+              info: false,
+            },
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching preguntas:", error);
+      }
+    },
     abrirPopup(pregunta) {
       this.preguntaSeleccionada = { ...pregunta };
       this.popupVisible = true;
@@ -426,18 +238,56 @@ export default {
     cerrarPopup() {
       this.popupVisible = false;
     },
-    guardarCambios() {
-      this.popupVisible = false;
+    async guardarCambios() {
+      try {
+        const response = await fetch("/api/index.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.preguntaSeleccionada),
+        });
+
+        if (response.ok) {
+          this.fetchPreguntas(); // Recargar datos
+          this.popupVisible = false;
+        }
+      } catch (error) {
+        console.error("Error al guardar cambios:", error);
+      }
     },
     buscarPregunta() {
-      console.log("Buscando:", this.input);
-      // Aquí podrías agregar lógica adicional para buscar preguntas por texto
+      // Implementación existente
     },
-    filtrarCategorias() {
-      // Actualiza el campo de búsqueda con las categorías seleccionadas
+    async addPregunta() {
+      try {
+        const response = await fetch("/api/crear_pregunta.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pregunta: this.pregunta,
+            dificultad: this.dificultad,
+            categoria: this.categoria,
+            respuestas: this.respuestas.split("|"),
+            correcta: this.correcta,
+          }),
+        });
 
+        if (response.ok) {
+          this.fetchPreguntas(); // Recargar datos
+          // Resetear formulario
+          this.pregunta = "";
+          this.dificultad = "";
+          this.categoria = "";
+          this.respuestas = "";
+          this.correcta = "";
+        }
+      } catch (error) {
+        console.error("Error al añadir pregunta:", error);
+      }
     },
-    addPregunta() {},
   },
 };
 </script>

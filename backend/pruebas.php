@@ -1,5 +1,5 @@
 <?php
 
-require 'respuestas/insert.php';
-importCSVRespuestas();
+require 'preguntas/select.php';
+obtenerPreguntas();
 ?>
