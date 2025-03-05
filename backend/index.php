@@ -28,10 +28,26 @@ switch ($action) {
         importCSVRespuestas();
         break;
 
+    case 'insertPregunta':
+        require 'preguntas/insert.php';
+        insertPregunta($input);
+        break;
+
     case 'obtenerPreguntas':
         require 'preguntas/select.php';
         obtenerPreguntas();
         break;
+
+    case 'obtenerCategorias':
+        require_once 'categorias/select.php';
+        obtenerCategorias();
+        break;
+
+    case 'actualizarCategorias':
+        require_once 'categorias/update.php';
+        actualizarCategoria();
+        break;
+    
 
     // Añadir casos para otras importaciones
     default:

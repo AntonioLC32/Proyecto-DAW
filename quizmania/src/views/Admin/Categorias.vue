@@ -40,7 +40,7 @@
 
       <div class="right-column">
         <section class="grafico">
-          <h3>Categorías más usadas</h3>
+          <h3>Preguntas por categoría</h3>
           <canvas ref="pieChart"></canvas>
         </section>
       </div>
@@ -66,126 +66,16 @@ export default {
         { key: "id", label: "ID" },
         { key: "nombre", label: "NOMBRE" },
         { key: "imagen", label: "IMAGEN" },
+        { key: "total_preguntas", label: "PREGUNTAS" },
         { key: "acciones", label: "ACCIONES" },
       ],
-      rows: [
-        {
-          id: 1,
-          nombre: "Arte",
-          imagen: "arte.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 2,
-          nombre: "Ciencia",
-          imagen: "ciencias.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 3,
-          nombre: "Música",
-          imagen: "musica.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 4,
-          nombre: "Deportes",
-          imagen: "deportes.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 5,
-          nombre: "Cultura",
-          imagen: "cultura.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 6,
-          nombre: "Geografía",
-          imagen: "geografia.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 7,
-          nombre: "Historia",
-          imagen: "historia.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 8,
-          nombre: "Matemáticas",
-          imagen: "mates.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 9,
-          nombre: "Tecnología",
-          imagen: "tecno.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-        {
-          id: 10,
-          nombre: "Entretenimiento",
-          imagen: "entre.png",
-          acciones: {
-            editar: true,
-            eliminar: false,
-            info: false,
-          },
-        },
-      ],
+      rows: [], // Datos de las categorías
+      preguntas: [], // Datos de las preguntas
       chartData: {
-        labels: [
-          "Geografía",
-          "Ciencia",
-          "Historia",
-          "Arte",
-          "Matemáticas",
-          "Deporte",
-          "Literatura",
-          "Música",
-          "Tecnología",
-          "Filosofía",
-        ],
+        labels: [],
         datasets: [
           {
-            data: [10, 15, 12, 8, 10, 7, 8, 15, 10, 5],
+            data: [],
             backgroundColor: [
               "#2E2E8B",
               "#7373E6",
@@ -204,23 +94,100 @@ export default {
     };
   },
   mounted() {
-    this.renderChart();
+    this.fetchCategorias(); // Obtener categorías
+    this.fetchPreguntas(); // Obtener preguntas
   },
   methods: {
+    async fetchCategorias() {
+      try {
+        const response = await fetch("/api/index.php?action=obtenerCategorias");
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.rows = data.data.map((categoria) => ({
+            id: categoria.id,
+            nombre: categoria.nombre,
+            imagen: categoria.imagen,
+            total_preguntas: 0, // Inicialmente 0, se actualizará después
+            acciones: {
+              editar: true,
+              eliminar: false,
+              info: false,
+            },
+          }));
+
+          // Actualizar la gráfica después de contar las preguntas
+          this.actualizarGrafica();
+        }
+      } catch (error) {
+        console.error("Error fetching categorias:", error);
+      }
+    },
+    async fetchPreguntas() {
+      try {
+        const response = await fetch("/api/index.php?action=obtenerPreguntas");
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.preguntas = data.data;
+
+          // Contar preguntas por categoría
+          this.contarPreguntasPorCategoria();
+        }
+      } catch (error) {
+        console.error("Error fetching preguntas:", error);
+      }
+    },
+    contarPreguntasPorCategoria() {
+      // Crear un objeto para contar preguntas por categoría
+      const conteoPorCategoria = {};
+
+      // Recorrer las preguntas y contar por categoría
+      this.preguntas.forEach((pregunta) => {
+        const categoria = pregunta.categoria;
+        if (conteoPorCategoria[categoria]) {
+          conteoPorCategoria[categoria]++;
+        } else {
+          conteoPorCategoria[categoria] = 1;
+        }
+      });
+
+      // Actualizar las filas de la tabla con el conteo
+      this.rows = this.rows.map((categoria) => ({
+        ...categoria,
+        total_preguntas: conteoPorCategoria[categoria.nombre] || 0,
+      }));
+
+      // Actualizar la gráfica
+      this.actualizarGrafica();
+    },
+    actualizarGrafica() {
+      // Actualizar los datos de la gráfica
+        this.chartData.labels = categorias.map((categoria) => categoria.nombre);
+        this.chartData.datasets[0].data = categorias.map(
+          (categoria) => categoria.total_preguntas
+      );
+
+      // Renderizar la gráfica
+      this.renderChart();
+    },
     renderChart() {
-      new Chart(this.$refs.pieChart, {
-        type: "pie",
-        data: this.chartData,
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "bottom",
+      if (this.$refs.pieChart) {
+        const ctx = this.$refs.pieChart.getContext("2d");
+        new Chart(ctx, {
+          type: "pie",
+          data: this.chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
             },
           },
-        },
-      });
+        });
+      }
     },
     abrirPopup(categoria) {
       this.categoriaSeleccionada = { ...categoria };
@@ -244,12 +211,23 @@ export default {
         this.nuevaImagenPreview = null;
       }
     },
-    guardarCambios() {
-      if (this.nuevaImagenPreview) {
-        URL.revokeObjectURL(this.nuevaImagenPreview);
-        this.nuevaImagenPreview = null;
+    async guardarCambios() {
+      try {
+        const response = await fetch("/api/index.php?action=actualizarCategoria", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.categoriaSeleccionada),
+        });
+
+        if (response.ok) {
+          this.fetchCategorias(); // Recargar datos
+          this.popupVisible = false;
+        }
+      } catch (error) {
+        console.error("Error al guardar cambios:", error);
       }
-      this.popupVisible = false;
     },
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
