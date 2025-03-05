@@ -1,6 +1,3 @@
--- Añadir el campo categoria_destacada para que se muestre la imagen en el ranking
-ALTER TABLE Ranking ADD COLUMN categoria_destacada VARCHAR(50);
-
 -- Inserts en la tabla Usuario
 INSERT INTO Usuario (nombre, correo, contraseña, num_derrotas, num_victorias, fecha_registro, habilitado)
 VALUES 

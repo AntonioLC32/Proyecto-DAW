@@ -176,15 +176,13 @@ export default {
   },
   data() {
     return {
-      // Variables de búsqueda y filtros
       input: "",
-      // Variables para el formulario
       pregunta: "",
       dificultad: "",
       categoria: "",
       respuestas: "",
       correcta: "",
-      // Datos de la tabla
+
       headers: [
         { key: "id", label: "ID" },
         { key: "pregunta", label: "PREGUNTA" },
@@ -192,7 +190,7 @@ export default {
         { key: "categoria", label: "CATEGORÍA" },
         { key: "acciones", label: "ACCIONES" },
       ],
-      rows: [], // Datos iniciales vacíos
+      rows: [],
       categoriasSeleccionadas: [],
       popupVisible: false,
       preguntaSeleccionada: {},
@@ -249,7 +247,7 @@ export default {
     },
     async guardarCambios() {
       try {
-        const response = await fetch("/api/index.php", {
+        const response = await fetch("/api/index.php?action=updatePregunta", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -257,16 +255,24 @@ export default {
           body: JSON.stringify(this.preguntaSeleccionada),
         });
 
-        if (response.ok) {
-          this.fetchPreguntas(); // Recargar datos
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "¡Pregunta actualizada correctamente!";
+          this.mensajeTipo = "success";
+          this.fetchPreguntas();
           this.popupVisible = false;
+        } else {
+          this.mensaje = data.mensaje || "Error al actualizar la pregunta";
+          this.mensajeTipo = "error";
         }
       } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
         console.error("Error al guardar cambios:", error);
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
       }
-    },
-    buscarPregunta() {
-      // Implementación existente
     },
     async addPregunta() {
       try {

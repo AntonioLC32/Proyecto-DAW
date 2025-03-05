@@ -21,7 +21,7 @@ function obtenerPreguntas() {
                 (SELECT texto FROM Respuesta WHERE id_pregunta = p.id_pregunta AND es_correcta = 1 LIMIT 1) AS correcta
             FROM Pregunta p
             JOIN Tarjeta t ON p.id_tarjeta = t.id_tarjeta
-            JOIN Categoría c ON t.id_categoría = c.id_categoría
+            JOIN Categoria c ON t.id_categoria = c.id_categoria
             LEFT JOIN Respuesta r ON p.id_pregunta = r.id_pregunta
             GROUP BY p.id_pregunta
             ORDER BY p.id_pregunta

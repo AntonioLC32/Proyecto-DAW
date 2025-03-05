@@ -1,8 +1,8 @@
 CREATE DATABASE IF NOT EXISTS quizmania;
 USE quizmania;
 -- Tablas independientes
-CREATE TABLE Categoría (
-    id_categoría INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Categoria (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
     imagen VARCHAR(255)
 );
@@ -24,7 +24,9 @@ CREATE TABLE Ranking (
     rondas INT,
     puntos INT,
     posicion INT UNSIGNED,
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
+    categoria_destacada INT,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_destacada) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
 );
 
 
@@ -42,8 +44,8 @@ CREATE TABLE Partida (
 CREATE TABLE Tarjeta (
     id_tarjeta INT AUTO_INCREMENT PRIMARY KEY,
     dificultad ENUM('Fácil','Media','Difícil') NOT NULL,
-    id_categoría INT NOT NULL,
-    FOREIGN KEY (id_categoría) REFERENCES Categoría(id_categoría)
+    id_categoria INT NOT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
 );
 
 -- Tablas dependientes de Tarjeta
@@ -78,10 +80,10 @@ CREATE TABLE Ronda (
     id_partida INT NOT NULL,
     num_ronda INT NOT NULL,
     tiempo TIME NOT NULL,
-    id_categoría INT NOT NULL,
+    id_categoria INT NOT NULL,
     PRIMARY KEY (id_partida, num_ronda),
     FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE,
-    FOREIGN KEY (id_categoría) REFERENCES Categoría(id_categoría) ON DELETE CASCADE
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
 );
 
 -- Tabla dependiente de Usuario
@@ -94,8 +96,8 @@ CREATE TABLE Historial (
 );
 
 -- Tabla dependiente de Partida
-CREATE TABLE Comodín (
-    id_comodín INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Comodin (
+    id_comodin INT AUTO_INCREMENT PRIMARY KEY,
     id_partida INT NOT NULL,
     nombre ENUM('50/50','quitar respuesta','pasar pregunta') NOT NULL,
     cantidad_maxima TINYINT UNSIGNED DEFAULT 1,

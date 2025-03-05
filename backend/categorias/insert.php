@@ -44,7 +44,7 @@ function importCSVCategorias() {
             $nombre = trim($data[1]);
             $imagen = trim($data[2]);
 
-            $stmt = $conn->prepare("INSERT INTO Categoría (id_categoría, nombre, imagen) 
+            $stmt = $conn->prepare("INSERT INTO Categoria (id_categoria, nombre, imagen) 
                                    VALUES (?, ?, ?) 
                                    ON DUPLICATE KEY UPDATE 
                                        nombre = VALUES(nombre), 

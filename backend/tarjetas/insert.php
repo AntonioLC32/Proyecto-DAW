@@ -44,11 +44,11 @@ function importCSVTarjetas() {
             $dificultad = trim($data[1]);
             $id_categoria = (int)$data[2];
 
-            $stmt = $conn->prepare("INSERT INTO Tarjeta (id_tarjeta, dificultad, id_categoría) 
+            $stmt = $conn->prepare("INSERT INTO Tarjeta (id_tarjeta, dificultad, id_categoria) 
                                    VALUES (?, ?, ?) 
                                    ON DUPLICATE KEY UPDATE 
                                        dificultad = VALUES(dificultad), 
-                                       id_categoría = VALUES(id_categoría)");
+                                       id_categoria = VALUES(id_categoria)");
             $stmt->bind_param("isi", $id, $dificultad, $id_categoria);
 
             if (!$stmt->execute()) {
