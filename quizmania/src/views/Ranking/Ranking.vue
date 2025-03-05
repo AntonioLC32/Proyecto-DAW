@@ -43,7 +43,7 @@
                 <td class="puntos">{{ jugador.puntos }}</td>
                 <td class="categoria">
                   <img
-                    :src="jugador.categoria"
+                    :src="getCategoriaImage(jugador.categoria_destacada)"
                     alt=""
                     width="60px"
                     height="60px"
@@ -59,24 +59,49 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import arteImage from "../../assets/arte.png";
-import cienciasImage from "../../assets/ciencias.png";
-import culturaImage from "../../assets/cultura.png";
-import entreImage from "../../assets/entre.png";
-import geoImage from "../../assets/geografia.png";
-import historiaImage from "../../assets/historia.png";
-import matesImage from "../../assets/mates.png";
-import tecnoImage from "../../assets/tecno.png";
-import musicaImage from "../../assets/musica.png";
-import deportesImage from "../../assets/deportes.png";
+import { ref, onMounted } from "vue";
 
 const perfil = ref({
   nombre: "PEPE_123ASD",
   posicion: 1,
 });
 
-const ranking = ref([
+const ranking = ref([]);
+
+// Función para obtener la imagen de la categoría
+const getCategoriaImage = (categoria) => {
+  return getImageUrl(`${categoria}.png`);
+};
+
+const fetchRanking = async () => {
+  try {
+    const response = await fetch("/backend/ranking/select_usuarios.php");
+    const data = await response.json();
+    ranking.value = data;
+  } catch (error) {
+    console.error("Error fetching ranking:", error);
+  }
+};
+
+onMounted(fetchRanking);
+
+const getImageUrl = (path) => new URL(`../../assets/${path}`, import.meta.url).href;
+
+const temas = ref([
+  { name: "Historia", image: getImageUrl("historia.png") },
+  { name: "Ciencias", image: getImageUrl("ciencias.png") },
+  { name: "Deportes", image: getImageUrl("deportes.png") },
+  { name: "Música", image: getImageUrl("musica.png") },
+  { name: "Entretenimiento", image: getImageUrl("entre.png") },
+  { name: "Arte", image: getImageUrl("arte.png") },
+  { name: "Geografía", image: getImageUrl("geografia.png") },
+  { name: "Matemáticas", image: getImageUrl("mates.png") },
+  { name: "Tecnología", image: getImageUrl("tecno.png") },
+  { name: "Cultura", image: getImageUrl("cultura.png") },
+]);
+
+/* ranking estatico */
+/*const ranking = ref([
   {
     nombre: "PEPE_123ASD",
     posicion: 1,
@@ -137,7 +162,7 @@ const ranking = ref([
     puntos: 14560,
     categoria: deportesImage,
   },
-]);
+]);*/
 </script>
 
 <style scoped lang="css">
@@ -343,23 +368,23 @@ h3.num {
 
 /*SCROLLBAR*/
 *::-webkit-scrollbar {
-    width: 12px;
-    padding-right: 5px;
+  width: 12px;
+  padding-right: 5px;
 }
 
 *::-webkit-scrollbar-track {
-    background-color: #8d89f9;
+  background-color: #8d89f9;
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #4943f0; 
-    border-radius: 20px;       
+  background: #4943f0;
+  border-radius: 20px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: #332fac; 
-    border-radius: 20px;  
-    transform: 0.2 color ease;     
+  background: #332fac;
+  border-radius: 20px;
+  transform: 0.2 color ease;
 }
 
 @media (max-width: 1024px) {
