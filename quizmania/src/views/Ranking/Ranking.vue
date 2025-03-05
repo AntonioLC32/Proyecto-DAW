@@ -37,16 +37,20 @@
               </tr>
             </thead>
             <tbody>
+              <tr v-if="ranking.length === 0">
+                <td colspan="4" class="text-white text-center py-3">
+                  No hay jugadores en el ranking.
+                </td>
+              </tr>
               <tr v-for="(jugador, index) in ranking" :key="index">
-                <td class="jugador">{{ jugador.nombre }}</td>
-                <td class="posicion">{{ jugador.posicion }}</td>
-                <td class="puntos">{{ jugador.puntos }}</td>
-                <td class="categoria">
+                <td class="jugador py-3">{{ jugador.nombre }}</td>
+                <td class="posicion py-3">{{ jugador.posicion }}</td>
+                <td class="puntos py-3">{{ jugador.puntos }}</td>
+                <td class="categoria py-3">
                   <img
                     :src="getCategoriaImage(jugador.categoria_destacada)"
-                    alt=""
-                    width="60px"
-                    height="60px"
+                    :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
+                    width="50px"
                   />
                 </td>
               </tr>
@@ -68,25 +72,9 @@ const perfil = ref({
 
 const ranking = ref([]);
 
-// Función para obtener la imagen de la categoría
-const getCategoriaImage = (categoria) => {
-  return getImageUrl(`${categoria}.png`);
-};
-
-const fetchRanking = async () => {
-  try {
-    const response = await fetch("/backend/ranking/select_usuarios.php");
-    const data = await response.json();
-    ranking.value = data;
-  } catch (error) {
-    console.error("Error fetching ranking:", error);
-  }
-};
-
-onMounted(fetchRanking);
-
-const getImageUrl = (path) => new URL(`../../assets/${path}`, import.meta.url).href;
-
+const getImageUrl = (path) =>
+  new URL(`../../assets/${path}`, import.meta.url).href;
+/*
 const temas = ref([
   { name: "Historia", image: getImageUrl("historia.png") },
   { name: "Ciencias", image: getImageUrl("ciencias.png") },
@@ -98,7 +86,25 @@ const temas = ref([
   { name: "Matemáticas", image: getImageUrl("mates.png") },
   { name: "Tecnología", image: getImageUrl("tecno.png") },
   { name: "Cultura", image: getImageUrl("cultura.png") },
-]);
+]);*/
+
+// Función para obtener la imagen de la categoría
+const getCategoriaImage = (categoria) => {
+  if (!categoria) return ""; // Evita errores si la categoría está vacía
+  return getImageUrl(`${categoria.toLowerCase()}.png`);
+};
+
+const obtenerRanking = async () => {
+  try {
+    const response = await fetch("/api/ranking/select.php");
+    const data = await response.json();
+    ranking.value = data;
+  } catch (error) {
+    console.error("Error obteniendo el ranking:", error);
+  }
+};
+
+onMounted(obtenerRanking);
 
 /* ranking estatico */
 /*const ranking = ref([
@@ -331,9 +337,6 @@ h3.num {
 .ranking .categoria {
   border-radius: 8px;
   color: #fff !important;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
   text-align: center;
 }
 
@@ -374,6 +377,7 @@ h3.num {
 
 *::-webkit-scrollbar-track {
   background-color: #8d89f9;
+  border-radius: 8px;
 }
 
 *::-webkit-scrollbar-thumb {
