@@ -44,7 +44,11 @@
             <div class="stat-item">
               <p class="me-2">Categoria Destacada:</p>
               <div class="num text-white">
-                <img :src="perfil.categoria" alt="Categoría" class="cat-img" />
+                <img
+                  :src="getCategoriaImage(perfil.categoria_destacada)"
+                  :alt="`Categoría destacada: ${perfil.categoria_destacada}`"
+                  class="cat-img"
+                />
               </div>
             </div>
           </div>
@@ -59,8 +63,8 @@
             >
               <p>Categoria</p>
               <img
-                :src="categoria.categoria"
-                alt="Categoría"
+                :src="getCategoriaImage(categoria.categoria)"
+                :alt="`Categoría destacada: ${categoria.categoria}`"
                 class="estadisticas-img"
               />
               <div class="d-flex ptot">
@@ -79,38 +83,49 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import arteImage from "../../assets/arte.png";
-import cienciasImage from "../../assets/ciencias.png";
-import culturaImage from "../../assets/cultura.png";
-import entreImage from "../../assets/entre.png";
-import geoImage from "../../assets/geografia.png";
-import historiaImage from "../../assets/historia.png";
-import matesImage from "../../assets/mates.png";
-import tecnoImage from "../../assets/tecno.png";
-import musicaImage from "../../assets/musica.png";
-import deportesImage from "../../assets/deportes.png";
+import { ref, onMounted } from "vue";
 
-const perfil = ref({
-  nombre: "PEPE_123ASD",
-  posicion: 1,
-  puntos: 15648,
-  juegosJugados: 120,
-  victorias: 89,
-  categoria: entreImage,
-});
+const perfil = ref({});
+
+const obtenerEstadisticasPerfil = async () => {
+  try {
+    const response = await fetch("/api/estadisticas/select_perfil.php"); // Ruta a la API
+    const data = await response.json();
+    perfil.value = {
+      nombre: data.nombre,
+      posicion: data.posicion,
+      puntos: data.puntos,
+      juegosJugados: data.juegos_jugados,
+      victorias: data.victorias,
+      categoria_destacada: getCategoriaImage(data.categoria),
+    };
+  } catch (error) {
+    console.error("Error obteniendo el perfil:", error);
+  }
+};
+
+onMounted(obtenerEstadisticasPerfil);
+
+const getImageUrl = (path) =>
+  new URL(`../../assets/${path}`, import.meta.url).href;
+
+// Función para obtener la imagen de la categoría
+const getCategoriaImage = (categoria) => {
+  if (!categoria) return ""; // Evita errores si la categoría está vacía
+  return getImageUrl(`${categoria.toLowerCase()}.png`);
+};
 
 const estadisticas = ref([
-  { categoria: entreImage, puntos: 5600, mejorPosicion: 1 },
-  { categoria: arteImage, puntos: 4200, mejorPosicion: 3 },
-  { categoria: cienciasImage, puntos: 3200, mejorPosicion: 5 },
-  { categoria: culturaImage, puntos: 2648, mejorPosicion: 7 },
-  { categoria: geoImage, puntos: 2400, mejorPosicion: 8 },
-  { categoria: historiaImage, puntos: 2000, mejorPosicion: 10 },
-  { categoria: matesImage, puntos: 1800, mejorPosicion: 12 },
-  { categoria: tecnoImage, puntos: 1500, mejorPosicion: 15 },
-  { categoria: musicaImage, puntos: 1200, mejorPosicion: 18 },
-  { categoria: deportesImage, puntos: 1200, mejorPosicion: 18 },
+  { categoria: "entre", puntos: 5600, mejorPosicion: 1 },
+  { categoria: "arte", puntos: 4200, mejorPosicion: 3 },
+  { categoria: "ciencias", puntos: 3200, mejorPosicion: 5 },
+  { categoria: "cultura", puntos: 2648, mejorPosicion: 7 },
+  { categoria: "geo", puntos: 2400, mejorPosicion: 8 },
+  { categoria: "historia", puntos: 2000, mejorPosicion: 10 },
+  { categoria: "mates", puntos: 1800, mejorPosicion: 12 },
+  { categoria: "tecno", puntos: 1500, mejorPosicion: 15 },
+  { categoria: "musica", puntos: 1200, mejorPosicion: 18 },
+  { categoria: "deportes", puntos: 1200, mejorPosicion: 18 },
 ]);
 </script>
 
@@ -283,25 +298,24 @@ section {
 
 /*SCROLLBAR*/
 *::-webkit-scrollbar {
-    width: 12px;
-    padding-right: 5px;
+  width: 12px;
+  padding-right: 5px;
 }
 
 *::-webkit-scrollbar-track {
-    background-color: #8d89f9;
+  background-color: #8d89f9;
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #4943f0; 
-    border-radius: 20px;       
+  background: #4943f0;
+  border-radius: 20px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: #332fac; 
-    border-radius: 20px;  
-    transform: 0.2 color ease;     
+  background: #332fac;
+  border-radius: 20px;
+  transform: 0.2 color ease;
 }
-
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {

@@ -5,10 +5,16 @@ header('Access-Control-Allow-Origin: *');
 require '../config/db.php';
 
 // Consulta SQL para obtener los usuarios
-$sql = "SELECT u.nombre, r.posicion, r.puntos, r.categoria_destacada 
-        FROM Ranking r
-        JOIN Usuario u ON r.id_usuario = u.id_usuario
-        ORDER BY r.posicion ASC";
+$sql = "SELECT 
+  u.nombre, 
+  r.posicion, 
+  r.puntos, 
+  r.categoria_destacada, 
+  c.imagen 
+FROM ranking r
+JOIN usuario u ON r.id_usuario = u.id_usuario
+JOIN categoría c ON r.categoria_destacada = c.id_categoría
+ORDER BY r.posicion ASC;";
 
 $result = $conn->query($sql);
 

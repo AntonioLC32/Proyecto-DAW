@@ -26,6 +26,7 @@
             </div>
           </div>
         </div>
+        <!-- Tabla ranking -->
         <div class="ranking">
           <table>
             <thead>
@@ -37,18 +38,20 @@
               </tr>
             </thead>
             <tbody>
+              <!-- Si no hay jugadores -->
               <tr v-if="ranking.length === 0">
                 <td colspan="4" class="text-white text-center py-3">
                   No hay jugadores en el ranking.
                 </td>
               </tr>
+              <!-- Muestra los registros en la bbdd -->
               <tr v-for="(jugador, index) in ranking" :key="index">
                 <td class="jugador py-3">{{ jugador.nombre }}</td>
                 <td class="posicion py-3">{{ jugador.posicion }}</td>
                 <td class="puntos py-3">{{ jugador.puntos }}</td>
                 <td class="categoria py-3">
                   <img
-                    :src="getCategoriaImage(jugador.categoria_destacada)"
+                    :src="obtenerImagenCategoria(jugador.imagen)"
                     :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
                     width="50px"
                   />
@@ -65,6 +68,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 
+// Datos de perfil
 const perfil = ref({
   nombre: "PEPE_123ASD",
   posicion: 1,
@@ -72,27 +76,27 @@ const perfil = ref({
 
 const ranking = ref([]);
 
-const getImageUrl = (path) =>
-  new URL(`../../assets/${path}`, import.meta.url).href;
-/*
-const temas = ref([
-  { name: "Historia", image: getImageUrl("historia.png") },
-  { name: "Ciencias", image: getImageUrl("ciencias.png") },
-  { name: "Deportes", image: getImageUrl("deportes.png") },
-  { name: "Música", image: getImageUrl("musica.png") },
-  { name: "Entretenimiento", image: getImageUrl("entre.png") },
-  { name: "Arte", image: getImageUrl("arte.png") },
-  { name: "Geografía", image: getImageUrl("geografia.png") },
-  { name: "Matemáticas", image: getImageUrl("mates.png") },
-  { name: "Tecnología", image: getImageUrl("tecno.png") },
-  { name: "Cultura", image: getImageUrl("cultura.png") },
-]);*/
-
-// Función para obtener la imagen de la categoría
-const getCategoriaImage = (categoria) => {
-  if (!categoria) return ""; // Evita errores si la categoría está vacía
-  return getImageUrl(`${categoria.toLowerCase()}.png`);
+const obtenerUrlImagen = (path) => {
+  // Las imágenes deben estar en la carpeta public/assets
+  return `../../${path}`;
 };
+
+const obtenerImagenCategoria = (imagen) => {
+  if (!imagen) return ""; // If no image
+  try {
+    // Import the image dynamically and let Vite resolve the correct path
+    return getImageUrl(imagen);
+  } catch (error) {
+    console.error("Image not found", error);
+    return ''; // Return empty if image not found
+  }
+};
+
+const getImageUrl = (path) => {
+  return new URL(`../../${path}`, import.meta.url).href;
+};
+
+
 
 const obtenerRanking = async () => {
   try {
@@ -104,71 +108,8 @@ const obtenerRanking = async () => {
   }
 };
 
+// Obtener el ranking cuando se monta el componente
 onMounted(obtenerRanking);
-
-/* ranking estatico */
-/*const ranking = ref([
-  {
-    nombre: "PEPE_123ASD",
-    posicion: 1,
-    puntos: 15648,
-    categoria: entreImage,
-  },
-  {
-    nombre: "PEPESITO",
-    posicion: 2,
-    puntos: 15648,
-    categoria: arteImage,
-  },
-  {
-    nombre: "PEPE",
-    posicion: 3,
-    puntos: 15648,
-    categoria: geoImage,
-  },
-  {
-    nombre: "MARIA_ABCD",
-    posicion: 4,
-    puntos: 15432,
-    categoria: musicaImage,
-  },
-  {
-    nombre: "JUAN_XYZ",
-    posicion: 5,
-    puntos: 15210,
-    categoria: matesImage,
-  },
-  {
-    nombre: "ANA_321",
-    posicion: 6,
-    puntos: 15100,
-    categoria: tecnoImage,
-  },
-  {
-    nombre: "LUIS_654",
-    posicion: 7,
-    puntos: 15000,
-    categoria: cienciasImage,
-  },
-  {
-    nombre: "CARLA_987",
-    posicion: 8,
-    puntos: 14850,
-    categoria: culturaImage,
-  },
-  {
-    nombre: "PEDRO_KLM",
-    posicion: 9,
-    puntos: 14700,
-    categoria: historiaImage,
-  },
-  {
-    nombre: "SOFIA_GHI",
-    posicion: 10,
-    puntos: 14560,
-    categoria: deportesImage,
-  },
-]);*/
 </script>
 
 <style scoped lang="css">

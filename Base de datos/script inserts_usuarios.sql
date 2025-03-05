@@ -15,16 +15,15 @@ VALUES
 ('PEDRO_KLK', 'pedro@example.com', 'hashed_password_9', 9, 5, NOW(), TRUE),
 ('SOFIA_GHI', 'sofia@example.com', 'hashed_password_10', 10, 3, NOW(), TRUE);
 
--- El nombre de categoria_destacada tiene que ser el mismo que la imagen o viceversa
 INSERT INTO Ranking (id_usuario, rondas, puntos, posicion, categoria_destacada)
 VALUES 
-(1, 50, 15648, 1, 'Historia'),
-(2, 45, 15648, 2, 'Ciencias'),
-(3, 40, 15648, 3, 'Deportes'),
-(4, 35, 15432, 4, 'Musica'),
-(5, 30, 15210, 5, 'Entre'),
-(6, 25, 15100, 6, 'Arte'),
-(7, 20, 15000, 7, 'Geografia'),
-(8, 15, 14850, 8, 'Mates'),
-(9, 10, 14700, 9, 'Tecno'),
-(10, 5, 14560, 10, 'Cultura');
+(1, 50, 15648, 1, 2),  -- Ciencias
+(2, 45, 15648, 2, 1),  -- Historia
+(3, 40, 15648, 3, 4),  -- Música
+(4, 35, 15432, 4, 10), -- Cultura
+(5, 30, 15210, 5, 6),  -- Arte
+(6, 25, 15100, 6, 5),  -- Entretenimiento
+(7, 20, 15000, 7, 3),  -- Deportes
+(8, 15, 14850, 8, 8),  -- Matemáticas
+(9, 10, 14700, 9, 7),  -- Geografía
+(10, 5, 14560, 10, 9); -- Tecnología
