@@ -13,11 +13,11 @@ function obtenerCategorias() {
         // Consulta SQL para obtener todas las categorías
         $sql = "
             SELECT 
-                id_categoría AS id,
+                id_categoria AS id,
                 nombre,
                 imagen
-            FROM Categoría
-            ORDER BY id_categoría
+            FROM Categoria
+            ORDER BY id_categoria
         ";
 
         $result = $conn->query($sql);

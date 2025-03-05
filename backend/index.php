@@ -47,6 +47,11 @@ switch ($action) {
         require_once 'categorias/update.php';
         actualizarCategoria();
         break;
+
+    case 'updatePregunta':
+        require 'preguntas/update.php';
+        updatePregunta($input);
+        break;
     
 
     // Añadir casos para otras importaciones

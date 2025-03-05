@@ -247,12 +247,30 @@ export default {
     },
     async guardarCambios() {
       try {
+        // Asegúrate de que el ID se llama "id_pregunta". Si en la tabla es "id", cámbialo:
+        const dataToSend = {
+          id_pregunta:
+            this.preguntaSeleccionada.id ||
+            this.preguntaSeleccionada.id_pregunta,
+          pregunta: this.preguntaSeleccionada.pregunta,
+          categoria: this.preguntaSeleccionada.categoria,
+          dificultad: this.preguntaSeleccionada.dificultad,
+          // Si 'opciones' es un string, lo convertimos en array separando por '|'
+          opciones:
+            typeof this.preguntaSeleccionada.opciones === "string"
+              ? this.preguntaSeleccionada.opciones
+                  .split("|")
+                  .map((opcion) => opcion.trim())
+              : this.preguntaSeleccionada.opciones,
+          correcta: this.preguntaSeleccionada.correcta,
+        };
+
         const response = await fetch("/api/index.php?action=updatePregunta", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(this.preguntaSeleccionada),
+          body: JSON.stringify(dataToSend),
         });
 
         const data = await response.json();
@@ -274,6 +292,7 @@ export default {
         setTimeout(() => (this.mensaje = ""), 5000);
       }
     },
+
     async addPregunta() {
       try {
         const response = await fetch("/api/index.php?action=insertPregunta", {

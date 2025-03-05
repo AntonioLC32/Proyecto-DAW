@@ -1,14 +1,15 @@
 <?php
 $data = [
-    'action' => 'insertPregunta',
-    'texto' => '¿Cuál es la capital de Alemania?',
-    'categoria' => 'Geografía',
-    'dificultad' => 'Fácil',
-    'respuestas' => ['Berlín', 'Munich', 'Hamburgo', 'Frankfurt'],
-    'respuesta_correcta' => 'Berlín'
+    'id_pregunta' => 1,
+    'pregunta'    => '¿Cuál es el planeta más cercano al sol?',
+    'categoria'   => 'Geografía',
+    'dificultad'  => 'Media',
+    'opciones'    => ['Venus', 'Marte', 'Mercurio', 'La Tierra'],
+    'correcta'    => 'Mercurio'
 ];
 
 $input = json_encode($data);
-require 'preguntas/insert.php';
-insertPregunta($input);
+$input = json_decode($input, true);
+require 'preguntas/update.php';
+updatePregunta($input);
 ?>

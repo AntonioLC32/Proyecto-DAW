@@ -23,7 +23,7 @@ function actualizarCategoria() {
         $imagen = $input['imagen'] ?? null; // La imagen es opcional
 
         // Construir la consulta SQL para actualizar la categoría
-        $sql = "UPDATE Categoría SET nombre = ?";
+        $sql = "UPDATE Categoria SET nombre = ?";
         $params = [$nombre];
 
         // Si se proporciona una imagen, agregarla a la consulta
@@ -32,7 +32,7 @@ function actualizarCategoria() {
             $params[] = $imagen;
         }
 
-        $sql .= " WHERE id_categoría = ?";
+        $sql .= " WHERE id_categoria = ?";
         $params[] = $id;
 
         // Preparar y ejecutar la consulta
