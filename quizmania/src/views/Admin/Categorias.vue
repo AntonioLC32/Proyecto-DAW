@@ -255,7 +255,6 @@ export default {
         alert(`Hubo un error al guardar los cambios. Detalles: ${error.message}`);
       }
     }
-
     ,
     getImageUrl(path) {
       return new URL(`../../${path}`, import.meta.url).href;
