@@ -45,7 +45,7 @@ switch ($action) {
 
     case 'actualizarCategorias':
         require_once 'categorias/update.php';
-        actualizarCategoria();
+        actualizarCategoria($input);
         break;
 
     case 'updatePregunta':

@@ -5,7 +5,6 @@ $data = [
 
 $input = json_encode($data);
 $input = json_decode($input, true);
-
-require 'usuarios/select.php';
-usuariosTotales();
+require 'categorias/update.php';
+actualizarCategoria($data)
 ?>

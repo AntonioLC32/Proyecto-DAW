@@ -15,9 +15,7 @@
             <span class="close" @click="cerrarPopup">&times;</span>
             <h2>{{ categoriaSeleccionada.nombre }}</h2>
             <img
-              :src="
-                nuevaImagenPreview || getImageUrl(categoriaSeleccionada.imagen)
-              "
+              :src="nuevaImagenPreview || imageURL(categoriaSeleccionada.imagen)"
               :alt="categoriaSeleccionada.nombre"
             />
             <button
@@ -46,6 +44,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -66,7 +65,6 @@ export default {
         { key: "id", label: "ID" },
         { key: "nombre", label: "NOMBRE" },
         { key: "imagen", label: "IMAGEN" },
-        { key: "total_preguntas", label: "PREGUNTAS" },
         { key: "acciones", label: "ACCIONES" },
       ],
       rows: [], // Datos de las categorías
@@ -93,9 +91,12 @@ export default {
       },
     };
   },
+  computed() {
+    imageURL();
+  },
   mounted() {
-    this.fetchCategorias(); // Obtener categorías
-    this.fetchPreguntas(); // Obtener preguntas
+    this.fetchCategorias();
+    this.fetchPreguntas();
   },
   methods: {
     async fetchCategorias() {
@@ -108,7 +109,7 @@ export default {
             id: categoria.id,
             nombre: categoria.nombre,
             imagen: categoria.imagen,
-            total_preguntas: 0, // Inicialmente 0, se actualizará después
+            total_preguntas: 0, 
             acciones: {
               editar: true,
               eliminar: false,
@@ -116,8 +117,9 @@ export default {
             },
           }));
 
-          // Actualizar la gráfica después de contar las preguntas
-          this.actualizarGrafica();
+          if (this.rows.length > 0) {
+            this.actualizarGrafica();
+          }
         }
       } catch (error) {
         console.error("Error fetching categorias:", error);
@@ -130,19 +132,18 @@ export default {
 
         if (data.status === "success") {
           this.preguntas = data.data;
-
-          // Contar preguntas por categoría
           this.contarPreguntasPorCategoria();
         }
       } catch (error) {
         console.error("Error fetching preguntas:", error);
       }
     },
+    imageURL(imagen) {
+      const path = new URL('../../', import.meta.url);
+      return `${path}/${imagen}`
+    },
     contarPreguntasPorCategoria() {
-      // Crear un objeto para contar preguntas por categoría
       const conteoPorCategoria = {};
-
-      // Recorrer las preguntas y contar por categoría
       this.preguntas.forEach((pregunta) => {
         const categoria = pregunta.categoria;
         if (conteoPorCategoria[categoria]) {
@@ -152,29 +153,29 @@ export default {
         }
       });
 
-      // Actualizar las filas de la tabla con el conteo
       this.rows = this.rows.map((categoria) => ({
         ...categoria,
         total_preguntas: conteoPorCategoria[categoria.nombre] || 0,
       }));
 
-      // Actualizar la gráfica
       this.actualizarGrafica();
     },
     actualizarGrafica() {
-      // Actualizar los datos de la gráfica
-        this.chartData.labels = categorias.map((categoria) => categoria.nombre);
-        this.chartData.datasets[0].data = categorias.map(
-          (categoria) => categoria.total_preguntas
+      this.chartData.labels = this.rows.map((categoria) => categoria.nombre);
+      this.chartData.datasets[0].data = this.rows.map(
+        (categoria) => categoria.total_preguntas
       );
-
-      // Renderizar la gráfica
       this.renderChart();
     },
     renderChart() {
       if (this.$refs.pieChart) {
         const ctx = this.$refs.pieChart.getContext("2d");
-        new Chart(ctx, {
+
+        if (this.chartInstance) {
+          this.chartInstance.destroy();
+        }
+
+        this.chartInstance = new Chart(ctx, {
           type: "pie",
           data: this.chartData,
           options: {
@@ -200,6 +201,8 @@ export default {
           URL.revokeObjectURL(this.nuevaImagenPreview);
         }
         this.nuevaImagenPreview = URL.createObjectURL(file);
+        // Guardamos el archivo para enviarlo luego
+        this.categoriaSeleccionada.imagenFile = file;
       } else {
         alert("Por favor selecciona un archivo de imagen válido.");
       }
@@ -213,28 +216,54 @@ export default {
     },
     async guardarCambios() {
       try {
-        const response = await fetch("/api/index.php?action=actualizarCategoria", {
+        const formData = new FormData();
+        formData.append('action', 'actualizarCategorias');
+        formData.append('id_categoria', this.categoriaSeleccionada.id);
+        formData.append('nombre', this.categoriaSeleccionada.nombre);
+
+        // Si hay una nueva imagen, la adjuntamos al FormData
+        if (this.categoriaSeleccionada.imagenFile) {
+          formData.append('file', this.categoriaSeleccionada.imagenFile);
+        }
+
+        const response = await fetch("../../../../categorias/update.php", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(this.categoriaSeleccionada),
+          body: formData,
         });
 
-        if (response.ok) {
-          this.fetchCategorias(); // Recargar datos
-          this.popupVisible = false;
+        const text = await response.text(); // Leer la respuesta como texto
+        let data;
+        try {
+          data = JSON.parse(text); // Intentar convertir la respuesta a JSON
+        } catch (error) {
+          console.error("Error al parsear la respuesta:", text);
+          throw new Error("Respuesta no válida del servidor: " + text);
+        }
+
+        if (data.status === "success") {
+          // Actualizar la lista de categorías para reflejar los cambios
+          await this.fetchCategorias();
+          this.cerrarPopup();
+          this.nuevaImagenPreview = null;
+          delete this.categoriaSeleccionada.imagenFile;
+        } else {
+          console.error("Error al actualizar la categoría:", data.mensaje);
+          alert("Error al actualizar la categoría: " + data.mensaje);
         }
       } catch (error) {
         console.error("Error al guardar cambios:", error);
+        alert(`Hubo un error al guardar los cambios. Detalles: ${error.message}`);
       }
-    },
+    }
+
+    ,
     getImageUrl(path) {
-      return new URL(`../../assets/${path}`, import.meta.url).href;
+      return new URL(`../../${path}`, import.meta.url).href;
     },
   },
 };
 </script>
+
 
 <style scoped>
 .categorias {
