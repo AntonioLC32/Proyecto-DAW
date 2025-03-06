@@ -94,7 +94,11 @@
 
             <div class="form-group">
               <label>Respuesta correcta</label>
-              <input v-model="preguntaSeleccionada.correcta" type="text" />
+              <input
+                v-model="preguntaSeleccionada.correcta"
+                type="text"
+                @keyup.enter="guardarCambios"
+              />
             </div>
 
             <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
@@ -285,7 +289,24 @@ export default {
     },
     async guardarCambios() {
       try {
-        // Asegúrate de que el ID se llama "id_pregunta". Si en la tabla es "id", cámbialo:
+        let opcionesArray =
+          typeof this.preguntaSeleccionada.opciones === "string"
+            ? this.preguntaSeleccionada.opciones
+                .split("|")
+                .map((opcion) => opcion.trim())
+            : this.preguntaSeleccionada.opciones.map((opcion) => opcion.trim());
+
+        // Tomamos las primeras 4 opciones
+        let opcionesLimitadas = opcionesArray.slice(0, 4);
+
+        // Validación: si la respuesta correcta NO está en las 4 primeras, mostrar error
+        if (!opcionesLimitadas.includes(this.preguntaSeleccionada.correcta)) {
+          this.mensaje =
+            "Error: La respuesta correcta no está en las primeras 4 opciones";
+          this.mensajeTipo = "error";
+          return; // No ejecuta la petición al backend
+        }
+
         const dataToSend = {
           id_pregunta:
             this.preguntaSeleccionada.id ||
@@ -293,13 +314,7 @@ export default {
           pregunta: this.preguntaSeleccionada.pregunta,
           categoria: this.preguntaSeleccionada.categoria,
           dificultad: this.preguntaSeleccionada.dificultad,
-          // Si 'opciones' es un string, lo convertimos en array separando por '|'
-          opciones:
-            typeof this.preguntaSeleccionada.opciones === "string"
-              ? this.preguntaSeleccionada.opciones
-                  .split("|")
-                  .map((opcion) => opcion.trim())
-              : this.preguntaSeleccionada.opciones,
+          opciones: opcionesLimitadas,
           correcta: this.preguntaSeleccionada.correcta,
         };
 
@@ -330,7 +345,6 @@ export default {
         setTimeout(() => (this.mensaje = ""), 5000);
       }
     },
-
     async addPregunta() {
       try {
         const response = await fetch("/api/index.php?action=insertPregunta", {
