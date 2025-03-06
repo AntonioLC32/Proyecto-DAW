@@ -52,7 +52,10 @@ switch ($action) {
         require 'preguntas/update.php';
         updatePregunta($input);
         break;
-    
+    case 'deshabilitarPregunta':
+        require 'preguntas/update.php';
+        deshabilitarPregunta($input);
+        break;
 
     // Añadir casos para otras importaciones
     default:

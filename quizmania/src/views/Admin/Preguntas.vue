@@ -50,6 +50,7 @@
             :headers="headers"
             :rows="rowsFiltradas"
             @editar="abrirPopup"
+            @eliminar="deshabilitarPregunta"
           />
         </section>
       </div>
@@ -101,7 +102,6 @@
         </div>
       </div>
 
-      <!-- Columna derecha: formulario para añadir pregunta -->
       <div class="right-column">
         <section class="add-pregunta">
           <h1 class="titulo-form">AÑADIR PREGUNTA</h1>
@@ -244,6 +244,44 @@ export default {
     },
     cerrarPopup() {
       this.popupVisible = false;
+    },
+
+    async deshabilitarPregunta(pregunta) {
+      try {
+        const confirmar = confirm(
+          `¿Deshabilitar la pregunta "${pregunta.pregunta}"?`
+        );
+        if (!confirmar) return;
+
+        const response = await fetch(
+          "/api/index.php?action=deshabilitarPregunta",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_pregunta: pregunta.id,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "Pregunta deshabilitada correctamente";
+          this.mensajeTipo = "success";
+          this.fetchPreguntas(); // Actualizar la lista
+        } else {
+          this.mensaje = data.mensaje || "Error al deshabilitar";
+          this.mensajeTipo = "error";
+        }
+      } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
+      }
     },
     async guardarCambios() {
       try {

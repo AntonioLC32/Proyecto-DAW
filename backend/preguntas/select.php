@@ -23,6 +23,7 @@ function obtenerPreguntas() {
             JOIN Tarjeta t ON p.id_tarjeta = t.id_tarjeta
             JOIN Categoria c ON t.id_categoria = c.id_categoria
             LEFT JOIN Respuesta r ON p.id_pregunta = r.id_pregunta
+            WHERE p.habilitado = 1
             GROUP BY p.id_pregunta
             ORDER BY p.id_pregunta
         ";
@@ -35,7 +36,7 @@ function obtenerPreguntas() {
 
         $rows = [];
         while ($row = $result->fetch_assoc()) {
-            // Estructurar según necesidades del frontend
+           
             $rows[] = [
                 'id' => $row['id'],
                 'pregunta' => $row['pregunta'],
