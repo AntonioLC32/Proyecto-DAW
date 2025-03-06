@@ -108,275 +108,23 @@ export default {
         profileImage:
           "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
       },
-      totalUsuarios: 120,
-      usuariosConectados: 25,
+      totalUsuarios: 0,
+      usuariosConectados: 0,
       headers: [
         { key: "id", label: "ID" },
         { key: "user", label: "USER" },
         { key: "correo", label: "CORREO" },
         { key: "acciones", label: "ACCIONES" },
       ],
-      rows: [
-        {
-          id: 1,
-          user: "Usuario 1",
-          correo: "usuario1@mail.com",
-          victorias: "37",
-          derrotas: "12",
-          puntos: "400",
-          ranking: "1",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-        {
-          id: 2,
-          user: "Usuario 2",
-          correo: "usuario2@mail.com",
-          victorias: "25",
-          derrotas: "8",
-          puntos: "300",
-          ranking: "2",
-          imagen:
-            "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-          acciones: {
-            editar: false,
-            eliminar: true,
-            info: true,
-          },
-        },
-      ],
+      rows: [],
       popupVisible: false,
       usuarioSeleccionado: {},
     };
+  },
+  mounted() {
+    this.usuariosTotales();
+    this.obtenerUsuariosConectados();
+    this.fetchUsuarios();
   },
   methods: {
     abrirPopup(usuario) {
@@ -385,6 +133,54 @@ export default {
     },
     cerrarPopup() {
       this.popupVisible = false;
+    },
+
+    async fetchUsuarios() {
+      try {
+        const response = await fetch("/api/index.php?action=obtenerUsuarios");
+        const data = await response.json();
+        if (data.status === "success") {
+          this.rows = data.data.map((usuario) => ({
+            ...usuario,
+            acciones: {
+              editar: false,
+              eliminar: false,
+              info: true,
+            },
+          }));
+        }
+      } catch (error) {
+        console.error("Error al obtener usuarios:", error);
+      }
+    },
+
+    async usuariosTotales() {
+      try {
+        const response = await fetch("/api/index.php?action=usuariosTotales");
+        const json = await response.json();
+        if (json.status === "success") {
+          this.totalUsuarios = json.data;
+        } else {
+          console.error("Error en API:", json.error);
+        }
+      } catch (error) {
+        console.error("Error al obtener usuarios totales:", error);
+      }
+    },
+    async obtenerUsuariosConectados() {
+      try {
+        const response = await fetch(
+          "/api/index.php?action=usuariosConectados"
+        );
+        const json = await response.json();
+        if (json.status === "success") {
+          this.usuariosConectados = json.data;
+        } else {
+          console.error("Error en API:", json.error);
+        }
+      } catch (error) {
+        console.error("Error al obtener usuarios conectados:", error);
+      }
     },
   },
 };

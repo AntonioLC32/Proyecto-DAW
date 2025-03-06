@@ -5,6 +5,7 @@ $data = [
 
 $input = json_encode($data);
 $input = json_decode($input, true);
-require 'preguntas/update.php';
-deshabilitarPregunta($input);
+
+require 'usuarios/select.php';
+usuariosTotales();
 ?>

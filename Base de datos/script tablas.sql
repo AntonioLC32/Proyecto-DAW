@@ -18,7 +18,8 @@ CREATE TABLE Usuario (
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     habilitado BOOLEAN DEFAULT TRUE,
     rol VARCHAR(20) DEFAULT 'jugador',
-    ult_conexion DATETIME DEFAULT NULL
+    ult_conexion DATETIME DEFAULT NULL,
+    imagen VARCHAR(255)
 );
 -- Tablas dependientes de Categoría/Partida
 CREATE TABLE Ranking (
