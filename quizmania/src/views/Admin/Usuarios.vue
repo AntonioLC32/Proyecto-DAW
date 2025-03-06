@@ -14,7 +14,12 @@
     <div class="content-wrapper">
       <div class="left-column">
         <section class="tabla">
-          <Table :headers="headers" :rows="rows" @info="abrirPopup" />
+          <Table
+            :headers="headers"
+            :rows="rows"
+            @eliminar="deshabilitarUsuario"
+            @info="abrirPopup"
+          />
         </section>
       </div>
 
@@ -77,6 +82,7 @@
             <p>Victorias: {{ usuarioSeleccionado.victorias }}</p>
             <p>Derrotas: {{ usuarioSeleccionado.derrotas }}</p>
             <p>Ranking: {{ usuarioSeleccionado.ranking }}</p>
+            <p>Puntos: {{ usuarioSeleccionado.puntos }}</p>
           </div>
           <img
             :src="usuarioSeleccionado.imagen"
@@ -135,6 +141,44 @@ export default {
       this.popupVisible = false;
     },
 
+    async deshabilitarUsuario(usuario) {
+      try {
+        const confirmar = confirm(
+          `¿Deshabilitar al usuario "${usuario.user}"?`
+        );
+        if (!confirmar) return;
+
+        const response = await fetch(
+          "/api/index.php?action=deshabilitarUsuario",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_usuario: usuario.id,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "Usuario deshabilitado correctamente";
+          this.mensajeTipo = "success";
+          this.fetchUsuarios();
+        } else {
+          this.mensaje = data.mensaje || "Error al deshabilitar el usuario";
+          this.mensajeTipo = "error";
+        }
+      } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
+      }
+    },
+
     async fetchUsuarios() {
       try {
         const response = await fetch("/api/index.php?action=obtenerUsuarios");
@@ -144,7 +188,7 @@ export default {
             ...usuario,
             acciones: {
               editar: false,
-              eliminar: false,
+              eliminar: true,
               info: true,
             },
           }));

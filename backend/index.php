@@ -72,6 +72,11 @@ switch ($action) {
         require 'usuarios/select.php';
         obtenerUsuarios();
         break;
+    
+        case 'deshabilitarUsuario':
+            require 'usuarios/update.php';
+            deshabilitarUsuario($input);
+            break;
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);

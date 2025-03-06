@@ -273,7 +273,7 @@ export default {
           this.mensajeTipo = "success";
           this.fetchPreguntas(); // Actualizar la lista
         } else {
-          this.mensaje = data.mensaje || "Error al deshabilitar";
+          this.mensaje = data.mensaje || "Error al deshabilitar la pregunta";
           this.mensajeTipo = "error";
         }
       } catch (error) {
