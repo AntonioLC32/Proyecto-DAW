@@ -16,7 +16,9 @@ CREATE TABLE Usuario (
     num_derrotas INT UNSIGNED DEFAULT 0,
     num_victorias INT UNSIGNED DEFAULT 0,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    habilitado BOOLEAN DEFAULT TRUE
+    habilitado BOOLEAN DEFAULT TRUE,
+    rol VARCHAR(20) DEFAULT 'jugador',
+    ult_conexion DATETIME DEFAULT NULL
 );
 -- Tablas dependientes de Categoría/Partida
 CREATE TABLE Ranking (
