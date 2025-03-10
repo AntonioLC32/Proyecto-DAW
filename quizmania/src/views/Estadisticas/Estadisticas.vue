@@ -45,7 +45,7 @@
               <p class="me-2">Categoria Destacada:</p>
               <div class="num text-white">
                 <img
-                  :src="getCategoriaImage(perfil.categoria_destacada)"
+                  :src="obtenerImagenCategoria(perfil.categoria_destacada)"
                   :alt="`Categoría destacada: ${perfil.categoria_destacada}`"
                   class="cat-img"
                 />
@@ -63,10 +63,11 @@
             >
               <p>Categoria</p>
               <img
-                :src="getCategoriaImage(categoria.categoria)"
-                :alt="`Categoría destacada: ${categoria.categoria}`"
+                :src="obtenerImagenCategoria(categoria.categoria)"
+                :alt="`Categoría: ${categoria.categoria}`"
                 class="estadisticas-img"
               />
+
               <div class="d-flex ptot">
                 <p>Puntos Totales</p>
                 <p class="puntos">{{ categoria.puntos }} pts</p>
@@ -82,51 +83,83 @@
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-
-const perfil = ref({});
-
-const obtenerEstadisticasPerfil = async () => {
-  try {
-    const response = await fetch("/api/estadisticas/select_perfil.php"); // Ruta a la API
-    const data = await response.json();
-    perfil.value = {
-      nombre: data.nombre,
-      posicion: data.posicion,
-      puntos: data.puntos,
-      juegosJugados: data.juegos_jugados,
-      victorias: data.victorias,
-      categoria_destacada: getCategoriaImage(data.categoria),
+<script>
+export default {
+  data() {
+    return {
+      perfil: {},
+      estadisticas: [
+        { categoria: 6, puntos: 5600, mejorPosicion: 1 },
+        { categoria: 5, puntos: 4200, mejorPosicion: 3 },
+        { categoria: 1, puntos: 3200, mejorPosicion: 5 },
+        { categoria: 3, puntos: 2648, mejorPosicion: 7 },
+        { categoria: 2, puntos: 2400, mejorPosicion: 8 },
+        { categoria: 4, puntos: 2000, mejorPosicion: 10 },
+        { categoria: 7, puntos: 1800, mejorPosicion: 12 },
+        { categoria: 8, puntos: 1500, mejorPosicion: 15 },
+        { categoria: 10, puntos: 1200, mejorPosicion: 18 },
+        { categoria: 9, puntos: 1200, mejorPosicion: 18 },
+      ],
     };
-  } catch (error) {
-    console.error("Error obteniendo el perfil:", error);
-  }
+  },
+  methods: {
+    async obtenerEstadisticasPerfil() {
+      try {
+        const response = await fetch("/api/estadisticas/select_perfil.php");
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const perfilData = data[0];
+          this.perfil = {
+            nombre: perfilData.nombre,
+            posicion: perfilData.posicion,
+            puntos: perfilData.puntos,
+            juegosJugados: perfilData.juegos_jugados,
+            victorias: perfilData.victorias,
+            categoria_destacada: perfilData.imagen_categoria, // Ahora es la URL de la imagen
+          };
+        } else {
+          console.error("No data found for the profile.");
+        }
+      } catch (error) {
+        console.error("Error obteniendo el perfil:", error);
+      }
+    },
+    obtenerImagenCategoria(imagen) {
+      if (!imagen) return ""; // Si no hay imagen, devolver vacío
+      try {
+        return `/src/${imagen}`; // ruta de las imágenes
+      } catch (error) {
+        console.error("Error cargando la imagen:", error);
+        return "";
+      }
+    },
+    async obtenerCategorias() {
+      try {
+        const response = await fetch("/api/estadisticas/select_categorias.php");
+        const data = await response.json();
+
+        if (data.length > 0) {
+          this.imagenesCategorias = data.reduce((acc, categoria) => {
+            acc[categoria.id_categoria] = categoria.imagen_categoria;
+            return acc;
+          }, {});
+        }
+      } catch (error) {
+        console.error("Error obteniendo las categorías:", error);
+      }
+    },
+    obtenerImagenCategoria(categoriaId) {
+      return this.imagenesCategorias[categoriaId]
+        ? `/src/${this.imagenesCategorias[categoriaId]}`
+        : "";
+    },
+    // bottom line
+  },
+  mounted() {
+    this.obtenerEstadisticasPerfil();
+    this.obtenerCategorias();
+  },
 };
-
-onMounted(obtenerEstadisticasPerfil);
-
-const getImageUrl = (path) =>
-  new URL(`../../assets/${path}`, import.meta.url).href;
-
-// Función para obtener la imagen de la categoría
-const getCategoriaImage = (categoria) => {
-  if (!categoria) return ""; // Evita errores si la categoría está vacía
-  return getImageUrl(`${categoria.toLowerCase()}.png`);
-};
-
-const estadisticas = ref([
-  { categoria: "entre", puntos: 5600, mejorPosicion: 1 },
-  { categoria: "arte", puntos: 4200, mejorPosicion: 3 },
-  { categoria: "ciencias", puntos: 3200, mejorPosicion: 5 },
-  { categoria: "cultura", puntos: 2648, mejorPosicion: 7 },
-  { categoria: "geo", puntos: 2400, mejorPosicion: 8 },
-  { categoria: "historia", puntos: 2000, mejorPosicion: 10 },
-  { categoria: "mates", puntos: 1800, mejorPosicion: 12 },
-  { categoria: "tecno", puntos: 1500, mejorPosicion: 15 },
-  { categoria: "musica", puntos: 1200, mejorPosicion: 18 },
-  { categoria: "deportes", puntos: 1200, mejorPosicion: 18 },
-]);
 </script>
 
 <style scoped>

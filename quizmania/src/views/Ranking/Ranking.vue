@@ -26,6 +26,7 @@
             </div>
           </div>
         </div>
+
         <!-- Tabla ranking -->
         <div class="ranking">
           <table>
@@ -65,51 +66,41 @@
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-
-// Datos de perfil
-const perfil = ref({
-  nombre: "PEPE_123ASD",
-  posicion: 1,
-});
-
-const ranking = ref([]);
-
-const obtenerUrlImagen = (path) => {
-  // Las imágenes deben estar en la carpeta public/assets
-  return `../../${path}`;
+<script>
+export default {
+  data() {
+    return {
+      perfil: {
+        nombre: "PEPE_123ASD",
+        posicion: 1,
+      },
+      ranking: [],
+    };
+  },
+  methods: {
+    async obtenerRanking() {
+      try {
+        const response = await fetch("/api/ranking/select.php");
+        const data = await response.json();
+        this.ranking = data;
+      } catch (error) {
+        console.error("Error obteniendo el ranking:", error);
+      }
+    },
+    obtenerImagenCategoria(imagen) {
+      if (!imagen) return ""; // Si no hay imagen, devolver vacío
+      try {
+        return `/src/${imagen}`; // ruta de las imágenes
+      } catch (error) {
+        console.error("Error cargando la imagen:", error);
+        return "";
+      }
+    },
+  },
+  mounted() {
+    this.obtenerRanking();
+  },
 };
-
-const obtenerImagenCategoria = (imagen) => {
-  if (!imagen) return ""; // If no image
-  try {
-    // Import the image dynamically and let Vite resolve the correct path
-    return getImageUrl(imagen);
-  } catch (error) {
-    console.error("Image not found", error);
-    return ''; // Return empty if image not found
-  }
-};
-
-const getImageUrl = (path) => {
-  return new URL(`../../${path}`, import.meta.url).href;
-};
-
-
-
-const obtenerRanking = async () => {
-  try {
-    const response = await fetch("/api/ranking/select.php");
-    const data = await response.json();
-    ranking.value = data;
-  } catch (error) {
-    console.error("Error obteniendo el ranking:", error);
-  }
-};
-
-// Obtener el ranking cuando se monta el componente
-onMounted(obtenerRanking);
 </script>
 
 <style scoped lang="css">
