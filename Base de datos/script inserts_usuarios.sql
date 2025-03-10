@@ -21,13 +21,13 @@ WHERE id_usuario = 1;
 -- El nombre de categoria_destacada tiene que ser el mismo que la imagen o viceversa
 INSERT INTO Ranking (id_usuario, rondas, puntos, posicion, categoria_destacada)
 VALUES 
-(1, 50, 15648, 1, 'Historia'),
-(2, 45, 15648, 2, 'Ciencias'),
-(3, 40, 15648, 3, 'Deportes'),
-(4, 35, 15432, 4, 'Musica'),
-(5, 30, 15210, 5, 'Entre'),
-(6, 25, 15100, 6, 'Arte'),
-(7, 20, 15000, 7, 'Geografia'),
-(8, 15, 14850, 8, 'Mates'),
-(9, 10, 14700, 9, 'Tecno'),
-(10, 5, 14560, 10, 'Cultura');
+(1, 50, 15648, 1, 2),  -- Historia
+(2, 45, 15348, 2, 1),  -- Ciencias
+(3, 40, 15048, 3, 4),  -- Deportes
+(4, 35, 14432, 4, 10), -- Música
+(5, 30, 14210, 5, 6),  -- Entretenimiento
+(6, 25, 14100, 6, 5),  -- Arte y Literatura
+(7, 20, 13000, 7, 3),  -- Geografía
+(8, 15, 12850, 8, 8),  -- Matemáticas
+(9, 10, 12700, 9, 7),  -- Tecnología
+(10, 5, 12560, 10, 9); -- Cultura General

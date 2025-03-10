@@ -44,7 +44,11 @@
             <div class="stat-item">
               <p class="me-2">Categoria Destacada:</p>
               <div class="num text-white">
-                <img :src="perfil.categoria" alt="Categoría" class="cat-img" />
+                <img
+                  :src="obtenerImagenCategoria(perfil.categoria_destacada)"
+                  :alt="`Categoría destacada: ${perfil.categoria_destacada}`"
+                  class="cat-img"
+                />
               </div>
             </div>
           </div>
@@ -59,10 +63,11 @@
             >
               <p>Categoria</p>
               <img
-                :src="categoria.categoria"
-                alt="Categoría"
+                :src="obtenerImagenCategoria(categoria.categoria)"
+                :alt="`Categoría: ${categoria.categoria}`"
                 class="estadisticas-img"
               />
+
               <div class="d-flex ptot">
                 <p>Puntos Totales</p>
                 <p class="puntos">{{ categoria.puntos }} pts</p>
@@ -78,40 +83,84 @@
   </section>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import arteImage from "../../assets/arte.png";
-import cienciasImage from "../../assets/ciencias.png";
-import culturaImage from "../../assets/cultura.png";
-import entreImage from "../../assets/entre.png";
-import geoImage from "../../assets/geografia.png";
-import historiaImage from "../../assets/historia.png";
-import matesImage from "../../assets/mates.png";
-import tecnoImage from "../../assets/tecno.png";
-import musicaImage from "../../assets/musica.png";
-import deportesImage from "../../assets/deportes.png";
+<script>
+export default {
+  data() {
+    return {
+      perfil: {},
+      estadisticas: [
+        { categoria: 6, puntos: 5600, mejorPosicion: 1 },
+        { categoria: 5, puntos: 4200, mejorPosicion: 3 },
+        { categoria: 1, puntos: 3200, mejorPosicion: 5 },
+        { categoria: 3, puntos: 2648, mejorPosicion: 7 },
+        { categoria: 2, puntos: 2400, mejorPosicion: 8 },
+        { categoria: 4, puntos: 2000, mejorPosicion: 10 },
+        { categoria: 7, puntos: 1800, mejorPosicion: 12 },
+        { categoria: 8, puntos: 1500, mejorPosicion: 15 },
+        { categoria: 10, puntos: 1200, mejorPosicion: 18 },
+        { categoria: 9, puntos: 1200, mejorPosicion: 18 },
+      ],
+      imagenesCategorias: {},
+    };
+  },
+  methods: {
+    async obtenerEstadisticasPerfil() {
+      try {
+        const response = await fetch("/api/estadisticas/select_perfil.php");
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const perfilData = data[0];
+          this.perfil = {
+            nombre: perfilData.nombre,
+            posicion: perfilData.posicion,
+            puntos: perfilData.puntos,
+            juegosJugados: perfilData.juegos_jugados,
+            victorias: perfilData.victorias,
+            categoria_destacada: perfilData.categoria_destacada, 
+          };
+        } else {
+          console.error("No se han encontrado los datos del perfil.");
+        }
+      } catch (error) {
+        console.error("Error obteniendo el perfil:", error);
+      }
+    },
+    obtenerImagenCategoria(imagen) {
+      if (!imagen) return ""; // Si no hay imagen, devolver vacío
+      try {
+        return `/src/${imagen}`; // ruta de las imágenes
+      } catch (error) {
+        console.error("Error cargando la imagen:", error);
+        return "";
+      }
+    },
+    async obtenerCategorias() {
+      try {
+        const response = await fetch("/api/estadisticas/select_categorias.php");
+        const data = await response.json();
 
-const perfil = ref({
-  nombre: "PEPE_123ASD",
-  posicion: 1,
-  puntos: 15648,
-  juegosJugados: 120,
-  victorias: 89,
-  categoria: entreImage,
-});
-
-const estadisticas = ref([
-  { categoria: entreImage, puntos: 5600, mejorPosicion: 1 },
-  { categoria: arteImage, puntos: 4200, mejorPosicion: 3 },
-  { categoria: cienciasImage, puntos: 3200, mejorPosicion: 5 },
-  { categoria: culturaImage, puntos: 2648, mejorPosicion: 7 },
-  { categoria: geoImage, puntos: 2400, mejorPosicion: 8 },
-  { categoria: historiaImage, puntos: 2000, mejorPosicion: 10 },
-  { categoria: matesImage, puntos: 1800, mejorPosicion: 12 },
-  { categoria: tecnoImage, puntos: 1500, mejorPosicion: 15 },
-  { categoria: musicaImage, puntos: 1200, mejorPosicion: 18 },
-  { categoria: deportesImage, puntos: 1200, mejorPosicion: 18 },
-]);
+        if (data.length > 0) {
+          this.imagenesCategorias = data.reduce((acc, categoria) => {
+            acc[categoria.id_categoria] = categoria.imagen_categoria;
+            return acc;
+          }, {});
+        }
+      } catch (error) {
+        console.error("Error obteniendo las categorías:", error);
+      }
+    },
+    obtenerImagenCategoria(categoriaId) {
+      return this.imagenesCategorias[categoriaId]
+        ? `/src/${this.imagenesCategorias[categoriaId]}`
+        : "";
+    },
+    // bottom line
+  },
+  mounted() {
+    this.obtenerEstadisticasPerfil();
+    this.obtenerCategorias();
+  },
+};
 </script>
 
 <style scoped>
@@ -283,25 +332,24 @@ section {
 
 /*SCROLLBAR*/
 *::-webkit-scrollbar {
-    width: 12px;
-    padding-right: 5px;
+  width: 12px;
+  padding-right: 5px;
 }
 
 *::-webkit-scrollbar-track {
-    background-color: #8d89f9;
+  background-color: #8d89f9;
 }
 
 *::-webkit-scrollbar-thumb {
-    background: #4943f0; 
-    border-radius: 20px;       
+  background: #4943f0;
+  border-radius: 20px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: #332fac; 
-    border-radius: 20px;  
-    transform: 0.2 color ease;     
+  background: #332fac;
+  border-radius: 20px;
+  transform: 0.2 color ease;
 }
-
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {

@@ -6,26 +6,20 @@
       </div>
       <div class="container-fluid pantalla-ranking">
         <div class="perfil-vista">
-          <img
-            src="../../assets/perfil.jpg"
-            alt="Perfil Image"
-            width="250"
-            height="275"
-            style="border-radius: 50%"
-          />
-          <h3 class="text-white">{{ perfil.nombre }}</h3>
+          <img src="../../assets/perfil.jpg" alt="Perfil Image" width="250" height="275" style="border-radius: 50%" />
+          <h3 class="text-white">{{ perfil.nombre || "Cargando..." }}</h3>
           <div>
             <p class="pos"><u>ESTADÍSTICAS</u></p>
             <div class="d-flex posicion">
               <p class="me-2">Última posición:</p>
               <div class="num text-white">
-                <u
-                  ><b>{{ perfil.posicion }}</b></u
-                >
+                <u><b>{{ perfil.posicion || "--" }}</b></u>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Tabla ranking -->
         <div class="ranking">
           <table>
             <thead>
@@ -37,21 +31,21 @@
               </tr>
             </thead>
             <tbody>
+              <!-- Si no hay jugadores -->
               <tr v-if="ranking.length === 0">
                 <td colspan="4" class="text-white text-center py-3">
                   No hay jugadores en el ranking.
                 </td>
               </tr>
+              <!-- Muestra los registros en la bbdd -->
               <tr v-for="(jugador, index) in ranking" :key="index">
                 <td class="jugador py-3">{{ jugador.nombre }}</td>
                 <td class="posicion py-3">{{ jugador.posicion }}</td>
                 <td class="puntos py-3">{{ jugador.puntos }}</td>
                 <td class="categoria py-3">
-                  <img
-                    :src="getCategoriaImage(jugador.categoria_destacada)"
-                    :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
-                    width="50px"
-                  />
+                  <img :src="obtenerImagenCategoria(jugador.imagen)" 
+                       :alt="`Categoría destacada: ${jugador.categoria_destacada}`" 
+                       width="50px" />
                 </td>
               </tr>
             </tbody>
@@ -62,114 +56,56 @@
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-
-const perfil = ref({
-  nombre: "PEPE_123ASD",
-  posicion: 1,
-});
-
-const ranking = ref([]);
-
-const getImageUrl = (path) =>
-  new URL(`../../assets/${path}`, import.meta.url).href;
-/*
-const temas = ref([
-  { name: "Historia", image: getImageUrl("historia.png") },
-  { name: "Ciencias", image: getImageUrl("ciencias.png") },
-  { name: "Deportes", image: getImageUrl("deportes.png") },
-  { name: "Música", image: getImageUrl("musica.png") },
-  { name: "Entretenimiento", image: getImageUrl("entre.png") },
-  { name: "Arte", image: getImageUrl("arte.png") },
-  { name: "Geografía", image: getImageUrl("geografia.png") },
-  { name: "Matemáticas", image: getImageUrl("mates.png") },
-  { name: "Tecnología", image: getImageUrl("tecno.png") },
-  { name: "Cultura", image: getImageUrl("cultura.png") },
-]);*/
-
-// Función para obtener la imagen de la categoría
-const getCategoriaImage = (categoria) => {
-  if (!categoria) return ""; // Evita errores si la categoría está vacía
-  return getImageUrl(`${categoria.toLowerCase()}.png`);
+<script>
+export default {
+  data() {
+    return {
+      perfil: {
+        nombre: "",
+        posicion: "",
+      },
+      ranking: [],
+    };
+  },
+  methods: {
+    async obtenerEstadisticasPerfil() {
+      try {
+        const response = await fetch("/api/estadisticas/select_perfil.php");
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const perfilData = data[0];
+          this.perfil = {
+            nombre: perfilData.nombre || "Desconocido",
+            posicion: perfilData.posicion || "--",
+          };
+        } else {
+          console.error("No se han encontrado los datos del perfil.");
+        }
+      } catch (error) {
+        console.error("Error obteniendo el perfil:", error);
+      }
+    },
+    async obtenerRanking() {
+      try {
+        const response = await fetch("/api/ranking/select.php");
+        const data = await response.json();
+        this.ranking = data || [];
+      } catch (error) {
+        console.error("Error obteniendo el ranking:", error);
+      }
+    },
+    obtenerImagenCategoria(imagen) {
+      if (!imagen) return "/img/default.png"; 
+      return `/src/${imagen}`; 
+    },
+  },
+  mounted() {
+    this.obtenerEstadisticasPerfil();
+    this.obtenerRanking();
+  },
 };
-
-const obtenerRanking = async () => {
-  try {
-    const response = await fetch("/api/ranking/select.php");
-    const data = await response.json();
-    ranking.value = data;
-  } catch (error) {
-    console.error("Error obteniendo el ranking:", error);
-  }
-};
-
-onMounted(obtenerRanking);
-
-/* ranking estatico */
-/*const ranking = ref([
-  {
-    nombre: "PEPE_123ASD",
-    posicion: 1,
-    puntos: 15648,
-    categoria: entreImage,
-  },
-  {
-    nombre: "PEPESITO",
-    posicion: 2,
-    puntos: 15648,
-    categoria: arteImage,
-  },
-  {
-    nombre: "PEPE",
-    posicion: 3,
-    puntos: 15648,
-    categoria: geoImage,
-  },
-  {
-    nombre: "MARIA_ABCD",
-    posicion: 4,
-    puntos: 15432,
-    categoria: musicaImage,
-  },
-  {
-    nombre: "JUAN_XYZ",
-    posicion: 5,
-    puntos: 15210,
-    categoria: matesImage,
-  },
-  {
-    nombre: "ANA_321",
-    posicion: 6,
-    puntos: 15100,
-    categoria: tecnoImage,
-  },
-  {
-    nombre: "LUIS_654",
-    posicion: 7,
-    puntos: 15000,
-    categoria: cienciasImage,
-  },
-  {
-    nombre: "CARLA_987",
-    posicion: 8,
-    puntos: 14850,
-    categoria: culturaImage,
-  },
-  {
-    nombre: "PEDRO_KLM",
-    posicion: 9,
-    puntos: 14700,
-    categoria: historiaImage,
-  },
-  {
-    nombre: "SOFIA_GHI",
-    posicion: 10,
-    puntos: 14560,
-    categoria: deportesImage,
-  },
-]);*/
 </script>
+
 
 <style scoped lang="css">
 * {
@@ -226,7 +162,8 @@ section {
   flex-wrap: nowrap;
   background-color: #5759cd;
   border-radius: 8px;
-  width: 30%; /* 30% of the container width */
+  width: 30%;
+  /* 30% of the container width */
   text-align: center;
   padding: 30px;
   font-weight: bold;
@@ -277,7 +214,7 @@ h3.num {
   flex-wrap: nowrap;
 }
 
-.pos > u {
+.pos>u {
   color: #5759cd !important;
 }
 
@@ -293,7 +230,8 @@ h3.num {
 }
 
 .ranking {
-  width: 70%; /* 70% of the container width */
+  width: 70%;
+  /* 70% of the container width */
   height: 100%;
   max-height: 680px;
   overflow: auto;
@@ -316,9 +254,11 @@ h3.num {
   text-align: center;
   border-spacing: 7px !important;
 }
+
 .ranking tbody {
   flex-grow: 1;
 }
+
 .ranking tr {
   height: 50px !important;
 }
@@ -444,6 +384,7 @@ h3.num {
     align-items: normal;
   }
 }
+
 @media (max-width: 768px) {
   .pantalla-ranking {
     flex-direction: column;
@@ -484,7 +425,7 @@ h3.num {
     margin: 0;
   }
 
-  .perfil-vista > div {
+  .perfil-vista>div {
     display: flex;
     flex-direction: column;
     align-items: center;
