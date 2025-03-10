@@ -5,14 +5,16 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
 require '../config/db.php';
-$sql = "SELECT 
-        c.id_categoria,
-        c.imagen AS imagen_categoria
-        FROM Categorias c";
 
-
+$sql = "SELECT id_categoria, imagen AS imagen_categoria FROM Categoria";
 $result = $conn->query($sql);
+
 $categorias = [];
+
+if ($result === false) {
+    echo json_encode(["error" => "Error en la consulta SQL", "detalle" => $conn->error]);
+    exit;
+}
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -24,3 +26,4 @@ if ($result->num_rows > 0) {
 }
 
 echo json_encode($categorias);
+?>

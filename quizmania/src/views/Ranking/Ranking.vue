@@ -6,22 +6,14 @@
       </div>
       <div class="container-fluid pantalla-ranking">
         <div class="perfil-vista">
-          <img
-            src="../../assets/perfil.jpg"
-            alt="Perfil Image"
-            width="250"
-            height="275"
-            style="border-radius: 50%"
-          />
-          <h3 class="text-white">{{ perfil.nombre }}</h3>
+          <img src="../../assets/perfil.jpg" alt="Perfil Image" width="250" height="275" style="border-radius: 50%" />
+          <h3 class="text-white">{{ perfil.nombre || "Cargando..." }}</h3>
           <div>
             <p class="pos"><u>ESTADÍSTICAS</u></p>
             <div class="d-flex posicion">
               <p class="me-2">Última posición:</p>
               <div class="num text-white">
-                <u
-                  ><b>{{ perfil.posicion }}</b></u
-                >
+                <u><b>{{ perfil.posicion || "--" }}</b></u>
               </div>
             </div>
           </div>
@@ -51,11 +43,9 @@
                 <td class="posicion py-3">{{ jugador.posicion }}</td>
                 <td class="puntos py-3">{{ jugador.puntos }}</td>
                 <td class="categoria py-3">
-                  <img
-                    :src="obtenerImagenCategoria(jugador.imagen)"
-                    :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
-                    width="50px"
-                  />
+                  <img :src="obtenerImagenCategoria(jugador.imagen)" 
+                       :alt="`Categoría destacada: ${jugador.categoria_destacada}`" 
+                       width="50px" />
                 </td>
               </tr>
             </tbody>
@@ -71,37 +61,51 @@ export default {
   data() {
     return {
       perfil: {
-        nombre: "PEPE_123ASD",
-        posicion: 1,
+        nombre: "",
+        posicion: "",
       },
       ranking: [],
     };
   },
   methods: {
+    async obtenerEstadisticasPerfil() {
+      try {
+        const response = await fetch("/api/estadisticas/select_perfil.php");
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const perfilData = data[0];
+          this.perfil = {
+            nombre: perfilData.nombre || "Desconocido",
+            posicion: perfilData.posicion || "--",
+          };
+        } else {
+          console.error("No se han encontrado los datos del perfil.");
+        }
+      } catch (error) {
+        console.error("Error obteniendo el perfil:", error);
+      }
+    },
     async obtenerRanking() {
       try {
         const response = await fetch("/api/ranking/select.php");
         const data = await response.json();
-        this.ranking = data;
+        this.ranking = data || [];
       } catch (error) {
         console.error("Error obteniendo el ranking:", error);
       }
     },
     obtenerImagenCategoria(imagen) {
-      if (!imagen) return ""; // Si no hay imagen, devolver vacío
-      try {
-        return `/src/${imagen}`; // ruta de las imágenes
-      } catch (error) {
-        console.error("Error cargando la imagen:", error);
-        return "";
-      }
+      if (!imagen) return "/img/default.png"; 
+      return `/src/${imagen}`; 
     },
   },
   mounted() {
+    this.obtenerEstadisticasPerfil();
     this.obtenerRanking();
   },
 };
 </script>
+
 
 <style scoped lang="css">
 * {
@@ -158,7 +162,8 @@ section {
   flex-wrap: nowrap;
   background-color: #5759cd;
   border-radius: 8px;
-  width: 30%; /* 30% of the container width */
+  width: 30%;
+  /* 30% of the container width */
   text-align: center;
   padding: 30px;
   font-weight: bold;
@@ -209,7 +214,7 @@ h3.num {
   flex-wrap: nowrap;
 }
 
-.pos > u {
+.pos>u {
   color: #5759cd !important;
 }
 
@@ -225,7 +230,8 @@ h3.num {
 }
 
 .ranking {
-  width: 70%; /* 70% of the container width */
+  width: 70%;
+  /* 70% of the container width */
   height: 100%;
   max-height: 680px;
   overflow: auto;
@@ -248,9 +254,11 @@ h3.num {
   text-align: center;
   border-spacing: 7px !important;
 }
+
 .ranking tbody {
   flex-grow: 1;
 }
+
 .ranking tr {
   height: 50px !important;
 }
@@ -376,6 +384,7 @@ h3.num {
     align-items: normal;
   }
 }
+
 @media (max-width: 768px) {
   .pantalla-ranking {
     flex-direction: column;
@@ -416,7 +425,7 @@ h3.num {
     margin: 0;
   }
 
-  .perfil-vista > div {
+  .perfil-vista>div {
     display: flex;
     flex-direction: column;
     align-items: center;

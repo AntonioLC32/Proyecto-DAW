@@ -100,6 +100,7 @@ export default {
         { categoria: 10, puntos: 1200, mejorPosicion: 18 },
         { categoria: 9, puntos: 1200, mejorPosicion: 18 },
       ],
+      imagenesCategorias: {},
     };
   },
   methods: {
@@ -115,10 +116,10 @@ export default {
             puntos: perfilData.puntos,
             juegosJugados: perfilData.juegos_jugados,
             victorias: perfilData.victorias,
-            categoria_destacada: perfilData.imagen_categoria, // Ahora es la URL de la imagen
+            categoria_destacada: perfilData.categoria_destacada, 
           };
         } else {
-          console.error("No data found for the profile.");
+          console.error("No se han encontrado los datos del perfil.");
         }
       } catch (error) {
         console.error("Error obteniendo el perfil:", error);

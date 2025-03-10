@@ -23,7 +23,6 @@ $sql = "SELECT
         WHERE r.id_usuario = ?";
 
 
-// Prepare statement to prevent SQL injection
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $usuario_id); // 'i' for integer
 $stmt->execute();
@@ -44,7 +43,7 @@ if ($row) {
         $row['victorias'] = (int) $row['victorias'];
         $row['categoria_destacada'] = (int) $row['categoria_destacada'];
 
-        $row['imagen_categoria'] = $row['imagen_categoria'] ?? ''; // Asegurar que tenga un valor
+        $row['imagen_categoria'] = $row['imagen_categoria'] ?? '';
 
         echo json_encode([$row]);
 } else {
