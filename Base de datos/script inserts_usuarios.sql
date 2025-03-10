@@ -1,6 +1,3 @@
--- Añadir el campo categoria_destacada para que se muestre la imagen en el ranking
-ALTER TABLE Ranking ADD COLUMN categoria_destacada VARCHAR(50);
-
 -- Inserts en la tabla Usuario
 INSERT INTO Usuario (nombre, correo, contraseña, num_derrotas, num_victorias, fecha_registro, habilitado)
 VALUES 
@@ -15,6 +12,13 @@ VALUES
 ('PEDRO_KLK', 'pedro@example.com', 'hashed_password_9', 9, 5, NOW(), TRUE),
 ('SOFIA_GHI', 'sofia@example.com', 'hashed_password_10', 10, 3, NOW(), TRUE);
 
+UPDATE Usuario 
+SET imagen = 'https://www.qanimals.com/wp-content/uploads/2024/10/pexels-river-augustin-1370012990-28934371.jpg', 
+    ult_conexion = NOW()
+WHERE id_usuario = 1;
+
+
+-- El nombre de categoria_destacada tiene que ser el mismo que la imagen o viceversa
 INSERT INTO Ranking (id_usuario, rondas, puntos, posicion, categoria_destacada)
 VALUES 
 (1, 50, 15648, 1, 2),  -- Ciencias

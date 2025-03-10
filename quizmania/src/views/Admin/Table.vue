@@ -93,7 +93,7 @@
             </template>
             <template v-else-if="header.key === 'imagen'">
               <img
-                :src="getImageUrl(row[header.key])"
+                :src="imageURL(row[header.key])"
                 :alt="`Imagen de ${row.nombre}`"
                 class="table-image"
               />
@@ -132,9 +132,12 @@ export default {
     info(row) {
       this.$emit("info", row);
     },
-    getImageUrl(path) {
-      return new URL(`../../assets/${path}`, import.meta.url).href;
+    imageURL(imagen) {
+      const path = new URL('../../', import.meta.url);
+      return `${path}/${imagen}`
     },
+
+
   },
 };
 </script>

@@ -50,6 +50,7 @@
             :headers="headers"
             :rows="rowsFiltradas"
             @editar="abrirPopup"
+            @eliminar="deshabilitarPregunta"
           />
         </section>
       </div>
@@ -93,7 +94,11 @@
 
             <div class="form-group">
               <label>Respuesta correcta</label>
-              <input v-model="preguntaSeleccionada.correcta" type="text" />
+              <input
+                v-model="preguntaSeleccionada.correcta"
+                type="text"
+                @keyup.enter="guardarCambios"
+              />
             </div>
 
             <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
@@ -101,7 +106,6 @@
         </div>
       </div>
 
-      <!-- Columna derecha: formulario para añadir pregunta -->
       <div class="right-column">
         <section class="add-pregunta">
           <h1 class="titulo-form">AÑADIR PREGUNTA</h1>
@@ -176,15 +180,13 @@ export default {
   },
   data() {
     return {
-      // Variables de búsqueda y filtros
       input: "",
-      // Variables para el formulario
       pregunta: "",
       dificultad: "",
       categoria: "",
       respuestas: "",
       correcta: "",
-      // Datos de la tabla
+
       headers: [
         { key: "id", label: "ID" },
         { key: "pregunta", label: "PREGUNTA" },
@@ -192,7 +194,7 @@ export default {
         { key: "categoria", label: "CATEGORÍA" },
         { key: "acciones", label: "ACCIONES" },
       ],
-      rows: [], // Datos iniciales vacíos
+      rows: [],
       categoriasSeleccionadas: [],
       popupVisible: false,
       preguntaSeleccionada: {},
@@ -247,26 +249,101 @@ export default {
     cerrarPopup() {
       this.popupVisible = false;
     },
+
+    async deshabilitarPregunta(pregunta) {
+      try {
+        const confirmar = confirm(
+          `¿Deshabilitar la pregunta "${pregunta.pregunta}"?`
+        );
+        if (!confirmar) return;
+
+        const response = await fetch(
+          "/api/index.php?action=deshabilitarPregunta",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_pregunta: pregunta.id,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "Pregunta deshabilitada correctamente";
+          this.mensajeTipo = "success";
+          this.fetchPreguntas(); // Actualizar la lista
+        } else {
+          this.mensaje = data.mensaje || "Error al deshabilitar la pregunta";
+          this.mensajeTipo = "error";
+        }
+      } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
+      }
+    },
     async guardarCambios() {
       try {
-        const response = await fetch("/api/index.php", {
+        let opcionesArray =
+          typeof this.preguntaSeleccionada.opciones === "string"
+            ? this.preguntaSeleccionada.opciones
+                .split("|")
+                .map((opcion) => opcion.trim())
+            : this.preguntaSeleccionada.opciones.map((opcion) => opcion.trim());
+
+        // Tomamos las primeras 4 opciones
+        let opcionesLimitadas = opcionesArray.slice(0, 4);
+
+        // Validación: si la respuesta correcta NO está en las 4 primeras, mostrar error
+        if (!opcionesLimitadas.includes(this.preguntaSeleccionada.correcta)) {
+          this.mensaje =
+            "Error: La respuesta correcta no está en las primeras 4 opciones";
+          this.mensajeTipo = "error";
+          return; // No ejecuta la petición al backend
+        }
+
+        const dataToSend = {
+          id_pregunta:
+            this.preguntaSeleccionada.id ||
+            this.preguntaSeleccionada.id_pregunta,
+          pregunta: this.preguntaSeleccionada.pregunta,
+          categoria: this.preguntaSeleccionada.categoria,
+          dificultad: this.preguntaSeleccionada.dificultad,
+          opciones: opcionesLimitadas,
+          correcta: this.preguntaSeleccionada.correcta,
+        };
+
+        const response = await fetch("/api/index.php?action=updatePregunta", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(this.preguntaSeleccionada),
+          body: JSON.stringify(dataToSend),
         });
 
-        if (response.ok) {
-          this.fetchPreguntas(); // Recargar datos
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.mensaje = "¡Pregunta actualizada correctamente!";
+          this.mensajeTipo = "success";
+          this.fetchPreguntas();
           this.popupVisible = false;
+        } else {
+          this.mensaje = data.mensaje || "Error al actualizar la pregunta";
+          this.mensajeTipo = "error";
         }
       } catch (error) {
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
         console.error("Error al guardar cambios:", error);
+      } finally {
+        setTimeout(() => (this.mensaje = ""), 5000);
       }
-    },
-    buscarPregunta() {
-      // Implementación existente
     },
     async addPregunta() {
       try {

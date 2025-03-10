@@ -44,6 +44,7 @@ function importCSVRespuestas() {
             $texto = trim($data[1]);
             $es_correcta = strtolower($data[2]) === 'true' ? 1 : 0;
             $id_pregunta = (int)$data[3];
+            $habilitado = 1;
 
             // Verificar si el id_pregunta existe en la tabla Pregunta
             $stmt_check = $conn->prepare("SELECT id_pregunta FROM Pregunta WHERE id_pregunta = ?");
@@ -59,13 +60,14 @@ function importCSVRespuestas() {
             $stmt_check->close();
 
             // Insertar la respuesta
-            $stmt = $conn->prepare("INSERT INTO Respuesta (id_respuesta, texto, es_correcta, id_pregunta) 
-                                   VALUES (?, ?, ?, ?) 
+            $stmt = $conn->prepare("INSERT INTO Respuesta (id_respuesta, texto, es_correcta, id_pregunta, habilitado) 
+                                   VALUES (?, ?, ?, ?, ?) 
                                    ON DUPLICATE KEY UPDATE 
                                        texto = VALUES(texto), 
                                        es_correcta = VALUES(es_correcta), 
-                                       id_pregunta = VALUES(id_pregunta)");
-            $stmt->bind_param("isii", $id, $texto, $es_correcta, $id_pregunta);
+                                       id_pregunta = VALUES(id_pregunta),
+                                       habilitado = VALUES(habilitado)");
+            $stmt->bind_param("isiii", $id, $texto, $es_correcta, $id_pregunta, $habilitado);
 
             if (!$stmt->execute()) {
                 $errores[] = "Error en ID $id: " . $stmt->error;

@@ -43,13 +43,15 @@ function importCSVPreguntas() {
             $id = (int)$data[0];
             $texto = trim($data[1]);
             $id_tarjeta = (int)$data[2];
+            $habilitado = 1;
 
-            $stmt = $conn->prepare("INSERT INTO Pregunta (id_pregunta, texto, id_tarjeta) 
-                                   VALUES (?, ?, ?) 
+            $stmt = $conn->prepare("INSERT INTO Pregunta (id_pregunta, texto, id_tarjeta, habilitado) 
+                                   VALUES (?, ?, ?, ?) 
                                    ON DUPLICATE KEY UPDATE 
                                        texto = VALUES(texto), 
-                                       id_tarjeta = VALUES(id_tarjeta)");
-            $stmt->bind_param("isi", $id, $texto, $id_tarjeta);
+                                       id_tarjeta = VALUES(id_tarjeta),
+                                       habilitado = VALUES(habilitado)");
+            $stmt->bind_param("isii", $id, $texto, $id_tarjeta, $habilitado);
 
             if (!$stmt->execute()) {
                 $errores[] = "Error en ID $id: " . $stmt->error;

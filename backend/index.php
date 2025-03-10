@@ -45,10 +45,38 @@ switch ($action) {
 
     case 'actualizarCategorias':
         require_once 'categorias/update.php';
-        actualizarCategoria();
+        actualizarCategoria($input);
+        break;
+
+    case 'updatePregunta':
+        require 'preguntas/update.php';
+        updatePregunta($input);
+        break;
+
+    case 'deshabilitarPregunta':
+        require 'preguntas/update.php';
+        deshabilitarPregunta($input);
+        break;
+
+    case 'usuariosTotales':
+        require 'usuarios/select.php';
+        usuariosTotales();
+        break;
+
+    case 'usuariosConectados':
+        require 'usuarios/select.php';
+        usuariosConectados();
+        break;
+
+    case 'obtenerUsuarios':
+        require 'usuarios/select.php';
+        obtenerUsuarios();
         break;
     
-
+    case 'deshabilitarUsuario':
+        require 'usuarios/update.php';
+        deshabilitarUsuario($input);
+        break;
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);
