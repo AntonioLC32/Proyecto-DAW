@@ -91,6 +91,17 @@ switch ($action) {
         require 'usuarios/logout.php';
         #logout();
         break;
+
+    case 'partidasDiarias':
+        require 'partidasDiarias.php';
+        break;
+
+    case 'usuariosSemanal':
+        require 'usuariosSemanal.php';
+        break;
+    
+
+
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);
