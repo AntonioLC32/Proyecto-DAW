@@ -211,45 +211,54 @@ export default {
     },
     async guardarCambios() {
       try {
-        const formData = new FormData();
-        formData.append("action", "actualizarCategorias");
-        formData.append("id_categoria", this.categoriaSeleccionada.id);
-        formData.append("nombre", this.categoriaSeleccionada.nombre);
-
-        // Si hay una nueva imagen, la adjuntamos al FormData
+        let base64Image = null;
         if (this.categoriaSeleccionada.imagenFile) {
-          formData.append("file", this.categoriaSeleccionada.imagenFile);
+          base64Image = await this.convertFileToBase64(
+            this.categoriaSeleccionada.imagenFile
+          );
         }
 
-        const response = await fetch("../../../../categorias/update.php", {
-          method: "POST",
-          body: formData,
-        });
+        const payload = {
+          action: "actualizarCategorias",
+          id_categoria: this.categoriaSeleccionada.id,
+          nombre: this.categoriaSeleccionada.nombre,
+          file: base64Image,
+        };
 
-        const text = await response.text(); // Leer la respuesta como texto
-        let data;
-        try {
-          data = JSON.parse(text); // Intentar convertir la respuesta a JSON
-        } catch (error) {
-          console.error("Error al parsear la respuesta:", text);
-          throw new Error("Respuesta no válida del servidor: " + text);
-        }
+        const response = await fetch(
+          "/api/index.php?action=actualizarCategorias",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        const data = await response.json();
 
         if (data.status === "success") {
-          // Actualizar la lista de categorías para reflejar los cambios
-          await this.fetchCategorias();
+          this.mensaje = "Categoría actualizada correctamente";
+          this.mensajeTipo = "success";
           this.cerrarPopup();
+
+          // Forzar actualización completa
+          await this.fetchCategorias();
+          await this.fetchPreguntas();
+
+          // Limpiar previsualización de imagen
           this.nuevaImagenPreview = null;
-          delete this.categoriaSeleccionada.imagenFile;
         } else {
-          console.error("Error al actualizar la categoría:", data.mensaje);
-          alert("Error al actualizar la categoría: " + data.mensaje);
+          this.mensaje = data.mensaje || "Error al actualizar categoría";
+          this.mensajeTipo = "error";
         }
       } catch (error) {
-        console.error("Error al guardar cambios:", error);
-        alert(
-          `Hubo un error al guardar los cambios. Detalles: ${error.message}`
-        );
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
+      } finally {
+        setTimeout(() => {
+          this.mensaje = "";
+          this.mensajeTipo = "";
+        }, 5000);
       }
     },
     getImageUrl(path) {
