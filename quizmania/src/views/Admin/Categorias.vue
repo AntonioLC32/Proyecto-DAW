@@ -44,7 +44,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -67,8 +66,8 @@ export default {
         { key: "imagen", label: "IMAGEN" },
         { key: "acciones", label: "ACCIONES" },
       ],
-      rows: [], // Datos de las categorías
-      preguntas: [], // Datos de las preguntas
+      rows: [],
+      preguntas: [],
       chartData: {
         labels: [],
         datasets: [
@@ -91,9 +90,6 @@ export default {
       },
     };
   },
-  computed() {
-    imageURL();
-  },
   mounted() {
     this.fetchCategorias();
     this.fetchPreguntas();
@@ -103,20 +99,18 @@ export default {
       try {
         const response = await fetch("/api/index.php?action=obtenerCategorias");
         const data = await response.json();
-
         if (data.status === "success") {
           this.rows = data.data.map((categoria) => ({
             id: categoria.id,
             nombre: categoria.nombre,
             imagen: categoria.imagen,
-            total_preguntas: 0, 
+            total_preguntas: 0,
             acciones: {
               editar: true,
               eliminar: false,
               info: false,
             },
           }));
-
           if (this.rows.length > 0) {
             this.actualizarGrafica();
           }
@@ -129,7 +123,6 @@ export default {
       try {
         const response = await fetch("/api/index.php?action=obtenerPreguntas");
         const data = await response.json();
-
         if (data.status === "success") {
           this.preguntas = data.data;
           this.contarPreguntasPorCategoria();
@@ -139,8 +132,8 @@ export default {
       }
     },
     imageURL(imagen) {
-      const path = new URL('../../', import.meta.url);
-      return `${path}/${imagen}`
+      const path = new URL('../../' + imagen, import.meta.url);
+      return path;
     },
     contarPreguntasPorCategoria() {
       const conteoPorCategoria = {};
@@ -152,12 +145,10 @@ export default {
           conteoPorCategoria[categoria] = 1;
         }
       });
-
       this.rows = this.rows.map((categoria) => ({
         ...categoria,
         total_preguntas: conteoPorCategoria[categoria.nombre] || 0,
       }));
-
       this.actualizarGrafica();
     },
     actualizarGrafica() {
@@ -170,11 +161,9 @@ export default {
     renderChart() {
       if (this.$refs.pieChart) {
         const ctx = this.$refs.pieChart.getContext("2d");
-
         if (this.chartInstance) {
           this.chartInstance.destroy();
         }
-
         this.chartInstance = new Chart(ctx, {
           type: "pie",
           data: this.chartData,
@@ -196,72 +185,65 @@ export default {
     },
     handleImageUpload(event) {
       const file = event.target.files[0];
-      if (file && file.type.startsWith("image/")) {
-        if (this.nuevaImagenPreview) {
-          URL.revokeObjectURL(this.nuevaImagenPreview);
-        }
-        this.nuevaImagenPreview = URL.createObjectURL(file);
-        // Guardamos el archivo para enviarlo luego
-        this.categoriaSeleccionada.imagenFile = file;
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // e.target.result contiene la imagen en Base64
+          this.nuevaImagenPreview = e.target.result;
+          // Guardamos la imagen en Base64 para enviarla luego
+          this.categoriaSeleccionada.imagenFile = e.target.result;
+        };
+        reader.readAsDataURL(file);
       } else {
         alert("Por favor selecciona un archivo de imagen válido.");
       }
     },
     cerrarPopup() {
       this.popupVisible = false;
-      if (this.nuevaImagenPreview) {
-        URL.revokeObjectURL(this.nuevaImagenPreview);
-        this.nuevaImagenPreview = null;
-      }
+      // No es necesario revocar el Base64
+      this.nuevaImagenPreview = null;
     },
     async guardarCambios() {
       try {
-        const formData = new FormData();
-        formData.append('action', 'actualizarCategorias');
-        formData.append('id_categoria', this.categoriaSeleccionada.id);
-        formData.append('nombre', this.categoriaSeleccionada.nombre);
+        const payload = {
+          action: "actualizarCategorias",
+          id_categoria: this.categoriaSeleccionada.id,
+          nombre: this.categoriaSeleccionada.nombre,
+          file: this.categoriaSeleccionada.imagenFile || "",
+        };
 
-        // Si hay una nueva imagen, la adjuntamos al FormData
-        if (this.categoriaSeleccionada.imagenFile) {
-          formData.append('file', this.categoriaSeleccionada.imagenFile);
-        }
+        console.log("Datos enviados:", payload);
 
-        const response = await fetch("../../../../categorias/update.php", {
+        const response = await fetch("/api/index.php?action=actualizarCategorias", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
 
-        const text = await response.text(); // Leer la respuesta como texto
-        let data;
-        try {
-          data = JSON.parse(text); // Intentar convertir la respuesta a JSON
-        } catch (error) {
-          console.error("Error al parsear la respuesta:", text);
-          throw new Error("Respuesta no válida del servidor: " + text);
-        }
+        const text = await response.text();
+        console.log("Respuesta bruta del servidor:", text);
+
+        const data = JSON.parse(text);
+        console.log("Respuesta JSON:", data);
 
         if (data.status === "success") {
-          // Actualizar la lista de categorías para reflejar los cambios
           await this.fetchCategorias();
           this.cerrarPopup();
-          this.nuevaImagenPreview = null;
-          delete this.categoriaSeleccionada.imagenFile;
         } else {
-          console.error("Error al actualizar la categoría:", data.mensaje);
-          alert("Error al actualizar la categoría: " + data.mensaje);
+          console.error("Error al actualizar:", data.mensaje);
+          alert("Error al actualizar: " + data.mensaje);
         }
       } catch (error) {
-        console.error("Error al guardar cambios:", error);
-        alert(`Hubo un error al guardar los cambios. Detalles: ${error.message}`);
+        console.error("Error en la petición:", error);
       }
-    }
-    ,
+    },
     getImageUrl(path) {
       return new URL(`../../${path}`, import.meta.url).href;
     },
   },
 };
 </script>
+
 
 
 <style scoped>

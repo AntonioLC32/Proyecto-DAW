@@ -1,7 +1,8 @@
 <?php
-// Habilitar reporte de errores para depuración
+declare(strict_types=1);
+
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -10,120 +11,106 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 require 'config/db.php';
 
-function actualizarCategoria($data) {
+function actualizarCategoria(array $input): void {
     global $conn;
 
-    try {
-        // Validar campos requeridos
-        $required = ['id_categoria', 'nombre'];
-        foreach ($required as $field) {
-            if (!isset($data[$field])) {
-                throw new Exception("Campo requerido faltante: $field");
-            }
-        }
-
-        $id_categoria = $data['id_categoria'];
-        $nombre = $data['nombre'];
-
-        // Iniciar transacción
-        $conn->begin_transaction();
-
-        // 1. Obtener la imagen antigua para eliminarla
-        $stmtOld = $conn->prepare("SELECT imagen FROM Categoria WHERE id_categoria = ?");
-        $stmtOld->bind_param("i", $id_categoria);
-        $stmtOld->execute();
-        $resultOld = $stmtOld->get_result();
-        $rowOld = $resultOld->fetch_assoc();
-
-        if (!$rowOld) {
-            throw new Exception("No se encontró la categoría con ID: $id_categoria");
-        }
-
-        $oldImage = $rowOld['imagen'];
-        $uploadDir = '../../assets/';
-        $oldImagePath = $uploadDir . $oldImage;
-
-        // 2. Manejar la nueva imagen si se proporciona
-        $newImageName = null;
-        if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            // Crear un nombre único para la nueva imagen
-            $newImageName = time() . '_' . basename($_FILES['file']['name']);
-            $destination = $uploadDir . $newImageName;
-
-            // Mover el archivo subido a la carpeta de assets
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], $destination)) {
-                throw new Exception("Error al subir la nueva imagen.");
-            }
-
-            // Eliminar la imagen antigua si existe
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
-        }
-
-        // 3. Actualizar la categoría en la base de datos
-        if ($newImageName) {
-            $sql = "UPDATE Categoria SET nombre = ?, imagen = ? WHERE id_categoria = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssi", $nombre, $newImageName, $id_categoria);
-        } else {
-            $sql = "UPDATE Categoria SET nombre = ? WHERE id_categoria = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $nombre, $id_categoria);
-        }
-
-        if (!$stmt->execute()) {
-            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-        }
-
-        // Confirmar la transacción
-        $conn->commit();
-
-        echo json_encode([
-            'status' => 'success',
-            'mensaje' => 'Categoría actualizada correctamente.'
-        ]);
-
-    } catch (Exception $e) {
-        // Revertir la transacción en caso de error
-        if ($conn) {
-            $conn->rollback();
-        }
-        http_response_code(400); // Bad Request
-        echo json_encode([
-            'status' => 'error',
-            'mensaje' => $e->getMessage()
-        ]);
+    // Verificar que existan los datos necesarios
+    if (!isset($input['id_categoria'], $input['nombre'])) {
+        echo json_encode(['status' => 'error', 'mensaje' => 'Datos insuficientes']);
+        exit;
     }
-}
 
-// Manejo de la solicitud
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        // Obtener los datos del formulario (en este caso, JSON)
-        $input = json_decode(file_get_contents("php://input"), true); // Datos enviados por JSON
-        $file = $_FILES['file'] ?? null; // Archivo de imagen
+    $id_categoria = $input['id_categoria'];
+    $nombre = $input['nombre'];
+    $image = isset($input['file']) ? (string)$input['file'] : '';
 
-        // Combinar datos y archivo
-        $data = array_merge($input, ['file' => $file]);
-
-        if (isset($data['action']) && $data['action'] === 'actualizarCategorias') {
-            actualizarCategoria($data);
-        } else {
-            throw new Exception("Acción no válida");
+    // Directorio de subida (ruta local)
+    $uploadDir = __DIR__ . "/../../quizmania/src/assets/";
+    // Asegurarse de que el directorio exista; si no, crearlo
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0755, true)) {
+            echo json_encode(['status' => 'error', 'mensaje' => 'No se pudo crear el directorio de subida']);
+            exit;
         }
-    } catch (Exception $e) {
-        http_response_code(400); // Bad Request
-        echo json_encode([
-            'status' => 'error',
-            'mensaje' => $e->getMessage()
-        ]);
     }
-} else {
-    http_response_code(405); // Método no permitido
-    echo json_encode([
-        'status' => 'error',
-        'mensaje' => 'Método no permitido'
-    ]);
+
+    try {
+        // Obtener la imagen actual de la categoría desde la BD
+        $query = $conn->prepare("SELECT imagen FROM categorias WHERE id = ?");
+        if (!$query) {
+            echo json_encode(['status' => 'error', 'mensaje' => 'Error en la consulta: ' . implode(" - ", $conn->errorInfo())]);
+            exit;
+        }
+        $query->execute([$id_categoria]);
+        $categoria = $query->fetch(PDO::FETCH_ASSOC);
+
+        if (!$categoria) {
+            echo json_encode(['status' => 'error', 'mensaje' => 'Categoría no encontrada']);
+            exit;
+        }
+
+        // Mantener la imagen actual si no se envía una nueva
+        $nombreImagen = $categoria['imagen'];
+
+        // Si se ha enviado una nueva imagen en Base64, procesarla
+        if (!empty($image)) {
+            // Se espera que la cadena Base64 tenga el formato: data:image/extension;base64,....
+            $parts = explode(',', $image);
+            if (count($parts) === 2) {
+                // Obtener el tipo de imagen desde la cabecera
+                if (preg_match('/data:image\/(.*?);base64/', $parts[0], $matches)) {
+                    $extension = $matches[1];
+                } else {
+                    echo json_encode(['status' => 'error', 'mensaje' => 'Tipo de imagen no válido']);
+                    exit;
+                }
+                $data = base64_decode($parts[1]);
+                if ($data === false) {
+                    echo json_encode(['status' => 'error', 'mensaje' => 'Error al decodificar la imagen']);
+                    exit;
+                }
+
+                // Definir un nuevo nombre de imagen basado en el nombre de la categoría
+                $sanitizedNombre = preg_replace('/[^a-zA-Z0-9_-]/', '', $nombre);
+                if (empty($sanitizedNombre)) {
+                    $sanitizedNombre = (string)time(); // fallback
+                }
+                $newImageName = $sanitizedNombre . '.' . $extension;
+                $rutaImagen = $uploadDir . $newImageName;
+
+                // Borrar la imagen antigua si existe en el directorio y es distinta a la nueva
+                if (!empty($categoria['imagen'])) {
+                    $oldImagePath = $uploadDir . basename($categoria['imagen']);
+                    if (file_exists($oldImagePath) && $oldImagePath !== $rutaImagen) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                // Guardar la nueva imagen en la carpeta local
+                if (file_put_contents($rutaImagen, $data) !== false) {
+                    // Guardar la ruta relativa en la BD (por ejemplo, "assets/nombre.ext")
+                    $nombreImagen = "assets/" . $newImageName;
+                } else {
+                    echo json_encode(['status' => 'error', 'mensaje' => 'Error al guardar la nueva imagen']);
+                    exit;
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'mensaje' => 'Formato de imagen inválido']);
+                exit;
+            }
+        }
+
+        // Actualizar la base de datos con el nuevo nombre e imagen
+        $updateQuery = $conn->prepare("UPDATE categorias SET nombre = ?, imagen = ? WHERE id = ?");
+        if (!$updateQuery) {
+            echo json_encode(['status' => 'error', 'mensaje' => 'Error en la consulta de actualización: ' . implode(" - ", $conn->errorInfo())]);
+            exit;
+        }
+        $updateQuery->execute([$nombre, $nombreImagen, $id_categoria]);
+
+        echo json_encode(['status' => 'success', 'mensaje' => 'Categoría actualizada correctamente']);
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'mensaje' => 'Error en la actualización: ' . $e->getMessage()]);
+    }
 }
 ?>
