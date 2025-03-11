@@ -87,7 +87,6 @@ switch ($action) {
         require 'usuarios/auth.php';
         register($input);
         break;
-        
     case 'logout':
         require 'usuarios/logout.php';
         #logout();
