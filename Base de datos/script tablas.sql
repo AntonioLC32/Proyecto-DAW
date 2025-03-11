@@ -106,3 +106,12 @@ CREATE TABLE Comodin (
     cantidad_maxima TINYINT UNSIGNED DEFAULT 1,
     FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE
 );
+
+CREATE TABLE Estadisticas (
+    id_usuario INT NOT NULL,
+    id_categoria INT NOT NULL,
+    puntos INT UNSIGNED DEFAULT 0,
+    PRIMARY KEY (id_usuario, id_categoria),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
+);
