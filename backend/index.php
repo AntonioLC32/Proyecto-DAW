@@ -44,7 +44,7 @@ switch ($action) {
         break;
 
     case 'actualizarCategorias':
-        require_once 'categorias/update.php';
+        require 'categorias/update.php';
         actualizarCategoria($input);
         break;
 
@@ -87,8 +87,7 @@ switch ($action) {
         require 'usuarios/auth.php';
         register($input);
         break;
-
-    case 'uploadAvatar':
+        
     case 'logout':
         require 'usuarios/logout.php';
         #logout();

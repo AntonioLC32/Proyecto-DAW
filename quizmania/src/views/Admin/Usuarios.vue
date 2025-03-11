@@ -85,7 +85,7 @@
             <p>Puntos: {{ usuarioSeleccionado.puntos }}</p>
           </div>
           <img
-            :src="usuarioSeleccionado.imagen"
+            :src="getUserImage(usuarioSeleccionado.imagen)"
             :alt="usuarioSeleccionado.user"
             class="popup-img"
           />
@@ -139,6 +139,10 @@ export default {
     },
     cerrarPopup() {
       this.popupVisible = false;
+    },
+
+    getUserImage(imagePath) {
+      return new URL("../../" + imagePath, import.meta.url).href;
     },
 
     async deshabilitarUsuario(usuario) {
@@ -459,11 +463,21 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .popup-text {
   flex: 1;
-  text-align: left;
+  min-width: 0;
+}
+
+.popup-text p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
 }
 
 .popup-img {
@@ -471,6 +485,7 @@ export default {
   height: 200px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .popup-content h2 {

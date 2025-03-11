@@ -1,10 +1,9 @@
 <?php
 $data = [
-    'username' => 'Primer Usuario',
-    'password' => 'qwe123'
+    'id_categoria' => 1,
+    'nombre' => 'Ciencia',
+    'file' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/wL+DzXwAAAAAElFTkSuQmCC'
 ];
-
-$input = json_encode($data);
-$input = json_decode($input, true);
-require 'usuarios/auth.php';login($data)
+require 'categorias/update.php';
+actualizarCategoria($data);
 ?>
