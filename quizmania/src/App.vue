@@ -21,8 +21,39 @@
 </template>
 
 <script setup>
+import { watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import Header from "./views/Header.vue";
 import Sidebar from "./views/Admin/Sidebar.vue";
+
+const router = useRouter();
+const route = useRoute();
+
+const rutasValidas = [
+  "/",
+  "/perfil",
+  "/ranking",
+  "/estadisticas",
+  "/juego",
+  "/selecciontema",
+  "/admin",
+  "/categorias",
+  "/usuarios",
+  "/preguntas",
+  "/importar-csv",
+  "/login",
+  "/register",
+  "/quizmania",
+];
+
+watch(
+  () => route.path,
+  (nuevoPath) => {
+    if (!rutasValidas.includes(nuevoPath)) {
+      router.push("/");
+    }
+  }
+);
 </script>
 
 <style>
