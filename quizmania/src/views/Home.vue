@@ -2,9 +2,7 @@
   <section class="game-landing">
     <div class="hero">
       <div class="hero-content">
-        <router-link to="/quizmania" class="play-link">
-            ¡A JUGAR!
-        </router-link>
+        <router-link to="/quizmania" class="play-link"> ¡A JUGAR! </router-link>
       </div>
       <img
         src="../assets/background_inicio.png"
@@ -63,6 +61,17 @@
   </section>
 </template>
 
+<script>
+import Footer from "./Footer.vue";
+
+export default {
+  name: "Home",
+  components: {
+    Footer,
+  },
+};
+</script>
+
 <style scoped>
 .game-landing {
   min-height: 100vh;
@@ -97,7 +106,6 @@
   font-weight: 700;
   font-family: "Montserrat", sans-serif;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  
   background: linear-gradient(135deg, #6366f1, #4f46e5);
   padding: 1.5rem 3rem;
   border: none;
@@ -105,6 +113,7 @@
   box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
   transition: all 0.3s ease;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .play-link:hover {
@@ -201,12 +210,9 @@
     max-width: 100%;
   }
 
-  .play-button {
-    padding: 1.2rem 2.5rem;
-  }
-
   .play-link {
     font-size: 2rem;
+    /* Puedes ajustar el padding aquí si es necesario */
   }
 
   .mode-title,
@@ -225,12 +231,11 @@
     height: 60vh;
   }
 
-  .play-button {
-    padding: 1rem 2rem;
-  }
-
+  /* Ajuste para que el botón se vea completo en una sola línea */
   .play-link {
     font-size: 1.5rem;
+    padding: 1rem 2rem;
+    white-space: nowrap;
   }
 
   .game-modes {
@@ -238,14 +243,3 @@
   }
 }
 </style>
-
-<script>
-import Footer from "./Footer.vue";
-
-export default {
-  name: "Home",
-  components: {
-    Footer,
-  },
-};
-</script>

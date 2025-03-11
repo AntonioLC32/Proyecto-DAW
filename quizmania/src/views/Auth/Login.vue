@@ -1,18 +1,17 @@
 <template>
   <div>
-    <Header />
     <div class="login-container">
       <form class="login-form" @submit.prevent="handleLogin">
         <h2 class="form-title">Iniciar Sesión</h2>
 
         <div class="form-group">
-          <label for="email" class="form-label">Nombre de usuario</label>
+          <label for="user" class="form-label">Nombre de usuario</label>
           <input
-            type="user"
+            type="text"
             id="user"
             v-model="user"
             required
-            autocomplete="user"
+            autocomplete="username"
             class="form-input"
             placeholder="Ingresa tu nombre de usuario"
           />
@@ -99,7 +98,7 @@ export default {
   name: "Perfil",
   data() {
     return {
-      email: "",
+      user: "",
       password: "",
       errorMessage: "",
       passwordVisible: false,
@@ -119,7 +118,7 @@ export default {
             resolve({
               data: {
                 user: {
-                  email: this.email,
+                  username: this.user,
                   token: "fake-jwt-token",
                 },
               },
@@ -153,36 +152,35 @@ export default {
   align-items: center;
   min-height: 100vh;
   background-color: #cac5f5;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .login-form {
   color: white;
   background: #5759cd;
-  padding: 4rem;
+  padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 600px;
-  transform: scale(1.2);
+  max-width: 500px;
 }
 
 .form-title {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   font-family: "Montserrat", sans-serif;
-  font-size: 2.5rem;
+  font-size: 2rem;
   letter-spacing: 1px;
 }
 
 .form-group {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-label {
   display: block;
-  margin-bottom: 0.8rem;
-  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -193,10 +191,10 @@ export default {
 
 .form-input {
   width: 100%;
-  padding: 1.2rem;
+  padding: 0.8rem 1rem;
   border: 2px solid #ddd;
-  border-radius: 15px;
-  font-size: 1.2rem;
+  border-radius: 12px;
+  font-size: 1rem;
   transition: all 0.3s ease;
 }
 
@@ -208,12 +206,12 @@ export default {
 
 .form-input::placeholder {
   color: #b0b0b0;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .password-toggle-btn {
   position: absolute;
-  right: 15px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -226,28 +224,29 @@ export default {
 }
 
 .eye-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .submit-btn {
   width: 100%;
-  padding: 1rem;
+  padding: 0.8rem;
   background-color: #8d89f9;
   color: white;
   border: none;
-  border-radius: 15px;
-  font-size: 1.2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin-top: 1rem;
 }
 
 .submit-btn:hover {
   background-color: #6c69d4;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -257,13 +256,13 @@ export default {
 }
 
 .additional-options {
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
   text-align: center;
 }
 
 .register-span {
   color: white;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .register-link {
@@ -279,27 +278,85 @@ export default {
 }
 
 .error-message {
-  color: #dc3545;
-  margin-top: 2rem;
+  color: #ffcccb;
+  background-color: rgba(220, 53, 69, 0.2);
+  padding: 0.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
+/* Media queries para diferentes tamaños de pantalla */
 @media (max-width: 768px) {
   .login-form {
-    max-width: 95%;
-    padding: 2.5rem;
-    transform: scale(1);
+    max-width: 100%;
+    padding: 1.5rem;
   }
 
   .form-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form {
+    padding: 1.2rem;
   }
 
-  .form-label,
-  .register-span,
-  .error-message {
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-input {
+    padding: 0.7rem;
+  }
+
+  .submit-btn {
     font-size: 1rem;
+    padding: 0.7rem;
+  }
+}
+
+/* Ajustes para pantallas muy altas */
+@media (min-height: 900px) {
+  .login-container {
+    padding: 2rem;
+  }
+}
+
+/* Ajustes para pantallas muy bajas */
+@media (max-height: 600px) {
+  .login-container {
+    min-height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .login-form {
+    padding: 1.2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Ajustes para dispositivos móviles en landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-container {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .login-form {
+    max-width: 400px;
   }
 }
 </style>

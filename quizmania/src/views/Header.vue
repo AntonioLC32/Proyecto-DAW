@@ -12,7 +12,7 @@
       <nav class="nav">
         <ul class="nav-list">
           <li class="nav-item">
-            <router-link to="/perfil" class="nav-link">
+            <router-link to="/perfil" class="nav-link perfil">
               <img
                 :src="getImageUrl(perfil)"
                 alt="Foto de perfil"
@@ -421,6 +421,10 @@ export default {
 @media (max-width: 480px) {
   .titulo {
     font-size: 2rem;
+  }
+
+  .perfil {
+    display: none;
   }
 }
 </style>
