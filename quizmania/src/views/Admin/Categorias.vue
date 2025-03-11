@@ -109,9 +109,16 @@ export default {
             nombre: categoria.nombre,
             imagen: categoria.imagen,
             total_preguntas: 0,
-            acciones: { editar: true, eliminar: false, info: false },
+            acciones: {
+              editar: true,
+              eliminar: false,
+              info: false,
+            },
           }));
-          if (this.rows.length > 0) this.actualizarGrafica();
+
+          if (this.rows.length > 0) {
+            this.actualizarGrafica();
+          }
         }
       } catch (error) {
         console.error("Error fetching categorias:", error);
@@ -128,6 +135,10 @@ export default {
       } catch (error) {
         console.error("Error fetching preguntas:", error);
       }
+    },
+    imageURL(imagen) {
+      const path = new URL("../../", import.meta.url);
+      return `${path}/${imagen}`;
     },
     contarPreguntasPorCategoria() {
       const conteoPorCategoria = {};
@@ -152,7 +163,11 @@ export default {
     renderChart() {
       if (this.$refs.pieChart) {
         const ctx = this.$refs.pieChart.getContext("2d");
-        if (this.chartInstance) this.chartInstance.destroy();
+
+        if (this.chartInstance) {
+          this.chartInstance.destroy();
+        }
+
         this.chartInstance = new Chart(ctx, {
           type: "pie",
           data: this.chartData,
@@ -171,9 +186,11 @@ export default {
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file && file.type.startsWith("image/")) {
-        if (this.nuevaImagenPreview)
+        if (this.nuevaImagenPreview) {
           URL.revokeObjectURL(this.nuevaImagenPreview);
+        }
         this.nuevaImagenPreview = URL.createObjectURL(file);
+        // Guardamos el archivo para enviarlo luego
         this.categoriaSeleccionada.imagenFile = file;
       } else {
         alert("Por favor selecciona un archivo de imagen válido.");
@@ -181,10 +198,8 @@ export default {
     },
     cerrarPopup() {
       this.popupVisible = false;
-      if (this.nuevaImagenPreview) {
-        URL.revokeObjectURL(this.nuevaImagenPreview);
-        this.nuevaImagenPreview = null;
-      }
+      // No es necesario revocar el Base64
+      this.nuevaImagenPreview = null;
     },
     convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -196,51 +211,47 @@ export default {
     },
     async guardarCambios() {
       try {
-        let base64Image = null;
+        const formData = new FormData();
+        formData.append("action", "actualizarCategorias");
+        formData.append("id_categoria", this.categoriaSeleccionada.id);
+        formData.append("nombre", this.categoriaSeleccionada.nombre);
+
+        // Si hay una nueva imagen, la adjuntamos al FormData
         if (this.categoriaSeleccionada.imagenFile) {
-          base64Image = await this.convertFileToBase64(
-            this.categoriaSeleccionada.imagenFile
-          );
+          formData.append("file", this.categoriaSeleccionada.imagenFile);
         }
 
-        const payload = {
-          action: "actualizarCategorias",
-          id_categoria: this.categoriaSeleccionada.id,
-          nombre: this.categoriaSeleccionada.nombre,
-          file: base64Image,
-        };
+        const response = await fetch("../../../../categorias/update.php", {
+          method: "POST",
+          body: formData,
+        });
 
-        const response = await fetch(
-          "/api/index.php?action=actualizarCategorias",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-
-        const data = await response.json();
+        const text = await response.text(); // Leer la respuesta como texto
+        let data;
+        try {
+          data = JSON.parse(text); // Intentar convertir la respuesta a JSON
+        } catch (error) {
+          console.error("Error al parsear la respuesta:", text);
+          throw new Error("Respuesta no válida del servidor: " + text);
+        }
 
         if (data.status === "success") {
-          this.mensaje = "Categoría actualizada correctamente";
-          this.mensajeTipo = "success";
+          // Actualizar la lista de categorías para reflejar los cambios
+          await this.fetchCategorias();
           this.cerrarPopup();
-          this.fetchCategorias();
+          this.nuevaImagenPreview = null;
+          delete this.categoriaSeleccionada.imagenFile;
         } else {
-          this.mensaje = data.mensaje || "Error al actualizar categoría";
-          this.mensajeTipo = "error";
+          console.error("Error al actualizar la categoría:", data.mensaje);
+          alert("Error al actualizar la categoría: " + data.mensaje);
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
-        this.mensajeTipo = "error";
-      } finally {
-        setTimeout(() => {
-          this.mensaje = "";
-          this.mensajeTipo = "";
-        }, 5000);
+        console.error("Error al guardar cambios:", error);
+        alert(
+          `Hubo un error al guardar los cambios. Detalles: ${error.message}`
+        );
       }
     },
-
     getImageUrl(path) {
       const url = new URL("../../", import.meta.url);
       return `${url}/${path}`;
