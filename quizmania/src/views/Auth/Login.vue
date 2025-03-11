@@ -107,30 +107,30 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        // Simulación de llamada a API
         if (this.password.length < 6) {
           throw new Error("La contraseña debe tener al menos 6 caracteres");
         }
 
-        // Aquí iría tu lógica real de autenticación
-        const response = await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              data: {
-                user: {
-                  username: this.user,
-                  token: "fake-jwt-token",
-                },
-              },
-            });
-          }, 1000);
+        const response = await fetch("/api/index.php?action=login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: this.user, // Asegúrate de que coincida con el nombre de campo usado en PHP
+            password: this.password,
+          }),
         });
 
-        // Guardar en Vuex o localStorage
-        localStorage.setItem("authToken", response.data.user.token);
+        const data = await response.json();
 
-        // Redireccionar
-        this.$router.push("/");
+        if (data.status === "success") {
+          // Guarda el token o los datos del usuario según lo requieras
+          localStorage.setItem("authToken", data.user.token || "");
+          this.$router.push("/");
+        } else {
+          throw new Error(data.mensaje || "Error al iniciar sesión");
+        }
       } catch (error) {
         this.errorMessage = error.message || "Error al iniciar sesión";
         setTimeout(() => {
@@ -138,6 +138,7 @@ export default {
         }, 3000);
       }
     },
+
     togglePasswordVisibility() {
       this.passwordVisible = !this.passwordVisible;
     },

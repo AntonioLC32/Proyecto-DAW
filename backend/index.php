@@ -77,6 +77,22 @@ switch ($action) {
         require 'usuarios/update.php';
         deshabilitarUsuario($input);
         break;
+
+    case 'login':
+        require 'usuarios/auth.php';
+        login($input);
+        break;
+
+    case 'register':
+        require 'usuarios/auth.php';
+        register($input);
+        break;
+
+    case 'uploadAvatar':
+    case 'logout':
+        require 'usuarios/logout.php';
+        #logout();
+        break;
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);

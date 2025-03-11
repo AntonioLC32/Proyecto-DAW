@@ -1,10 +1,10 @@
 <?php
 $data = [
-    'id_pregunta' => 1,
+    'username' => 'Primer Usuario',
+    'password' => 'qwe123'
 ];
 
 $input = json_encode($data);
 $input = json_decode($input, true);
-require 'categorias/update.php';
-actualizarCategoria($data)
+require 'usuarios/auth.php';login($data)
 ?>

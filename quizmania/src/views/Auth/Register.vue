@@ -108,6 +108,7 @@ export default {
       confirmPassword: "",
       imageFile: null,
       previewImage: "",
+      imageBase64: "", // 🔹 Almacena la imagen convertida en Base64
       errorMessage: "",
       passwordVisible: false,
     };
@@ -118,30 +119,50 @@ export default {
         if (this.password !== this.confirmPassword) {
           throw new Error("Las contraseñas no coinciden");
         }
-        // Lógica de registro...
-        console.log("Datos de registro:", {
+
+        const formData = {
           username: this.username,
           email: this.email,
           password: this.password,
-          image: this.imageFile,
+          image: this.imageBase64, // Enviamos la imagen en formato Base64
+        };
+
+        const response = await fetch("/api/index.php?action=register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         });
-        this.$router.push("/login");
+
+        const result = await response.json();
+        if (result.status === "success") {
+          alert("Registro exitoso 🎉");
+          this.$router.push("/login");
+        } else {
+          throw new Error(result.mensaje || "Error en el registro");
+        }
       } catch (error) {
-        this.errorMessage = error.message || "Error en el registro";
+        this.errorMessage = error.message;
         setTimeout(() => {
           this.errorMessage = "";
         }, 3000);
       }
     },
+
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
         this.imageFile = file;
         this.previewImage = URL.createObjectURL(file);
+
+        // Convertir la imagen a Base64
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageBase64 = e.target.result; // Guardamos la imagen convertida
+        };
+        reader.readAsDataURL(file);
       }
-    },
-    togglePasswordVisibility() {
-      this.passwordVisible = !this.passwordVisible;
     },
   },
 };
