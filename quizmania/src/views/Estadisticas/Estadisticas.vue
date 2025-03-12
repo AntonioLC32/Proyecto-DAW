@@ -14,7 +14,6 @@
             />
             <h3 class="text-white">{{ perfil.nombre }}</h3>
           </div>
-          <br />
           <p><u>ESTADÍSTICAS GENERALES</u></p>
           <div class="est-generales">
             <div class="stat-item">
@@ -88,18 +87,7 @@ export default {
   data() {
     return {
       perfil: {},
-      estadisticas: [
-        { categoria: 6, puntos: 5600, mejorPosicion: 1 },
-        { categoria: 5, puntos: 4200, mejorPosicion: 3 },
-        { categoria: 1, puntos: 3200, mejorPosicion: 5 },
-        { categoria: 3, puntos: 2648, mejorPosicion: 7 },
-        { categoria: 2, puntos: 2400, mejorPosicion: 8 },
-        { categoria: 4, puntos: 2000, mejorPosicion: 10 },
-        { categoria: 7, puntos: 1800, mejorPosicion: 12 },
-        { categoria: 8, puntos: 1500, mejorPosicion: 15 },
-        { categoria: 10, puntos: 1200, mejorPosicion: 18 },
-        { categoria: 9, puntos: 1200, mejorPosicion: 18 },
-      ],
+      estadisticas: [],
       imagenesCategorias: {},
     };
   },
@@ -116,7 +104,7 @@ export default {
             puntos: perfilData.puntos,
             juegosJugados: perfilData.juegos_jugados,
             victorias: perfilData.victorias,
-            categoria_destacada: perfilData.categoria_destacada, 
+            categoria_destacada: perfilData.categoria_destacada,
           };
         } else {
           console.error("No se han encontrado los datos del perfil.");
@@ -154,11 +142,34 @@ export default {
         ? `/src/${this.imagenesCategorias[categoriaId]}`
         : "";
     },
+    async obtenerEstadisticasCompletas() {
+      try {
+        const response = await fetch(
+          "/api/estadisticas/select_estadisticas_usuario.php"
+        );
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          this.estadisticas = data.map((categoria) => ({
+            categoria: categoria.categoria,
+            puntos: categoria.puntos_totales,
+            mejorPosicion: Math.floor(Math.random() * 10) + 1, // Simulación de posición
+          }));
+        } else {
+          console.error(
+            "No se han encontrado los datos de las estadisticas del perfil."
+          );
+        }
+      } catch (error) {
+        console.error("Error obteniendo las estadisticas del perfil:", error);
+      }
+    },
     // bottom line
   },
   mounted() {
     this.obtenerEstadisticasPerfil();
     this.obtenerCategorias();
+    this.obtenerEstadisticasCompletas();
   },
 };
 </script>
@@ -252,9 +263,11 @@ section {
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  overflow-y: scroll;
   background-color: #4a4da5;
   padding: 20px;
   border-radius: 8px;
+  max-height: 260px;
 }
 
 .stat-item {
@@ -353,6 +366,11 @@ section {
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
+  .est-generales{
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
   .pantalla-estadisticas {
     flex-direction: column;
     align-items: center;
@@ -386,6 +404,10 @@ section {
   .pantalla-estadisticas {
     gap: 20px;
     padding: 20px;
+  }
+
+  .est-generales{
+    max-height: unset;
   }
 
   .perfil-vista {

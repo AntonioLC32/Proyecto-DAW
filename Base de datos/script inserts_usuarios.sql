@@ -17,8 +17,6 @@ SET imagen = 'https://www.qanimals.com/wp-content/uploads/2024/10/pexels-river-a
     ult_conexion = NOW()
 WHERE id_usuario = 1;
 
-
--- El nombre de categoria_destacada tiene que ser el mismo que la imagen o viceversa
 INSERT INTO Ranking (id_usuario, rondas, puntos, posicion, categoria_destacada)
 VALUES 
 (1, 50, 15648, 1, 2),  -- Historia
@@ -31,3 +29,16 @@ VALUES
 (8, 15, 12850, 8, 8),  -- Matemáticas
 (9, 10, 12700, 9, 7),  -- Tecnología
 (10, 5, 12560, 10, 9); -- Cultura General
+
+-- Inserts de la tabla Estadisticas para id_usuario = 1
+INSERT INTO Estadisticas (id_usuario, id_categoria, puntos) VALUES
+(1, 6, 5600), -- Entretenimiento
+(1, 5, 4200), -- Arte y Literatura
+(1, 1, 3200), -- Ciencias
+(1, 3, 2648), -- Geografía
+(1, 2, 2400), -- Historia
+(1, 4, 2000), -- Deportes
+(1, 7, 1800), -- Tecnología
+(1, 8, 1500), -- Matemáticas
+(1, 10, 1200), -- Música
+(1, 9, 1200); -- Cultura General
