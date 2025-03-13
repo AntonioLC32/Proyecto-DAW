@@ -117,7 +117,7 @@ export default {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: this.user, // Asegúrate de que coincida con el nombre de campo usado en PHP
+            username: this.user,
             password: this.password,
           }),
         });
@@ -125,9 +125,11 @@ export default {
         const data = await response.json();
 
         if (data.status === "success") {
-          // Guarda el token o los datos del usuario según lo requieras
-          localStorage.setItem("authToken", data.user.token || "");
-          this.$router.push("/");
+          this.$cookies.set("user", JSON.stringify(data.user), "7d");
+          console.log(this.$cookies.get("user"));
+          this.$router.push("/quizmania").then(() => {
+            location.reload();
+          });
         } else {
           throw new Error(data.mensaje || "Error al iniciar sesión");
         }

@@ -26,7 +26,7 @@
       <div class="right-column">
         <section class="edit-user">
           <!-- Imagen de perfil del administrador -->
-          <img :src="admin.profileImage" alt="Admin" />
+          <img :src="adminData.imagen" alt="Admin" />
 
           <form action="" @submit.prevent="actualizarAdmin">
             <label for="username">Nombre de usuario</label>
@@ -34,7 +34,7 @@
               type="text"
               id="username"
               placeholder="Ej: admin123"
-              v-model="admin.username"
+              v-model="adminData.nombre"
               required
             />
 
@@ -43,7 +43,7 @@
               type="email"
               id="email"
               placeholder="Ej: admin@dominio.com"
-              v-model="admin.email"
+              v-model="adminData.email"
               required
             />
 
@@ -105,15 +105,6 @@ export default {
   },
   data() {
     return {
-      admin: {
-        username: "admin123",
-        email: "admin@dominio.com",
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-        profileImage:
-          "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png",
-      },
       totalUsuarios: 0,
       usuariosConectados: 0,
       headers: [
@@ -125,12 +116,25 @@ export default {
       rows: [],
       popupVisible: false,
       usuarioSeleccionado: {},
+      adminData: {
+        nombre: "",
+        email: "",
+        imagen: "",
+      },
     };
   },
   mounted() {
     this.usuariosTotales();
     this.obtenerUsuariosConectados();
     this.fetchUsuarios();
+    const cookieData = this.$cookies.get("user");
+    if (cookieData) {
+      this.adminData = {
+        nombre: cookieData.nombre || "",
+        email: cookieData.correo || "",
+        imagen: "src/" + cookieData.imagen || "",
+      };
+    }
   },
   methods: {
     abrirPopup(usuario) {

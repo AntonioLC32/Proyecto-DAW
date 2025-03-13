@@ -11,10 +11,19 @@
       </h1>
       <nav class="nav">
         <ul class="nav-list">
-          <li class="nav-item">
+          <li v-if="this.userData" class="nav-item">
             <router-link to="/perfil" class="nav-link perfil">
               <img
-                :src="getImageUrl(perfil)"
+                :src="getImageUserUrl(this.userData.imagen)"
+                alt="Foto de perfil"
+                class="profile-pic"
+              />
+            </router-link>
+          </li>
+          <li v-else class="nav-item">
+            <router-link to="/login" class="nav-link perfil">
+              <img
+                src="../assets/users/default/default.png"
                 alt="Foto de perfil"
                 class="profile-pic"
               />
@@ -128,6 +137,7 @@ export default {
       nombreCategoria: "Música",
       imagenCategoria: "musica.png",
       ronda: 1,
+      userData: null,
     };
   },
   computed: {
@@ -148,6 +158,7 @@ export default {
     if (this.$route.path === "/juego") {
       this.startTimer();
     }
+    this.userData = this.$cookies.get("user");
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -171,6 +182,10 @@ export default {
     getImageUrl(path) {
       return new URL(`../assets/${path}`, import.meta.url).href;
     },
+
+    getImageUserUrl(path) {
+      return `src/${path}`;
+    },
     startTimer() {
       this.timerInterval = setInterval(() => {
         if (this.timer > 0) {
@@ -186,7 +201,10 @@ export default {
       document.body.style.overflow = this.showSidebar ? "hidden" : "auto";
     },
     handleLogout() {
-      console.log("Cerrando sesión...");
+      this.$cookies.remove("user");
+      this.$router.push("/").then(() => {
+        location.reload();
+      });
     },
   },
 };

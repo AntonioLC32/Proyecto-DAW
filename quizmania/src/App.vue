@@ -23,36 +23,56 @@
 <script setup>
 import { watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useCookies } from "vue3-cookies";
 import Header from "./views/Header.vue";
 import Sidebar from "./views/Admin/Sidebar.vue";
 
 const router = useRouter();
 const route = useRoute();
+const { cookies } = useCookies();
+const userData = null;
 
-const rutasValidas = [
-  "/",
-  "/perfil",
-  "/ranking",
-  "/estadisticas",
-  "/juego",
-  "/selecciontema",
+const rutasPublicas = ["/", "/login", "/register"];
+const rutasAdmin = [
   "/admin",
   "/categorias",
   "/usuarios",
   "/preguntas",
   "/importar-csv",
-  "/login",
-  "/register",
+];
+const rutasUsuario = [
+  "/perfil",
+  "/ranking",
+  "/estadisticas",
+  "/juego",
+  "/selecciontema",
   "/quizmania",
 ];
 
 watch(
   () => route.path,
   (nuevoPath) => {
-    if (!rutasValidas.includes(nuevoPath)) {
-      router.push("/");
+    const user = cookies.get("user");
+
+    if (!user) {
+      if (!rutasPublicas.includes(nuevoPath)) {
+        router.push("/").then(() => {
+          location.reload();
+        });
+      }
+    } else {
+      if (user.rol === "admin") {
+        return;
+      } else {
+        if (![...rutasUsuario, ...rutasPublicas].includes(nuevoPath)) {
+          router.push("/quizmania").then(() => {
+            location.reload();
+          });
+        }
+      }
     }
-  }
+  },
+  { immediate: true }
 );
 </script>
 

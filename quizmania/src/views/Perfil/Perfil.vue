@@ -9,17 +9,38 @@
         <!-- Perfil -->
         <div class="perfil-vista">
           <div id="perfil_img">
-            <img src="../../assets/perfil.jpg" alt="Perfil Image" style="border-radius: 50%" />
+            <img
+              v-if="userData && userData.imagen"
+              :src="getImageUserUrl(userData.imagen)"
+              alt="Perfil Image"
+              style="border-radius: 50%"
+            />
+            <img
+              v-else
+              src="../assets/users/default/default.png"
+              alt="Imagen predeterminada"
+              style="border-radius: 50%"
+            />
           </div>
 
           <h3 class="text-white">{{ user.nombre || "Cargando..." }}</h3>
           <h4 class="text-wrap">¡Comparte tu perfil con tus amigos!</h4>
           <div class="socials text-white">
             <a href="#instagram" class="social-button" aria-label="Instagram">
-              <img src="../../assets/instagram2.png" alt="instagram" height="32px" width="32px" />
+              <img
+                src="../../assets/instagram2.png"
+                alt="instagram"
+                height="32px"
+                width="32px"
+              />
             </a>
             <a href="#compartir" class="social-button">
-              <img src="../../assets/share.png" alt="share" height="32px" width="32px" />
+              <img
+                src="../../assets/share.png"
+                alt="share"
+                height="32px"
+                width="32px"
+              />
             </a>
           </div>
         </div>
@@ -29,42 +50,66 @@
           <div class="container-fluid p-0">
             <ul class="nav nav-tabs w-100">
               <li class="nav-item" style="width: 50%; text-align: center">
-                <a @click="setTab('ajustes')" :class="{ active: activeTab === 'ajustes' }" class="nav-link">
+                <a
+                  @click="setTab('ajustes')"
+                  :class="{ active: activeTab === 'ajustes' }"
+                  class="nav-link"
+                >
                   Ajustes de la cuenta
                 </a>
               </li>
               <li class="nav-item" style="width: 50%; text-align: center">
-                <a @click="setTab('estadisticas')" :class="{ active: activeTab === 'estadisticas' }" class="nav-link">
+                <a
+                  @click="setTab('estadisticas')"
+                  :class="{ active: activeTab === 'estadisticas' }"
+                  class="nav-link"
+                >
                   Resumen de tus estadísticas
                 </a>
               </li>
             </ul>
             <div class="tab-content">
-              <div v-if="activeTab === 'ajustes'" class="tab-pane" :class="{ 'show active': activeTab === 'ajustes' }">
+              <div
+                v-if="activeTab === 'ajustes'"
+                class="tab-pane"
+                :class="{ 'show active': activeTab === 'ajustes' }"
+              >
                 <form @submit.prevent="saveSettings">
                   <label for="nombre">Nombre de usuario</label><br />
-                  <input 
-                    v-model="settings.nombre" 
-                    type="text" 
-                    value="{{ perfil.nombre }}" 
+                  <input
+                    v-model="settings.nombre"
+                    type="text"
+                    value="{{ perfil.nombre }}"
                     placeholder="Tu nombre"
                     class="form-control mb-3"
-                    autocomplete="nombre-actual" 
+                    autocomplete="nombre-actual"
                   />
                   <label for="password">Contraseña</label><br />
-                  <input 
-                    v-model="settings.contraseña" 
-                    type="password" 
-                    value="{{ perfil.contraseña }}" 
+                  <input
+                    v-model="settings.contraseña"
+                    type="password"
+                    value="{{ perfil.contraseña }}"
                     placeholder="Tu contraseña"
-                    class="form-control mb-3" 
-                    autocomplete="contraseña-actual" 
+                    class="form-control mb-3"
+                    autocomplete="contraseña-actual"
                   />
                   <label>Desea recibir notificaciones?</label>
                   <div class="form-check">
-                    <input v-model="settings.notificaciones" type="radio" name="notificaciones" id="si" value="si" />
+                    <input
+                      v-model="settings.notificaciones"
+                      type="radio"
+                      name="notificaciones"
+                      id="si"
+                      value="si"
+                    />
                     <label for="si">Sí</label><br />
-                    <input v-model="settings.notificaciones" type="radio" name="notificaciones" id="no" value="no" />
+                    <input
+                      v-model="settings.notificaciones"
+                      type="radio"
+                      name="notificaciones"
+                      id="no"
+                      value="no"
+                    />
                     <label for="no">No</label>
                   </div>
                   <button class="btn w-100 mt-3">✍ Guardar Ajustes</button>
@@ -72,26 +117,39 @@
               </div>
 
               <!-- Contenido de Estadísticas -->
-              <div v-if="activeTab === 'estadisticas'" class="tab-pane"
-                :class="{ 'show active': activeTab === 'estadisticas' }">
+              <div
+                v-if="activeTab === 'estadisticas'"
+                class="tab-pane"
+                :class="{ 'show active': activeTab === 'estadisticas' }"
+              >
                 <div class="estadisticas-container">
                   <div class="estadistica-item">
                     <h4>Pos. Última Partida</h4>
-                    <p class="estadistica-valor">{{ stats.posUltimaPartida || "--" }}</p>
+                    <p class="estadistica-valor">
+                      {{ stats.posUltimaPartida || "--" }}
+                    </p>
                   </div>
                   <div class="estadistica-item">
                     <h4>Puntos Última Partida</h4>
-                    <p class="estadistica-valor">{{ stats.puntosUltimaPartida || "--" }}</p>
+                    <p class="estadistica-valor">
+                      {{ stats.puntosUltimaPartida || "--" }}
+                    </p>
                   </div>
                   <div class="estadistica-item">
                     <h4>Categoría Destacada</h4>
                     <p class="estadistica-valor">
-                      <img :src="obtenerImagenCategoria(stats.imagenCategoria)" alt="Categoría" width="50px" />
+                      <img
+                        :src="obtenerImagenCategoria(stats.imagenCategoria)"
+                        alt="Categoría"
+                        width="50px"
+                      />
                     </p>
                   </div>
                 </div>
                 <div class="my-5">
-                  <a href="/estadisticas" class="btn btn-outline-light">Ver tus estadísticas completas</a>
+                  <a href="/estadisticas" class="btn btn-outline-light"
+                    >Ver tus estadísticas completas</a
+                  >
                 </div>
               </div>
             </div>
@@ -123,12 +181,19 @@ export default {
         puntosUltimaPartida: "--",
         imagenCategoria: entreImage,
       },
+      userData: null,
     };
   },
+
   methods: {
     setTab(tab) {
       this.activeTab = tab;
     },
+
+    getImageUserUrl(path) {
+      return `src/${path}`;
+    },
+
     async cargarPerfil() {
       try {
         const response = await fetch("/api/perfil/select_perfil.php");
@@ -147,8 +212,7 @@ export default {
       } catch (error) {
         console.error("Error obteniendo el perfil:", error.message);
       }
-    }
-    ,
+    },
     obtenerImagenCategoria(imagen) {
       if (!imagen) return "/img/default.png";
       return `/src/${imagen}`;
@@ -158,11 +222,11 @@ export default {
     },
   },
   mounted() {
-    this.cargarPerfil();
+    this.userData = this.$cookies.get("user");
+    //this.cargarPerfil();
   },
 };
 </script>
-
 
 <style scoped lang="css">
 * {
@@ -231,7 +295,7 @@ section {
   font-weight: bold;
 }
 
-.perfil-vista>#perfil_img>img {
+.perfil-vista > #perfil_img > img {
   margin-bottom: 20px;
   width: 100%;
   height: auto;
@@ -244,7 +308,7 @@ section {
   font-size: 32px;
 }
 
-.perfil-vista>.socials {
+.perfil-vista > .socials {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -307,7 +371,7 @@ section {
   justify-content: center;
 }
 
-.tab-content>.active {
+.tab-content > .active {
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -325,26 +389,26 @@ section {
   min-width: 320px;
 }
 
-.tab-content form>input {
+.tab-content form > input {
   padding: 1.2rem;
   border: 2px solid #ddd;
   border-radius: 15px;
   transition: all 0.3s ease;
 }
 
-.tab-content form>label {
+.tab-content form > label {
   display: block;
   font-size: 1.1rem;
   font-weight: 500;
 }
 
-.tab-content form>input:focus {
+.tab-content form > input:focus {
   outline: none;
   border-color: #8d89f9;
   box-shadow: 0 0 0 3px rgba(141, 137, 249, 0.3);
 }
 
-.tab-content form>button {
+.tab-content form > button {
   background-color: #8d89f9;
   filter: drop-shadow(0 2px 2px #00000073);
   /* drop shadow */
@@ -548,12 +612,12 @@ section {
     min-height: 460px;
   }
 
-  .tab-content form>label,
+  .tab-content form > label,
   input {
     font-size: 14px;
   }
 
-  .tab-content form>input {
+  .tab-content form > input {
     height: 40px;
   }
 
