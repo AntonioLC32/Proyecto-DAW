@@ -36,66 +36,39 @@ export default {
     const chartDificultad = ref(null);
     const chartPartidas = ref(null);
 
-/*------------------------- ZONA DE PRUEBAS -------------------------*/
 
-    
+    // Función para obtener las partidas jugadas diarias desde la API
     const fetchPartidasDiarias = async () => {
-      // Simulando datos aleatorios para las partidas jugadas diarias
-      const simulatedData = {
-        Lunes: Math.floor(Math.random() * 100),  // Valores aleatorios entre 0 y 100
-        Martes: Math.floor(Math.random() * 100),
-        Miércoles: Math.floor(Math.random() * 100),
-        Jueves: Math.floor(Math.random() * 100),
-        Viernes: Math.floor(Math.random() * 100),
-        Sábado: Math.floor(Math.random() * 100),
-        Domingo: Math.floor(Math.random() * 100),
-      };
-      
-      partidasData.value = simulatedData;
-      
-      // Llamada a la función para actualizar el gráfico de partidas jugadas
-      PartidasDiarias();
+      try {
+        const response = await fetch("/api/index.php?action=partidasDiarias");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        partidasData.value = data;
+        PartidasDiarias();
+      } catch (error) {
+        console.error("Error al obtener partidas diarias:", error);
+      }
     };
 
+    // Función para obtener la participación de usuarios semanal desde la API
+    const usuariosData = ref({});
     const fetchUsuariosSemanal = async () => {
-      // Simulando datos aleatorios para las partidas jugadas diarias
-      const simulatedData = {
-        Lunes: Math.floor(Math.random() * 100),  // Valores aleatorios entre 0 y 100
-        Martes: Math.floor(Math.random() * 100),
-        Miércoles: Math.floor(Math.random() * 100),
-        Jueves: Math.floor(Math.random() * 100),
-        Viernes: Math.floor(Math.random() * 100),
-        Sábado: Math.floor(Math.random() * 100),
-        Domingo: Math.floor(Math.random() * 100),
-      };
-      
-      partidasData.value = simulatedData;
-      
-      // Llamada a la función para actualizar el gráfico de partidas jugadas
-      UsuariosSemanal();
+      try {
+        const response = await fetch("/api/index.php?action=usuariosSemanal");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        usuariosData.value = Array.isArray(data) ? data[0] : data;
+        UsuariosSemanal();
+      } catch (error) {
+        console.error("Error al obtener datos de usuariosSemanal:", error);
+      }
     };
     
-    
-  /*  const fetchPartidasDiarias = async () => {
-      const response = await fetch("index.php?action=partidasDiarias", {
-        method: "GET",
-      });
-      const data = await response.json();
-      partidasData.value = data;
-      PartidasDiarias();
-    };
-  */
-  /*
-    const fetchUsuariosSemanal = async () => {
-      const response = await fetch("index.php?action=usuariosSemanal", {
-        method: "GET",
-      });
-      const data = await response.json();
-      partidasData.value = data;
-      UsuariosSemanal();
-    };
-  */
-
+    // Función para obtener los aciertos por categoría (se asume que la API devuelve los datos correctos)
     const fetchAciertos = async () => {
       const response = await fetch("index.php?action=aciertosCategoria", {
         method: "GET",
@@ -105,6 +78,7 @@ export default {
       AciertosCategoria();
     };
     
+    // Función para obtener los aciertos por dificultad
     const fetchDificultad = async () => {
       const response = await fetch("index.php?action=aciertosDificultad", {
         method: "GET",
@@ -121,9 +95,7 @@ export default {
         new Chart(chartPartidas.value, {
           type: "bar",
           data: {
-            labels: [
-              "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
-            ],
+            labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
             datasets: [
               {
                 label: "Partidas Jugadas",
@@ -175,31 +147,34 @@ export default {
     };
 
     const UsuariosSemanal = () => {
-      if (chartUsuarios.value) {
-        new Chart(chartUsuarios.value, {
-          type: "bar",
-          data: {
-            labels: [
-              "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
-            ],
-            datasets: [
-              {
-                label: "Partidas Jugadas",
-                data: [
-                  partidasData.value.Lunes,
-                  partidasData.value.Martes,
-                  partidasData.value.Miércoles,
-                  partidasData.value.Jueves,
-                  partidasData.value.Viernes,
-                  partidasData.value.Sábado,
-                  partidasData.value.Domingo,
-                ],
-                backgroundColor: "green",
-              },
-            ],
-          },
-        });
+      if (!chartUsuarios.value || !usuariosData.value) {
+        console.warn("UsuariosSemanal: No se encontró chartUsuarios o datos inválidos");
+        return;
       }
+
+      const dataArray = [
+        usuariosData.value.Lunes || 0,
+        usuariosData.value.Martes || 0,
+        usuariosData.value.Miércoles || 0,
+        usuariosData.value.Jueves || 0,
+        usuariosData.value.Viernes || 0,
+        usuariosData.value.Sábado || 0,
+        usuariosData.value.Domingo || 0,
+      ];
+
+      new Chart(chartUsuarios.value, {
+        type: "bar",
+        data: {
+          labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+          datasets: [
+            {
+              label: "Usuarios Únicos",
+              data: dataArray,
+              backgroundColor: "green",
+            },
+          ],
+        },
+      });
     };
 
     const AciertosDificultad = () => {

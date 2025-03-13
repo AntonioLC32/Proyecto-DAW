@@ -7,20 +7,14 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 require 'config/db.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Comprobar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-}
-
-// Consulta para obtener la cantidad de usuarios únicos por día
+// Consulta corregida con JOIN
 $sql = "
     SELECT 
-        DAYOFWEEK(fecha) AS dia_semana, 
-        COUNT(DISTINCT id_usuario) AS usuarios_unicos
-    FROM Partida
-    WHERE estado = 'finalizada'  -- Solo contar partidas finalizadas
+        DAYOFWEEK(p.fecha) AS dia_semana, 
+        COUNT(DISTINCT pt.id_usuario) AS usuarios_unicos
+    FROM Partida p
+    JOIN Participante pt ON p.id_partida = pt.id_partida
+    WHERE p.estado = 'finalizada'
     GROUP BY dia_semana
     ORDER BY dia_semana;
 ";
@@ -37,27 +31,27 @@ $datos_usuarios = array(
     'Domingo' => 0
 );
 
-if ($result->num_rows > 0) {
+if ($result) {
     while ($row = $result->fetch_assoc()) {
         $dia = $row['dia_semana'];
         $usuarios = $row['usuarios_unicos'];
 
-        // Mapear el número del día de la semana a su nombre
-        switch ($dia) {
-            case 1: $datos_usuarios['Domingo'] = $usuarios; break;
-            case 2: $datos_usuarios['Lunes'] = $usuarios; break;
-            case 3: $datos_usuarios['Martes'] = $usuarios; break;
-            case 4: $datos_usuarios['Miércoles'] = $usuarios; break;
-            case 5: $datos_usuarios['Jueves'] = $usuarios; break;
-            case 6: $datos_usuarios['Viernes'] = $usuarios; break;
-            case 7: $datos_usuarios['Sábado'] = $usuarios; break;
+        // Mapear número de día a su nombre
+        $dias_semana = [
+            1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles',
+            4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'
+        ];
+
+        if (isset($dias_semana[$dia])) {
+            $datos_usuarios[$dias_semana[$dia]] = $usuarios;
         }
     }
 }
 
-// Cerrar la conexión
+// Cerrar conexión
 $conn->close();
 
-// Devolver los datos en formato JSON
+// Devolver datos en formato JSON
 echo json_encode($datos_usuarios);
+
 ?>

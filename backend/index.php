@@ -93,11 +93,11 @@ switch ($action) {
         break;
 
     case 'partidasDiarias':
-        require 'partidasDiarias.php';
+        require 'graficas/partidasDiarias.php';
         break;
 
     case 'usuariosSemanal':
-        require 'usuariosSemanal.php';
+        require 'graficas/usuariosSemanal.php';
         break;
     
 
