@@ -49,15 +49,32 @@
     </div>
     <!-- Botones juego -->
     <div class="juegos">
-      <button class="juego">
-        <a href="/selecciontema" class="juego-link">Modo solitario</a>
+      <button class="juego" @click="navegarA('solitario')">
+        <span class="juego-link">Modo solitario</span>
       </button>
-      <button class="juego">
-        <a href="/selecciontema" class="juego-link">Modo multijugador</a>
+      <button class="juego" @click="navegarA('multijugador')">
+        <span class="juego-link">Modo multijugador</span>
       </button>
     </div>
   </section>
 </template>
+
+<script>
+export default {
+  name: "Quizmania",
+  data() {
+    return {
+      showPopup: false,
+    };
+  },
+  methods: {
+    navegarA(modo) {
+      sessionStorage.setItem("modo-juego", modo);
+      this.$router.push("/selecciontema");
+    },
+  },
+};
+</script>
 
 <style scoped>
 .inicio {
@@ -362,14 +379,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  name: "Quizmania",
-  data() {
-    return {
-      showPopup: false,
-    };
-  },
-};
-</script>

@@ -127,7 +127,7 @@ function register($input) {
             
             $imagePath = 'assets/users/' . $usernameFolder . '/' . $fileName;
         } else {
-            $imagePath = 'assets/users/default.png';
+            $imagePath = 'assets/users/default/default.png';
         }
         
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
@@ -145,6 +145,12 @@ function register($input) {
                     'id_usuario' => $new_id,
                     'nombre'     => $username,
                     'correo'     => $email,
+                    'num_derrotas' => 0,
+                    'num_victorias' => 0,
+                    'fecha_registro' => date("Y-m-d H:i:s"),
+                    'habilitado' => 1,
+                    'rol' => 'jugador',
+                    'ult_conexion' => date("Y-m-d H:i:s"),
                     'imagen'     => $imagePath
                 ]
             ]);

@@ -2,7 +2,7 @@
   <section>
     <div class="contenedor">
       <!-- IF MULTIJUGADOR-->
-      <div class="jugadores d-flex gap-2">
+      <div class="jugadores d-flex gap-2" v-if="modo === 'multijugador'">
         <div class="temas">
           <div class="temas_completados">
             <img
@@ -26,7 +26,7 @@
             />
           </div>
         </div>
-        <div class="temas" v-if="multijugador">
+        <div class="temas">
           <div class="temas_completados">
             <img
               :src="getImageUrl('perfil.jpg')"
@@ -51,10 +51,10 @@
         </div>
       </div>
       <!-- ENDIF MULTIJUGADOR-->
-
+      <!--
       <div class="roulette">
         <div class="arrow"></div>
-        <!-- Flecha indicadora -->
+        <!-- Flecha indicadora 
         <div
           class="roller"
           :style="{
@@ -78,6 +78,37 @@
       <br />
       <div v-if="selectedTheme" class="selected-theme">
         Tema seleccionado: {{ selectedTheme }}
+      </div>-->
+
+      <Roulette
+        ref="roulette"
+        :items="rouletteItems"
+        :firstItemIndex="{ value: 0 }"
+        :wheelResultIndex="{ value: null }"
+        displayCenterIndicator="true"
+        indicatorPosition="top"
+        :size="size"
+        :displayShadow="true"
+        :duration="5"
+        :resultVariation="10"
+        easing="ease"
+        :counterClockwise="false"
+        :horizontalContent="false"
+        :displayBorder="true"
+        :displayIndicator="true"
+        :baseDisplay="true"
+        :baseDisplayIndicator="true"
+        :baseSize="100"
+        baseBackground="#5759cd"
+        @wheelStart="onWheelStart"
+        @wheelEnd="onWheelEnd"
+      />
+
+      <button @click="spinWheel" class="boton_girar">GIRA</button>
+
+      <!-- Se mostrará el tema seleccionado cuando el wheel termine -->
+      <div v-if="selectedCategory" class="selected-theme">
+        Tema seleccionado: {{ selectedCategory }}
       </div>
 
       <div>
@@ -140,12 +171,16 @@
 </template>
 
 <script>
+import Roulette from "../../components/Roulette.vue";
 export default {
   name: "SeleccionTema",
+  components: {
+    Roulette,
+  },
   data() {
     const themes = [
       { name: "Historia", image: this.getImageUrl("historia.png") },
-      { name: "Ciencias", image: this.getImageUrl("ciencias.png") },
+      { name: "Ciencias", image: this.getImageUrl("ciencia.png") },
       { name: "Deportes", image: this.getImageUrl("deportes.png") },
       { name: "Música", image: this.getImageUrl("musica.png") },
       { name: "Entretenimiento", image: this.getImageUrl("entre.png") },
@@ -163,13 +198,52 @@ export default {
       spinning: false,
       selectedTheme: null,
       selectedIndex: null,
-      multijugador: false, // Definir según lógica
+      modo: "", // Definir según lógica
+      selectedCategory: null,
+      size: 500,
     };
   },
+
+  computed: {
+    rouletteItems() {
+      return this.themes.map((theme) => ({
+        id: theme.name,
+        background: "#8D89F8",
+        htmlContent: `<img src="${theme.image}" alt="${theme.name}" style="width:15%; height:auto;">`,
+        textColor: "#000",
+      }));
+    },
+  },
+
+  mounted() {
+    this.modo = sessionStorage.getItem("modo-juego");
+    sessionStorage.removeItem("modo-juego");
+
+    if (this.modo === "multijugador") {
+      this.size = 300;
+    }
+  },
+
   methods: {
+    spinWheel() {
+      this.$refs.roulette.launchWheel();
+    },
+    onWheelStart(selectedItem) {
+      console.log("Wheel started:", selectedItem);
+    },
+    onWheelEnd(selectedItem) {
+      console.log("Wheel ended:", selectedItem);
+      sessionStorage.setItem("categoria", selectedItem.id);
+      this.selectedCategory = selectedItem.id;
+      setTimeout(() => {
+        this.$router.push("/juego");
+      }, 2000);
+    },
+
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
     },
+
     exit() {
       // Close the modal using Bootstrap's JavaScript API
       const modal = bootstrap.Modal.getInstance(this.$refs.modalRendirte);

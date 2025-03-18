@@ -137,8 +137,11 @@ export default {
 
         const result = await response.json();
         if (result.status === "success") {
-          alert("Registro exitoso 🎉");
-          this.$router.push("/login");
+          this.$cookies.set("user", JSON.stringify(result.user), "7d");
+          //console.log(this.$cookies.get("user"));
+          this.$router.push("/quizmania").then(() => {
+            location.reload();
+          });
         } else {
           throw new Error(result.mensaje || "Error en el registro");
         }

@@ -1,16 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="
-        ![
-          '/admin',
-          '/categorias',
-          '/usuarios',
-          '/preguntas',
-          '/importar-csv',
-        ].includes($route.path)
-      "
-    >
+    <div v-if="!rutasAdmin.includes($route.path)">
       <Header />
     </div>
     <div v-else>
@@ -30,7 +20,6 @@ import Sidebar from "./views/Admin/Sidebar.vue";
 const router = useRouter();
 const route = useRoute();
 const { cookies } = useCookies();
-const userData = null;
 
 const rutasPublicas = ["/", "/login", "/register"];
 const rutasAdmin = [
@@ -53,21 +42,21 @@ watch(
   () => route.path,
   (nuevoPath) => {
     const user = cookies.get("user");
-
+    const rutasValidas = [...rutasPublicas, ...rutasAdmin, ...rutasUsuario];
+    if (!rutasValidas.includes(nuevoPath)) {
+      router.push("/").then(() => location.reload());
+      return;
+    }
     if (!user) {
       if (!rutasPublicas.includes(nuevoPath)) {
-        router.push("/").then(() => {
-          location.reload();
-        });
+        router.push("/").then(() => location.reload());
       }
     } else {
       if (user.rol === "admin") {
         return;
       } else {
         if (![...rutasUsuario, ...rutasPublicas].includes(nuevoPath)) {
-          router.push("/quizmania").then(() => {
-            location.reload();
-          });
+          router.push("/quizmania").then(() => location.reload());
         }
       }
     }

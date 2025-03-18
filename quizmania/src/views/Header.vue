@@ -159,6 +159,7 @@ export default {
       this.startTimer();
     }
     this.userData = this.$cookies.get("user");
+    console.log(this.userData);
   },
   beforeDestroy() {
     if (this.timerInterval) {
