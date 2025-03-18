@@ -48,6 +48,11 @@ switch ($action) {
         actualizarCategoria($input);
         break;
 
+    case 'actualizarUsuario':
+        require_once 'perfil/updatePerfil.php';
+        actualizarUsuario($input);
+        break;
+
     case 'updatePregunta':
         require 'preguntas/update.php';
         updatePregunta($input);

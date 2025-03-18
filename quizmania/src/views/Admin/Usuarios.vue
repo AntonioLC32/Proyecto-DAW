@@ -26,7 +26,11 @@
       <div class="right-column">
         <section class="edit-user">
           <!-- Imagen de perfil del administrador -->
-          <img :src="adminData.imagen" alt="Admin" />
+          <img 
+            :src="
+            nuevaImagenPreview || adminData.imagen
+            " alt="Admin" 
+          />
 
           <form action="" @submit.prevent="actualizarAdmin">
             <label for="username">Nombre de usuario</label>
@@ -49,20 +53,24 @@
 
             <!-- Botón personalizado para seleccionar imagen -->
             <div class="custom-file-upload">
-              <label for="profile-image" class="btn-file-upload"
-                >Seleccionar Imagen</label
-              >
+              <button 
+                @click="$refs.fileInput.click()"
+                class="popup-btn cambiar-imagen-btn"
+                >
+                  Seleccionar Imagen
+              </button>
               <input
                 type="file"
-                id="profile-image"
+                ref="fileInput"
+                hidden
                 accept="image/*"
-                @change="subirImagen"
+                @change="handleImageUpload"
               />
             </div>
 
             <!-- Botones centrados -->
             <div class="botones-form">
-              <button type="submit" class="btn-submit">Guardar Cambios</button>
+              <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
               <button type="button" class="btn-cancel" @click="cancelarEdicion">
                 Cancelar
               </button>
@@ -100,11 +108,10 @@ import Table from "./Table.vue";
 
 export default {
   name: "Usuarios",
-  components: {
-    Table,
-  },
+  components: { Table },
   data() {
     return {
+      nuevaImagenPreview: null,
       totalUsuarios: 0,
       usuariosConectados: 0,
       headers: [
@@ -116,7 +123,10 @@ export default {
       rows: [],
       popupVisible: false,
       usuarioSeleccionado: {},
+      mensaje: "",
+      mensajeTipo: "",
       adminData: {
+        id: "",
         nombre: "",
         email: "",
         imagen: "",
@@ -130,9 +140,10 @@ export default {
     const cookieData = this.$cookies.get("user");
     if (cookieData) {
       this.adminData = {
+        id: cookieData.id_usuario || "",
         nombre: cookieData.nombre || "",
         email: cookieData.correo || "",
-        imagen: "src/" + cookieData.imagen || "",
+        imagen: cookieData.imagen ? "src/" + cookieData.imagen : "",
       };
     }
   },
@@ -233,6 +244,85 @@ export default {
       } catch (error) {
         console.error("Error al obtener usuarios conectados:", error);
       }
+    },
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith("image/")) {
+        if (this.nuevaImagenPreview) {
+          URL.revokeObjectURL(this.nuevaImagenPreview);
+        }
+        this.nuevaImagenPreview = URL.createObjectURL(file);
+        // Guardamos el archivo para enviarlo luego
+        this.usuarioSeleccionado.imagenFile = file;
+      } else {
+        alert("Por favor selecciona un archivo de imagen válido.");
+      }
+    },
+    convertFileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    },
+    async guardarCambios() {
+      try {
+        let base64Image = null;
+        
+        // Verificar si hay una nueva imagen seleccionada
+        if (this.usuarioSeleccionado.imagenFile) {
+          base64Image = await this.convertFileToBase64(this.usuarioSeleccionado.imagenFile);
+        }
+
+        // Preparar el payload para la petición
+        const payload = {
+          action: "actualizarUsuario",  // Se ajusta la acción según lo que se quiera hacer
+          id_usuario: this.usuarioSeleccionado.id || this.adminData.id,
+          nombre: this.usuarioSeleccionado.nombre || this.adminData.nombre,
+          email: this.usuarioSeleccionado.email || this.adminData.email,  // Si se cambia el email
+          file: base64Image,  // Añadir la imagen en base64 si está presente
+        };
+
+        // Realizar la petición al servidor
+        const response = await fetch("/api/index.php?action=actualizarUsuario", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        // Obtener la respuesta como texto
+        const data = await response.text();
+        console.log("Error en " + data)
+
+        // Si la respuesta es exitosa
+        if (data.status === "success") {
+          this.mensaje = "Usuario actualizado correctamente";
+          this.mensajeTipo = "success";
+
+          await this.fetchUsuarios(); // Volver a cargar la lista de usuarios
+
+          this.nuevaImagenPreview = null;  // Limpiar la previsualización de la imagen
+        } else {
+          this.mensaje = data.mensaje || "Error al actualizar usuario";
+          this.mensajeTipo = "error";
+        }
+      } catch (error) {
+        console.error("Error en guardar cambios:", error);
+        this.mensaje = "Error de conexión: " + error.message;
+        this.mensajeTipo = "error";
+      } finally {
+        setTimeout(() => {
+          this.mensaje = "";
+          this.mensajeTipo = "";
+        }, 5000);
+      }
+    },
+    getImageUrl(path) {
+      return `/assets/${path}`;
+    },
+    cancelarEdicion() {
+      window.location.reload();
     },
   },
 };
@@ -360,6 +450,23 @@ export default {
   display: none;
 }
 
+.popup-btn {
+  background-color: #6c5ce7;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  align-self: center;
+  width: 100%;
+}
+
+/*
 .btn-file-upload {
   display: inline-block;
   padding: 10px 20px;
@@ -370,6 +477,7 @@ export default {
   font-weight: bold;
   transition: background-color 0.3s;
 }
+*/
 
 .btn-file-upload:hover {
   background-color: #5b4bc4;
