@@ -2,15 +2,33 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Headers: Content-Type");
 
 require '../config/db.php';
 
-$usuario_id = 1; 
+if (!isset($_COOKIE['user'])) {
+    echo json_encode(["error" => "Usuario no autenticado"]);
+    exit;
+}
+
+// Decodificar la cookie 'user'
+$user = json_decode($_COOKIE['user'], true);
+
+/* Imprimir el contenido de la cookie para depuración
+echo "Contenido de la cookie 'user':\n";
+print_r($user); // Imprime el array de la cookie
+echo "\n";
+*/
+
+if (!$user || !isset($user['id_usuario'])) {
+    echo json_encode(["error" => "Cookie de usuario inválida"]);
+    exit;
+}
+
+$usuario_id = $user['id_usuario'];
 
 $sql = "SELECT 
     u.nombre,  
-    u.contraseña,  
+    u.correo, 
     r.posicion, 
     r.puntos, 
     r.categoria_destacada, 
@@ -24,18 +42,18 @@ if ($stmt = $conn->prepare($sql)) {
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $perfil = $result->fetch_assoc();
         echo json_encode($perfil);
     } else {
-        echo json_encode(["error" => "No se encontraron datos para el usuario."]);
+        error_log("No se encontraron datos para el usuario con ID: " . $usuario_id);
+        echo json_encode(["error" => "No se encontraron datos para el usuario con ID: " . $usuario_id]);
     }
-    
+
     $stmt->close();
 } else {
     echo json_encode(["error" => "Error en la consulta SQL."]);
 }
 
 $conn->close();
-?>

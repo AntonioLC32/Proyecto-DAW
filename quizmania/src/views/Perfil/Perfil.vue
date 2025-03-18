@@ -79,21 +79,25 @@
                   <input
                     v-model="settings.nombre"
                     type="text"
-                    value="{{ perfil.nombre }}"
                     placeholder="Tu nombre"
                     class="form-control mb-3"
-                    autocomplete="nombre-actual"
                   />
-                  <label for="password">Contraseña</label><br />
+                  <label for="correo">Correo Electrónico</label><br />
                   <input
-                    v-model="settings.contraseña"
-                    type="password"
-                    value="{{ perfil.contraseña }}"
-                    placeholder="Tu contraseña"
+                    v-model="settings.correo"
+                    type="email"
+                    placeholder="Tu correo"
                     class="form-control mb-3"
-                    autocomplete="contraseña-actual"
                   />
-                  <label>Desea recibir notificaciones?</label>
+                  <button
+                    type="button"
+                    class="btn btn-link mt-3"
+                    @click="retrievePassword"
+                  >
+                    Te has olvidado de tu contraseña?
+                  </button>
+                  
+                  <label class="mt-3">Desea recibir notificaciones?</label>
                   <div class="form-check">
                     <input
                       v-model="settings.notificaciones"
@@ -140,7 +144,7 @@
                     <p class="estadistica-valor">
                       <img
                         :src="obtenerImagenCategoria(stats.imagenCategoria)"
-                        alt="Categoría"
+                        alt="Categoria Destacada"
                         width="50px"
                       />
                     </p>
@@ -161,8 +165,6 @@
 </template>
 
 <script>
-import entreImage from "../../assets/entre.png";
-
 export default {
   name: "Perfil",
   data() {
@@ -173,15 +175,16 @@ export default {
       },
       settings: {
         nombre: "Cargando...",
-        contraseña: "Cargando...",
+        correo: "Cargando...",
         notificaciones: "si",
       },
       stats: {
         posUltimaPartida: "--",
         puntosUltimaPartida: "--",
-        imagenCategoria: entreImage,
+        imagenCategoria: "--",
       },
       userData: null,
+      passwordVisible: false,
     };
   },
 
@@ -191,39 +194,95 @@ export default {
     },
 
     getImageUserUrl(path) {
-      return `src/${path}`;
+      return path ? `/src/${path}` : "/src/assets/users/default.png";
     },
 
     async cargarPerfil() {
+      console.log("cargarPerfil method called");
       try {
-        const response = await fetch("/api/perfil/select_perfil.php");
+        const response = await fetch("/api/perfil/select_perfil.php", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
+        if (!data || data.error) {
+          console.error("API Error:", data?.error || "Invalid response");
+          return;
+        }
+        console.log("Datos devueltos por la API:", data);
 
-        if (data.error) throw new Error(data.error);
+        this.user = {
+          ...this.user,
+          nombre: data.nombre || this.user.nombre,
+          imagen: data.imagen || this.user.imagen,
+        };
 
-        this.user.nombre = data.nombre || "Desconocido";
-        this.user.contraseña = data.contraseña || "contraseña por defecto";
+        this.settings = {
+          ...this.settings,
+          nombre: data.nombre || this.settings.nombre,
+          correo: data.correo || this.settings.correo, 
+          notificaciones: data.notificaciones || this.settings.notificaciones,
+        }
+
         this.stats = {
+          ...this.stats,
           posUltimaPartida: data.posicion || "--",
           puntosUltimaPartida: data.puntos || "--",
-          imagenCategoria: data.imagen_categoria || "/img/default.png",
+          imagenCategoria: data.imagen_categoria || "--",
         };
+
         this.settings.nombre = this.user.nombre;
       } catch (error) {
         console.error("Error obteniendo el perfil:", error.message);
       }
     },
+
     obtenerImagenCategoria(imagen) {
-      if (!imagen) return "/img/default.png";
+      if (!imagen || imagen === "--") return "/src/assets/default.png";
       return `/src/${imagen}`;
     },
+
     async saveSettings() {
       console.log("Ajustes guardados:", this.settings);
+      alert("Los ajustes han sido guardados exitosamente.");
+    },
+
+    togglePasswordVisibility() {
+      this.passwordVisible = !this.passwordVisible;
+    },
+
+    retrievePassword() {
+      alert("Función de recuperación de contraseña no implementada.");
     },
   },
+
   mounted() {
-    this.userData = this.$cookies.get("user");
-    //this.cargarPerfil();
+    const userCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("user="))
+      ?.split("=")[1];
+
+    if (userCookie) {
+      try {
+        this.userData = JSON.parse(decodeURIComponent(userCookie));
+        this.user = { ...this.user, ...this.userData };
+        this.settings.nombre = this.user.nombre;
+        this.user.imagen = this.user.imagen || "Imagen no encontrada";
+
+        console.log("Usuario cargado desde cookies:", this.user);
+
+        // Now fetch the latest profile data from the API
+        this.cargarPerfil();
+      } catch (error) {
+        console.error("Error parsing user cookie:", error.message);
+      }
+    } else {
+      console.warn("No user found in cookies. Fetching profile from API...");
+      // If no cookie, directly load data from the API
+      this.cargarPerfil();
+    }
   },
 };
 </script>
@@ -298,9 +357,12 @@ section {
 .perfil-vista > #perfil_img > img {
   margin-bottom: 20px;
   width: 100%;
-  height: auto;
   max-width: 250px;
-  max-height: 275px;
+  height: 250px;
+}
+
+.perfil-vista > #perfil_img {
+  margin: 20px;
 }
 
 .perfil-vista h3 {
@@ -522,6 +584,14 @@ section {
     margin-right: 20px;
   }
 
+  .perfil-vista > #perfil_img > img {
+    height: 250px;
+  }
+
+  .perfil-vista > #perfil_img {
+    margin: 20px;
+  }
+
   .division {
     flex-direction: column;
     align-items: center;
@@ -648,5 +718,29 @@ section {
     margin-top: 10px;
     width: 100px;
   }
+}
+
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
 }
 </style>
