@@ -6,14 +6,27 @@
       </div>
       <div class="container-fluid pantalla-ranking">
         <div class="perfil-vista">
-          <img src="../../assets/perfil.jpg" alt="Perfil Image" width="250" height="275" style="border-radius: 50%" />
+          <img
+            v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
+            :src="getImageUserUrl(perfil.imagen)"
+            alt="Perfil Image"
+            style="border-radius: 50%"
+          />
+          <img
+            v-else
+            :src="defaultImagePath"
+            alt="Imagen predeterminada"
+            style="border-radius: 50%"
+          />
           <h3 class="text-white">{{ perfil.nombre || "Cargando..." }}</h3>
           <div>
             <p class="pos"><u>ESTADÍSTICAS</u></p>
             <div class="d-flex posicion">
               <p class="me-2">Última posición:</p>
               <div class="num text-white">
-                <u><b>{{ perfil.posicion || "--" }}</b></u>
+                <u
+                  ><b>{{ perfil.posicion || "--" }}</b></u
+                >
               </div>
             </div>
           </div>
@@ -43,9 +56,11 @@
                 <td class="posicion py-3">{{ jugador.posicion }}</td>
                 <td class="puntos py-3">{{ jugador.puntos }}</td>
                 <td class="categoria py-3">
-                  <img :src="obtenerImagenCategoria(jugador.imagen)" 
-                       :alt="`Categoría destacada: ${jugador.categoria_destacada}`" 
-                       width="50px" />
+                  <img
+                    :src="obtenerImagenCategoria(jugador.imagen_categoria)"
+                    :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
+                    width="50px"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -63,24 +78,34 @@ export default {
       perfil: {
         nombre: "",
         posicion: "",
+        imagen: "",
       },
       ranking: [],
+      defaultImagePath: "/assets/users/default/default.png", // Standardized default image path
     };
   },
   methods: {
     async obtenerEstadisticasPerfil() {
       try {
-        const response = await fetch("/api/estadisticas/select_perfil.php");
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const perfilData = data[0];
-          this.perfil = {
-            nombre: perfilData.nombre || "Desconocido",
-            posicion: perfilData.posicion || "--",
-          };
-        } else {
-          console.error("No se han encontrado los datos del perfil.");
+        const response = await fetch("/api/perfil/select_perfil.php", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        if (!data || data.error) {
+          console.error("API Error:", data?.error || "Invalid response");
+          return;
+        }
+        console.log("Datos devueltos por la API:", data);
+
+        this.perfil = {
+          ...this.perfil,
+          nombre: data.nombre || this.perfil.nombre,
+          posicion: data.posicion || "--",
+          imagen: this.perfil.imagen || this.defaultImagePath,
+        };
       } catch (error) {
         console.error("Error obteniendo el perfil:", error);
       }
@@ -89,23 +114,53 @@ export default {
       try {
         const response = await fetch("/api/ranking/select.php");
         const data = await response.json();
-        this.ranking = data || [];
+        if (!data || data.error) {
+          console.error("API Error:", data?.error || "Invalid response");
+          this.ranking = [];
+          return;
+        }
+        this.ranking = data;
       } catch (error) {
         console.error("Error obteniendo el ranking:", error);
       }
     },
-    obtenerImagenCategoria(imagen) {
-      if (!imagen) return "/img/default.png"; 
-      return `/src/${imagen}`; 
+    obtenerImagenCategoria(imagen_categoria) {
+      if (!imagen_categoria || imagen_categoria === "--") return "/src/assets/default.png";
+      return `/src/${imagen_categoria}`;
+    },
+    getImageUserUrl(path) {
+      return path ? `/src/${path}` : this.defaultImagePath;
     },
   },
   mounted() {
-    this.obtenerEstadisticasPerfil();
-    this.obtenerRanking();
+    const userCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("user="))
+      ?.split("=")[1];
+
+    if (userCookie) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(userCookie));
+        this.perfil = { ...this.perfil, ...userData };
+        this.perfil.imagen =
+          this.perfil.imagen || this.defaultImagePath;
+        console.log("Usuario cargado desde cookies:", this.perfil);
+
+        // Fetch additional data from the API
+        this.obtenerEstadisticasPerfil();
+        this.obtenerRanking();
+      } catch (error) {
+        console.error("Error parsing user cookie:", error.message);
+      }
+    } else {
+      console.warn("No user found in cookies. Fetching profile from API...");
+      // If no cookie, directly load data from the API
+      this.obtenerEstadisticasPerfil();
+      this.obtenerRanking();
+    }
   },
 };
 </script>
-
 
 <style scoped lang="css">
 * {
@@ -174,11 +229,11 @@ section {
 
 .perfil-vista img {
   margin-bottom: 20px;
-  margin-top: 47px;
   width: 100%;
-  height: auto;
   max-width: 250px;
-  max-height: 275px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 50%; /* Ensure circular shape */
 }
 
 .perfil-vista h3 {
@@ -214,7 +269,7 @@ h3.num {
   flex-wrap: nowrap;
 }
 
-.pos>u {
+.pos > u {
   color: #5759cd !important;
 }
 
@@ -362,8 +417,11 @@ h3.num {
   }
 
   .perfil-vista img {
-    width: 100px;
-    height: 100px;
+    width: 120px; /* Adjust size for smaller screens */
+    height: 120px;
+    max-width: unset;
+    max-height: unset;
+    object-fit: cover; /* Maintain aspect ratio */
     border-radius: 50%;
     margin: 0;
   }
@@ -415,8 +473,11 @@ h3.num {
   }
 
   .perfil-vista img {
-    width: 90px;
-    height: 90px;
+    width: 100px; /* Further adjust size for smaller screens */
+    height: 100px;
+    max-width: unset;
+    max-height: unset;
+    object-fit: cover; /* Maintain aspect ratio */
     border-radius: 50%;
   }
 
@@ -425,7 +486,7 @@ h3.num {
     margin: 0;
   }
 
-  .perfil-vista>div {
+  .perfil-vista > div {
     display: flex;
     flex-direction: column;
     align-items: center;

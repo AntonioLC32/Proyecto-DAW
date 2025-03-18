@@ -13,12 +13,6 @@ if (!isset($_COOKIE['user'])) {
 // Decodificar la cookie 'user'
 $user = json_decode($_COOKIE['user'], true);
 
-/* Imprimir el contenido de la cookie para depuración
-echo "Contenido de la cookie 'user':\n";
-print_r($user); // Imprime el array de la cookie
-echo "\n";
-*/
-
 if (!$user || !isset($user['id_usuario'])) {
     echo json_encode(["error" => "Cookie de usuario inválida"]);
     exit;

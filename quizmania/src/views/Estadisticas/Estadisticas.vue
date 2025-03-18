@@ -14,7 +14,9 @@
             />
             <h3 class="text-white">{{ perfil.nombre }}</h3>
           </div>
+          <!--
           <p><u>ESTADÍSTICAS GENERALES</u></p>
+          -->
           <div class="est-generales">
             <div class="stat-item">
               <p class="me-2">Última posición:</p>
@@ -25,19 +27,25 @@
             <div class="stat-item">
               <p class="me-2">Puntos Totales:</p>
               <div class="num text-white">
-                <b>{{ perfil.puntos }}</b>
+                <b>{{ perfil.puntos_totales }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Juegos Jugados:</p>
+              <p class="me-2">Rondas Jugadas:</p>
               <div class="num text-white">
-                <b>{{ perfil.juegosJugados }}</b>
+                <b>{{ perfil.rondas_jugadas }}</b>
               </div>
             </div>
             <div class="stat-item">
               <p class="me-2">Victorias:</p>
               <div class="num text-white">
                 <b>{{ perfil.victorias }}</b>
+              </div>
+            </div>
+            <div class="stat-item">
+              <p class="me-2">Derrotas:</p>
+              <div class="num text-white">
+                <b>{{ perfil.derrotas }}</b>
               </div>
             </div>
             <div class="stat-item">
@@ -54,7 +62,10 @@
         </div>
 
         <div class="estadisticas">
-          <div class="estadisticas-grid">
+          <div v-if="estadisticas.length === 0" class="no-records">
+            <p>No hay estadísticas para este usuario.</p>
+          </div>
+          <div v-else class="estadisticas-grid">
             <div
               v-for="(categoria, index) in estadisticas"
               :key="index"
@@ -94,21 +105,30 @@ export default {
   methods: {
     async obtenerEstadisticasPerfil() {
       try {
-        const response = await fetch("/api/estadisticas/select_perfil.php");
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const perfilData = data[0];
-          this.perfil = {
-            nombre: perfilData.nombre,
-            posicion: perfilData.posicion,
-            puntos: perfilData.puntos,
-            juegosJugados: perfilData.juegos_jugados,
-            victorias: perfilData.victorias,
-            categoria_destacada: perfilData.categoria_destacada,
-          };
-        } else {
-          console.error("No se han encontrado los datos del perfil.");
+        const response = await fetch("/api/perfil/select_perfil.php", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        if (!data || data.error) {
+          console.error("API Error:", data?.error || "Invalid response");
+          return;
+        }
+        console.log("Datos devueltos por la API:", data);
+        
+        this.perfil = {
+          ...this.perfil,
+          nombre: data.nombre || this.perfil.nombre,
+          posicion: data.posicion || "--",
+          puntos_totales: data.puntos_totales || "--",
+          rondasJugadas: data.rondas_jugadas || "--",
+          victorias: data.victorias || this.perfil.num_victorias || "--",
+          derrotas: data.derrotas || this.perfil.num_derrotas || "--",
+          categoria_destacada: data.categoria_destacada || "--",
+          imagen: this.perfil.imagen || this.defaultImagePath,
+        };
       } catch (error) {
         console.error("Error obteniendo el perfil:", error);
       }
@@ -149,27 +169,60 @@ export default {
         );
         const data = await response.json();
 
+        if (data.error) {
+          console.error("Error:", data.error);
+          this.estadisticas = [];
+          return;
+        }
+
+        if (data.message) {
+          console.warn(data.message);
+          this.estadisticas = [];
+          return;
+        }
+
         if (data && data.length > 0) {
           this.estadisticas = data.map((categoria) => ({
             categoria: categoria.categoria,
             puntos: categoria.puntos_totales,
             mejorPosicion: Math.floor(Math.random() * 10) + 1, // Simulación de posición
           }));
-        } else {
-          console.error(
-            "No se han encontrado los datos de las estadisticas del perfil."
-          );
         }
       } catch (error) {
-        console.error("Error obteniendo las estadisticas del perfil:", error);
+        console.error("Error obteniendo las estadísticas del perfil:", error);
+        this.estadisticas = [];
       }
     },
     // bottom line
   },
   mounted() {
-    this.obtenerEstadisticasPerfil();
-    this.obtenerCategorias();
-    this.obtenerEstadisticasCompletas();
+    const userCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("user="))
+      ?.split("=")[1];
+
+    if (userCookie) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(userCookie));
+        this.perfil = { ...this.perfil, ...userData };
+        this.perfil.imagen =
+          this.perfil.imagen || "../../assets/users/default/default.png";
+        console.log("Usuario cargado desde cookies:", this.perfil);
+
+        // Fetch additional data from the API
+        this.obtenerEstadisticasPerfil();
+        this.obtenerCategorias();
+        this.obtenerEstadisticasCompletas();
+      } catch (error) {
+        console.error("Error parsing user cookie:", error.message);
+      }
+    } else {
+      console.warn("No user found in cookies. Fetching profile from API...");
+      // If no cookie, directly load data from the API
+      this.obtenerEstadisticasPerfil();
+      this.obtenerCategorias();
+      this.obtenerEstadisticasCompletas();
+    }
   },
 };
 </script>
@@ -343,6 +396,14 @@ section {
   font-size: 18px;
 }
 
+.no-records {
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 20px;
+}
+
 /*SCROLLBAR*/
 *::-webkit-scrollbar {
   width: 12px;
@@ -366,7 +427,7 @@ section {
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
-  .est-generales{
+  .est-generales {
     max-height: 100%;
     overflow-y: auto;
   }
@@ -406,7 +467,7 @@ section {
     padding: 20px;
   }
 
-  .est-generales{
+  .est-generales {
     max-height: unset;
   }
 
