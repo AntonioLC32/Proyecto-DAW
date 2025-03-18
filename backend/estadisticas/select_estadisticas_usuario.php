@@ -6,15 +6,33 @@ header("Access-Control-Allow-Headers: Content-Type");
 
 require '../config/db.php';
 
-$usuario_id = 1; // ID fijo del usuario 1
+if (!isset($_COOKIE['user'])) {
+    echo json_encode(["error" => "Usuario no autenticado"]);
+    exit;
+}
+
+// Decodificar la cookie 'user'
+$user = json_decode($_COOKIE['user'], true);
+
+// Imprimir el contenido de la cookie para depuración
+echo "Contenido de la cookie 'user':\n";
+print_r($user); // Imprime el array de la cookie
+echo "\n";
+
+if (!$user || !isset($user['id_usuario'])) {
+    echo json_encode(["error" => "Cookie de usuario inválida"]);
+    exit;
+}
+
+$usuario_id = $user['id_usuario'];
 
 $sql = "SELECT 
         id_usuario,
         id_categoria AS categoria, 
         puntos AS puntos_totales 
         FROM Estadisticas
-        WHERE id_usuario = $usuario_id
-        ORDER BY puntos DESC";
+        WHERE id_usuario = ?
+        ORDER BY puntos DESC LIMIT 1";
 
 $result = $conn->query($sql);
 
