@@ -2,13 +2,10 @@
   <section class="game-landing">
     <div class="hero">
       <div class="hero-content">
-        <router-link to="/quizmania" class="play-link"> ¡A JUGAR! </router-link>
+        <router-link v-if="userData" to="/quizmania" class="play-link"> ¡A JUGAR! </router-link>
+        <router-link v-else to="/login" class="play-link"> Inicia sesión </router-link>
       </div>
-      <img
-        src="../assets/background_inicio.png"
-        alt="Fondo de inicio del juego"
-        class="hero-image"
-      />
+      <img src="../assets/background_inicio.png" alt="Fondo de inicio del juego" class="hero-image" />
     </div>
 
     <section class="game-modes">
@@ -69,6 +66,14 @@ export default {
   components: {
     Footer,
   },
+  data() {
+    return {
+      userData: null,
+    };
+  },
+  mounted() {
+    this.userData = this.$cookies.get("user");
+  }
 };
 </script>
 
