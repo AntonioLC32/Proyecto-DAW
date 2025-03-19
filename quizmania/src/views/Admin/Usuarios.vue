@@ -129,7 +129,9 @@ export default {
         id: "",
         nombre: "",
         email: "",
-        imagen: "",
+        // Inicialmente se asigna lo que venga de las cookies,
+        // pero si no hay imagen o es default, se usará la imagen default
+        imagen: "src/assets/users/admin/default.png",
       },
     };
   },
@@ -137,13 +139,15 @@ export default {
     this.usuariosTotales();
     this.obtenerUsuariosConectados();
     this.fetchUsuarios();
+    // Asignamos datos de las cookies
     const cookieData = this.$cookies.get("user");
     if (cookieData) {
       this.adminData = {
         id: cookieData.id_usuario || "",
         nombre: cookieData.nombre || "",
         email: cookieData.correo || "",
-        imagen: cookieData.imagen ? "src/" + cookieData.imagen : "",
+        // Si en la cookie hay imagen, se asigna; si no, se deja default.
+        imagen: cookieData.imagen ? "src/" + cookieData.imagen : "src/assets/users/admin/default.png",
       };
     }
   },
@@ -155,33 +159,21 @@ export default {
     cerrarPopup() {
       this.popupVisible = false;
     },
-
+    // Si usas getUserImage para mostrar la imagen en el popup:
     getUserImage(imagePath) {
-      return new URL("../../" + imagePath, import.meta.url).href;
+      const timestamp = new Date().getTime(); // Para evitar caché
+      return imagePath ? `${imagePath}?t=${timestamp}` : "src/assets/users/admin/default.png";
     },
-
     async deshabilitarUsuario(usuario) {
       try {
-        const confirmar = confirm(
-          `¿Deshabilitar al usuario "${usuario.user}"?`
-        );
+        const confirmar = confirm(`¿Deshabilitar al usuario "${usuario.user}"?`);
         if (!confirmar) return;
-
-        const response = await fetch(
-          "/api/index.php?action=deshabilitarUsuario",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id_usuario: usuario.id,
-            }),
-          }
-        );
-
+        const response = await fetch("/api/index.php?action=deshabilitarUsuario", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_usuario: usuario.id }),
+        });
         const data = await response.json();
-
         if (data.status === "success") {
           this.mensaje = "Usuario deshabilitado correctamente";
           this.mensajeTipo = "success";
@@ -197,7 +189,6 @@ export default {
         setTimeout(() => (this.mensaje = ""), 5000);
       }
     },
-
     async fetchUsuarios() {
       try {
         const response = await fetch("/api/index.php?action=obtenerUsuarios");
@@ -205,18 +196,26 @@ export default {
         if (data.status === "success") {
           this.rows = data.data.map((usuario) => ({
             ...usuario,
-            acciones: {
-              editar: false,
-              eliminar: true,
-              info: true,
-            },
+            acciones: { editar: false, eliminar: true, info: true },
           }));
+
+          // Buscar el administrador (por ejemplo, rol "admin")
+          const admin = data.data.find(u => u.rol && u.rol.toLowerCase() === "admin");
+          if (admin) {
+            // Si la imagen en BD es válida y no es "default.png", se actualiza adminData.imagen
+            if (admin.imagen && admin.imagen !== "assets/users/admin/default.png") {
+              // admin.imagen ya debería contener la ruta correcta, por ejemplo: "assets/users/admin/andres.png"
+              this.adminData.imagen = admin.imagen;
+            } else {
+              // Si no hay imagen o es default, se mantiene la default
+              this.adminData.imagen = "src/assets/users/admin/default.png";
+            }
+          }
         }
       } catch (error) {
         console.error("Error al obtener usuarios:", error);
       }
     },
-
     async usuariosTotales() {
       try {
         const response = await fetch("/api/index.php?action=usuariosTotales");
@@ -232,9 +231,7 @@ export default {
     },
     async obtenerUsuariosConectados() {
       try {
-        const response = await fetch(
-          "/api/index.php?action=usuariosConectados"
-        );
+        const response = await fetch("/api/index.php?action=usuariosConectados");
         const json = await response.json();
         if (json.status === "success") {
           this.usuariosConectados = json.data;
@@ -252,7 +249,7 @@ export default {
           URL.revokeObjectURL(this.nuevaImagenPreview);
         }
         this.nuevaImagenPreview = URL.createObjectURL(file);
-        // Guardamos el archivo para enviarlo luego
+        // Guardamos el archivo para enviarlo luego en la actualización
         this.usuarioSeleccionado.imagenFile = file;
       } else {
         alert("Por favor selecciona un archivo de imagen válido.");
@@ -269,46 +266,41 @@ export default {
     async guardarCambios() {
       try {
         let base64Image = null;
-        
-        // Verificar si hay una nueva imagen seleccionada
         if (this.usuarioSeleccionado.imagenFile) {
           base64Image = await this.convertFileToBase64(this.usuarioSeleccionado.imagenFile);
         }
-
-        // Preparar el payload para la petición
         const payload = {
-          action: "actualizarUsuario",  // Se ajusta la acción según lo que se quiera hacer
+          action: "actualizarUsuario",
           id_usuario: this.usuarioSeleccionado.id || this.adminData.id,
           nombre: this.usuarioSeleccionado.nombre || this.adminData.nombre,
-          email: this.usuarioSeleccionado.email || this.adminData.email,  // Si se cambia el email
-          file: base64Image,  // Añadir la imagen en base64 si está presente
+          email: this.usuarioSeleccionado.email || this.adminData.email,
+          file: base64Image,
         };
-
-        // Realizar la petición al servidor
         const response = await fetch("/api/index.php?action=actualizarUsuario", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-
-        // Obtener la respuesta como texto
-        const data = await response.text();
-        console.log("Error en " + data)
-
-        // Si la respuesta es exitosa
+        const data = await response.json();
+        console.log("Data: ", data);
         if (data.status === "success") {
+          alert("Usuario actualizado correctamente");
           this.mensaje = "Usuario actualizado correctamente";
           this.mensajeTipo = "success";
-
-          await this.fetchUsuarios(); // Volver a cargar la lista de usuarios
-
-          this.nuevaImagenPreview = null;  // Limpiar la previsualización de la imagen
+          // Actualiza adminData.imagen con la nueva ruta devuelta, si existe
+          if (data.nuevaImagen) {
+            this.adminData.imagen = data.nuevaImagen;
+          }
+          this.cerrarPopup();
+          await this.fetchUsuarios();
+          this.nuevaImagenPreview = null;
         } else {
+          alert(data.mensaje || "Error al actualizar usuario");
           this.mensaje = data.mensaje || "Error al actualizar usuario";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        console.error("Error en guardar cambios:", error);
+        alert("Error de conexión: " + error.message);
         this.mensaje = "Error de conexión: " + error.message;
         this.mensajeTipo = "error";
       } finally {
@@ -319,7 +311,7 @@ export default {
       }
     },
     getImageUrl(path) {
-      return `/assets/${path}`;
+      return `/assets/users/admin/${path}`;
     },
     cancelarEdicion() {
       window.location.reload();
@@ -327,6 +319,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .usuarios {

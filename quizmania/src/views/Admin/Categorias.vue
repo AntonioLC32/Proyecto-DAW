@@ -235,6 +235,7 @@ export default {
         );
 
         const data = await response.json();
+        console.log ("Data: " + data);
 
         if (data.status === "success") {
           this.mensaje = "Categoría actualizada correctamente";

@@ -10,8 +10,6 @@ function actualizarUsuario($data) {
     global $conn;
     $conn->begin_transaction();
 
-    echo "Datos recibidos: " . json_encode($data) . "\n"; // Para verificar qué datos se reciben
-
     try {
         $required = ['id_usuario', 'nombre'];
         foreach ($required as $field) {
@@ -51,36 +49,27 @@ function actualizarUsuario($data) {
                 }
             }
 
-            $newImageName = "assets/{$nombreImagenBase}.{$extension}";
+            $newImageName = "assets/users/admin/{$nombreImagenBase}.{$extension}";
             $destination = $uploadDir . "{$nombreImagenBase}.{$extension}";
-            echo "Ruta de destino de la imagen: $destination\n";
-
             if (!file_exists($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
 
             $imageData = base64_decode($base64Image);
             if ($imageData === false) {
-                echo "Error al decodificar la imagen base64.\n";
                 throw new Exception("Error al procesar imagen");
             }
 
             file_put_contents($destination, $imageData);
-            echo "Imagen guardada en: $destination\n";
 
             if (!empty($oldImage) && file_exists($oldImagePath)) {
                 $oldBasename = basename($oldImage);
                 $newBasename = basename($newImageName);
                 if ($oldBasename !== $newBasename) {
-                    echo "Eliminando imagen antigua: $oldImagePath\n";
                     unlink($oldImagePath);
                 }
-            }            
-            
-            echo "Actualizando usuario con ID: $id_usuario, Nombre: $nombre, Imagen: $newImageName\n";
-
+            }
         }
-
 
         if ($newImageName) {
             $stmt = $conn->prepare("UPDATE Usuario SET nombre = ?, imagen = ? WHERE id_usuario = ?");
@@ -90,17 +79,15 @@ function actualizarUsuario($data) {
             $stmt->bind_param("si", $nombre, $id_usuario);
         }
         
-        echo "Nombre: $nombre, Imagen: $newImageName, ID: $id_usuario\n";
-        
         if (!$stmt->execute()) {
             throw new Exception("Error al actualizar usuario");
         }
         
-        echo "Guardando imagen en: " . $destination;
-        file_put_contents($destination, $imageData);
-
         $conn->commit();
-        echo "Guardando cambios en el usuario. Nombre: $nombre, Imagen: $newImageName\n";
+
+        if (ob_get_length()) {
+            ob_clean();
+        }
         
         echo json_encode(['status' => 'success', 'mensaje' => 'Usuario actualizado']);
         
