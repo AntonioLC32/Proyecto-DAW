@@ -11,7 +11,7 @@
               v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
               :src="getImageUserUrl(perfil.imagen)"
               alt="Perfil Image"
-              style="border-radius: 50%"
+              style="border-radius: 50%; max-width: 250px;"
             />
             <img
               v-else
@@ -303,10 +303,10 @@ section {
   min-height: 680px;
 }
 
-.perfil-img {
-  border-radius: 50%;
-  height: auto;
-  width: 200px;
+.perfil-vista > .nombre-img > img  {
+  width: 250px;
+  height: 250px;
+  max-width: 250px;
 }
 
 .ptot {
