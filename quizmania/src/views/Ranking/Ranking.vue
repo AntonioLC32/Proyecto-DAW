@@ -98,7 +98,8 @@ export default {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        console.log("Datos devueltos por la API:", data);
+        // solo para debuggear
+        // console.log("Datos devueltos por la API:", data);
 
         this.perfil = {
           ...this.perfil,
@@ -144,7 +145,9 @@ export default {
         this.perfil = { ...this.perfil, ...userData };
         this.perfil.imagen =
           this.perfil.imagen || this.defaultImagePath;
-        console.log("Usuario cargado desde cookies:", this.perfil);
+        
+        // solo para debuggear
+        //console.log("Usuario cargado desde cookies:", this.perfil);
 
         // Fetch additional data from the API
         this.obtenerEstadisticasPerfil();

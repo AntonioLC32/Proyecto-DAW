@@ -27,7 +27,7 @@ $sql = "SELECT
         u.imagen, 
         r.posicion, 
         r.puntos, 
-        r.rondas AS juegos_jugados, 
+        r.rondas AS rondasJugadas, 
         u.num_victorias as victorias, 
         r.categoria_destacada, 
         c.imagen AS imagen_categoria
@@ -52,13 +52,13 @@ if ($row) {
     // Ensure that the numeric values are integers
     $row['posicion'] = (int) $row['posicion'];
     $row['puntos'] = (int) $row['puntos'];
-    $row['juegos_jugados'] = (int) $row['juegos_jugados'];
+    $row['rondasJugadas'] = (int) $row['rondasJugadas'];
     $row['victorias'] = (int) $row['victorias'];
     $row['categoria_destacada'] = (int) $row['categoria_destacada'];
     $row['imagen'] = $row['imagen'] ?? '../../assets/users/default/default.png';
     $row['imagen_categoria'] = $row['imagen_categoria'] ?? '';
 
-    echo json_encode([$row]);
+    echo json_encode($row);
 } else {
     echo json_encode(["error" => "Usuario no encontrado."]);
 }

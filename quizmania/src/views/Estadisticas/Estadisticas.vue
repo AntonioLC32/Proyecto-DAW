@@ -8,9 +8,16 @@
         <div class="perfil-vista">
           <div class="d-flex nombre-img flex-column">
             <img
-              src="../../assets/perfil.jpg"
+              v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
+              :src="getImageUserUrl(perfil.imagen)"
               alt="Perfil Image"
-              class="perfil-img"
+              style="border-radius: 50%"
+            />
+            <img
+              v-else
+              :src="defaultImagePath"
+              alt="Imagen predeterminada"
+              style="border-radius: 50%"
             />
             <h3 class="text-white">{{ perfil.nombre }}</h3>
           </div>
@@ -27,13 +34,13 @@
             <div class="stat-item">
               <p class="me-2">Puntos Totales:</p>
               <div class="num text-white">
-                <b>{{ perfil.puntos_totales }}</b>
+                <b>{{ perfil.puntos }}</b>
               </div>
             </div>
             <div class="stat-item">
               <p class="me-2">Rondas Jugadas:</p>
               <div class="num text-white">
-                <b>{{ perfil.rondas_jugadas }}</b>
+                <b>{{ perfil.rondasJugadas }}</b>
               </div>
             </div>
             <div class="stat-item">
@@ -82,9 +89,11 @@
                 <p>Puntos Totales</p>
                 <p class="puntos">{{ categoria.puntos }} pts</p>
               </div>
+              <!--
               <p class="posicion">
                 Mejor Posición #{{ categoria.mejorPosicion }}
               </p>
+              -->
             </div>
           </div>
         </div>
@@ -100,34 +109,40 @@ export default {
       perfil: {},
       estadisticas: [],
       imagenesCategorias: {},
+      defaultImagePath: "../../assets/users/default/default.png", // Define default image path
     };
   },
   methods: {
     async obtenerEstadisticasPerfil() {
       try {
-        const response = await fetch("/api/perfil/select_perfil.php", {
+        const response = await fetch("/api/estadisticas/select_perfil.php", {
           credentials: "include",
         });
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
         if (!data || data.error) {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        console.log("Datos devueltos por la API:", data);
-        
+        // solo para debugging
+        // console.log("Datos devueltos por la API:", data);
+        // this.perfil = data; recibidos de la api
+        // this.perfil = this.perfil; // datos de cookie
+
         this.perfil = {
           ...this.perfil,
-          nombre: data.nombre || this.perfil.nombre,
-          posicion: data.posicion || "--",
-          puntos_totales: data.puntos_totales || "--",
-          rondasJugadas: data.rondas_jugadas || "--",
-          victorias: data.victorias || this.perfil.num_victorias || "--",
+          nombre: data.nombre || this.perfil.nombre || "--",
+          posicion: data.posicion ?? "--",
+          puntos: data.puntos ?? "--",
+          rondasJugadas: data.rondasJugadas ?? "--",
+          victorias: data.victorias ?? this.perfil.num_victorias ?? "--",
           derrotas: data.derrotas || this.perfil.num_derrotas || "--",
-          categoria_destacada: data.categoria_destacada || "--",
-          imagen: this.perfil.imagen || this.defaultImagePath,
+          categoria_destacada: data.categoria_destacada || this.perfil.imagen_categoria || "",
+          imagen: data.imagen || this.perfil.imagen || this.defaultImagePath,
         };
       } catch (error) {
         console.error("Error obteniendo el perfil:", error);
@@ -185,13 +200,16 @@ export default {
           this.estadisticas = data.map((categoria) => ({
             categoria: categoria.categoria,
             puntos: categoria.puntos_totales,
-            mejorPosicion: Math.floor(Math.random() * 10) + 1, // Simulación de posición
+            // mejorPosicion: Math.floor(Math.random() * 10) + 1, 
           }));
         }
       } catch (error) {
         console.error("Error obteniendo las estadísticas del perfil:", error);
         this.estadisticas = [];
       }
+    },
+    getImageUserUrl(path) {
+      return path ? `/src/${path}` : this.defaultImagePath; // Use the defined defaultImagePath
     },
     // bottom line
   },
@@ -207,7 +225,8 @@ export default {
         this.perfil = { ...this.perfil, ...userData };
         this.perfil.imagen =
           this.perfil.imagen || "../../assets/users/default/default.png";
-        console.log("Usuario cargado desde cookies:", this.perfil);
+        // solo para debugging
+        // console.log("Usuario cargado desde cookies:", this.perfil); 
 
         // Fetch additional data from the API
         this.obtenerEstadisticasPerfil();

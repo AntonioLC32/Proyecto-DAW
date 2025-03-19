@@ -198,7 +198,8 @@ export default {
     },
 
     async cargarPerfil() {
-      console.log("cargarPerfil method called");
+      // solo para debuggear
+      // console.log("cargarPerfil method called");
       try {
         const response = await fetch("/api/perfil/select_perfil.php", {
           credentials: "include",
@@ -211,7 +212,8 @@ export default {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        console.log("Datos devueltos por la API:", data);
+        // solo para debuggear
+        //console.log("Datos devueltos por la API:", data);
 
         this.user = {
           ...this.user,
@@ -271,7 +273,8 @@ export default {
         this.settings.nombre = this.user.nombre;
         this.user.imagen = this.user.imagen || "Imagen no encontrada";
 
-        console.log("Usuario cargado desde cookies:", this.user);
+        // solo para debuggear
+        // console.log("Usuario cargado desde cookies:", this.user);
 
         // Now fetch the latest profile data from the API
         this.cargarPerfil();
