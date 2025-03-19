@@ -7,50 +7,28 @@
             <p>{{ preguntas[questionIndex].pregunta }}</p>
           </div>
 
-          <button
-            class="respuesta"
-            v-for="opcion in preguntas[questionIndex].opciones"
-            :key="opcion"
-            :class="{
-              correcta: isRespuestaCorrecta(opcion),
-              incorrecta: isRespuestaIncorrecta(opcion),
-            }"
-            @click="seleccionarRespuesta(opcion)"
-          >
+          <button class="respuesta" v-for="opcion in preguntas[questionIndex].opciones" :key="opcion" :class="{
+            correcta: isRespuestaCorrecta(opcion),
+            incorrecta: isRespuestaIncorrecta(opcion),
+          }" @click="seleccionarRespuesta(opcion)">
             <p>{{ opcion }}</p>
           </button>
 
           <div class="misc">
             <div class="progreso">{{ progreso }}%</div>
             <a href="#" @click.prevent="usarPista">
-              <img
-                src="../../assets/pista.png"
-                alt="Pista"
-                width="70px"
-                height="70px"
-              />
+              <img src="../../assets/pista.png" alt="Pista" width="70px" height="70px" />
             </a>
             <a href="#" @click.prevent="siguientePregunta">
-              <img
-                src="../../assets/siguiente.png"
-                alt="Siguiente"
-                width="70px"
-                height="70px"
-              />
+              <img src="../../assets/siguiente.png" alt="Siguiente" width="70px" height="70px" />
             </a>
           </div>
         </div>
       </div>
       <div class="right">
         <div class="encase gap-5">
-          <img
-            v-for="(corazon, index) in vidas"
-            :key="index"
-            src="../../assets/corazon.png"
-            alt="Corazón"
-            width="80px"
-            height="80px"
-          />
+          <img v-for="(corazon, index) in vidas" :key="index" src="../../assets/corazon.png" alt="Corazón" width="80px"
+            height="80px" />
         </div>
       </div>
     </div>
@@ -64,14 +42,14 @@ export default {
     return {
       preguntas: [
         {
-          pregunta: "¿Quién hizo la canción Thriller?",
+          pregunta: "",
           opciones: [
-            "Jason Derulo",
-            "Bon Jovi",
-            "Miley Cyrus",
-            "Michael Jackson",
+            "",
+            "",
+            "",
+            "",
           ],
-          respuestaCorrecta: "Michael Jackson",
+          respuestaCorrecta: "",
         },
       ],
       questionIndex: 0, // Índice de la pregunta actual
@@ -80,25 +58,57 @@ export default {
       pistaUsada: false,
       progreso: 50,
       vidas: 3,
+      categoriaSeleccionada: null,
     };
+  },
+
+  mounted() {
+    this.categoriaSeleccionada = sessionStorage.getItem("categoria");
+    sessionStorage.removeItem("categoria");
+    //console.log(this.categoriaSeleccionada);
+    this.obtenerPregunta(this.categoriaSeleccionada);
   },
   computed: {
     isRespuestaCorrecta() {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada ===
-          this.preguntas[this.questionIndex].respuestaCorrecta &&
+        this.preguntas[this.questionIndex].respuestaCorrecta &&
         opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada !==
-          this.preguntas[this.questionIndex].respuestaCorrecta &&
+        this.preguntas[this.questionIndex].respuestaCorrecta &&
         this.respuestaSeleccionada === opcion;
     },
   },
   methods: {
+    async obtenerPregunta(categoriaSeleccionada) {
+      try {
+        const response = await fetch("/api/index.php?action=obtenerPreguntaJuego", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ categoria: categoriaSeleccionada }),
+        });
+        const data = await response.json();
+        if (data.status === "success") {
+          const preguntaObtenida = {
+            pregunta: data.data.pregunta,
+            opciones: data.data.opciones,
+            respuestaCorrecta: data.data.correcta,
+          };
+          this.preguntas = [preguntaObtenida];
+        } else {
+          console.error("Error al obtener la pregunta:", data.mensaje);
+        }
+      } catch (error) {
+        console.error("Error al obtener pregunta:", error);
+      }
+    },
     seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
@@ -110,7 +120,7 @@ export default {
         }
         setTimeout(() => {
           this.$router.push("/selecciontema");
-        },4000);
+        }, 4000);
       }
     },
     usarPista() {
@@ -293,6 +303,7 @@ section {
     width: 100%;
     padding: 120px;
   }
+
   .left {
     width: 70%;
   }
@@ -300,6 +311,7 @@ section {
   .right .encase {
     padding-left: 200px;
   }
+
   .right img {
     width: 60px;
     height: 60px;

@@ -1,76 +1,47 @@
 <template>
   <div class="wheel-wrapper">
-    <div
-      :id="`wheel-container-${randomIdRoulette}`"
-      class="wheel-container"
-      :class="[
-        `indicator-${indicatorPosition}`,
-        { 'wheel-container-indicator': displayIndicator },
-        { 'wheel-container-shadow': displayShadow },
-        { 'wheel-container-border': displayBorder },
-      ]"
-    >
+    <div :id="`wheel-container-${randomIdRoulette}`" class="wheel-container" :class="[
+      `indicator-${indicatorPosition}`,
+      { 'wheel-container-indicator': displayIndicator },
+      { 'wheel-container-shadow': displayShadow },
+      { 'wheel-container-border': displayBorder },
+    ]">
       <div v-if="displayCenterIndicator" class="wheel-center-indicator"></div>
       <!-- BASE WHEEL -->
-      <div
-        v-if="baseDisplay"
-        class="wheel-base-container"
-        :class="[{ 'wheel-base-container-shadow': baseDisplayShadow }]"
-        :style="{
+      <div v-if="baseDisplay" class="wheel-base-container"
+        :class="[{ 'wheel-base-container-shadow': baseDisplayShadow }]" :style="{
           width: `${baseSize}px`,
           height: `${baseSize}px`,
           background: `${baseBackground}`,
-        }"
-      >
+        }">
         <div class="wheel-base">
           <slot name="baseContent" />
         </div>
         <div v-if="baseDisplayIndicator" class="wheel-base-indicator" />
       </div>
       <!-- WHEEL -->
-      <div
-        class="wheel"
-        :class="[`easing-${easing}`, { 'wheel-border': displayBorder }]"
-        :style="{
-          width: `${size}px`,
-          height: `${size}px`,
-          transitionDuration: `${duration}s`,
-          transform: `rotate(${startingAngle}deg)`,
-        }"
-      >
-        <div
-          v-for="(item, index) in items"
-          :key="item.id"
-          class="wheel-item"
-          :style="{
-            transform: `rotate(${itemAngle * index}deg) skewY(${-(
-              90 - itemAngle
-            )}deg)`,
-            background: item.background,
-          }"
-        >
-          <div
-            class="content"
-            :class="{ 'horizontal-content': horizontalContent }"
-            :style="{
-              transform: `skewY(${90 - itemAngle}deg) rotate(${
-                itemAngle / 2
+      <div class="wheel" :class="[`easing-${easing}`, { 'wheel-border': displayBorder }]" :style="{
+        width: `${size}px`,
+        height: `${size}px`,
+        transitionDuration: `${duration}s`,
+        transform: `rotate(${startingAngle}deg)`,
+      }">
+        <div v-for="(item, index) in items" :key="item.id" class="wheel-item" :style="{
+          transform: `rotate(${itemAngle * index}deg) skewY(${-(
+            90 - itemAngle
+          )}deg)`,
+          background: item.background,
+        }">
+          <div class="content" :class="{ 'horizontal-content': horizontalContent }" :style="{
+            transform: `skewY(${90 - itemAngle}deg) rotate(${itemAngle / 2
               }deg)`,
-            }"
-          >
-            <span
-              :style="{ color: item.textColor }"
-              v-html="item.htmlContent"
-            />
+          }">
+            <span :style="{ color: item.textColor }" v-html="item.htmlContent" />
           </div>
         </div>
       </div>
     </div>
-    <div
-      v-if="displayIndicator"
-      class="wheel-indicator"
-      :class="[`indicator-${indicatorPosition}`]"
-    ></div>
+    <div v-if="displayIndicator" class="wheel-indicator" :class="[`indicator-${indicatorPosition}`]"></div>
   </div>
 </template>
 
@@ -278,12 +249,11 @@ export default defineComponent({
 
       this.itemSelected = this.items[wheelResult];
 
-      wheelElt.style.transform = `rotate(${
-        this.counterClockWiseOperator * (360 * 3) +
+      wheelElt.style.transform = `rotate(${this.counterClockWiseOperator * (360 * 3) +
         -wheelResult * this.itemAngle -
         this.itemAngle / 2 +
         this.degreesVariation
-      }deg)`;
+        }deg)`;
       this.$emit("wheel-start", this.itemSelected);
     },
   },
@@ -297,6 +267,7 @@ export default defineComponent({
 .wheel-base-indicator {
   transition: transform 1s ease-in-out;
 }
+
 .wheel-container {
   position: relative;
   display: inline-block;
@@ -319,20 +290,26 @@ export default defineComponent({
   &.indicator-top {
     transform: rotate(0deg);
   }
+
   &.indicator-right {
     transform: rotate(90deg);
+
     .wheel-base {
       transform: rotate(-90deg);
     }
   }
+
   &.indicator-bottom {
     transform: rotate(180deg);
+
     .wheel-base {
       transform: rotate(-180deg);
     }
   }
+
   &.indicator-left {
     transform: rotate(270deg);
+
     .wheel-base {
       transform: rotate(-270deg);
     }
@@ -346,6 +323,7 @@ export default defineComponent({
     box-shadow: 5px 5px 15px -5px #4a4da5;
   }
 }
+
 .wheel-base-container {
   position: absolute;
   z-index: 2;
@@ -370,12 +348,14 @@ export default defineComponent({
     height: 100%;
     border-radius: 50%;
   }
+
   .wheel-base-indicator {
     position: absolute;
     z-index: 1;
     width: 100%;
     height: 100%;
   }
+
   .wheel-base-indicator:before {
     content: "";
     position: absolute;
@@ -404,6 +384,21 @@ export default defineComponent({
   pointer-events: none;
 }
 
+@media (max-width: 768px) {
+  .wheel-center-indicator {
+    border-left: 3vw solid transparent;
+    border-right: 3vw solid transparent;
+    border-bottom: 4.5vw solid #4a4da5;
+    transform: translate(-50%, -120%);
+  }
+}
+
+@media (max-width: 480px) {
+  .wheel-center-indicator {
+    transform: translate(-50%, -125%);
+  }
+}
+
 .wheel {
   border-radius: 50%;
   margin: auto;
@@ -412,6 +407,7 @@ export default defineComponent({
   &.easing-ease {
     transition: transform cubic-bezier(0.65, 0, 0.35, 1);
   }
+
   &.easing-bounce {
     transition: transform cubic-bezier(0.49, 0.02, 0.52, 1.12);
   }
@@ -425,11 +421,9 @@ export default defineComponent({
     top: 0;
     z-index: 3;
     border-radius: 50%;
-    background-image: linear-gradient(
-      to left,
-      #4a4da5 33%,
-      rgba(255, 255, 255, 0) 0%
-    );
+    background-image: linear-gradient(to left,
+        #4a4da5 33%,
+        rgba(255, 255, 255, 0) 0%);
     background-position: bottom;
     background-size: 3px 1px;
     /* background:linear-gradient(red,purple,orange); */
@@ -447,9 +441,11 @@ export default defineComponent({
     transform-origin: 0% 100%;
     border: 1px solid #cac5f5;
   }
+
   &-item:nth-child(odd) {
     background-color: skyblue;
   }
+
   &-item:nth-child(even) {
     background-color: pink;
   }
@@ -469,6 +465,7 @@ export default defineComponent({
       width: 50%;
       height: 250%;
       text-align: right;
+
       span {
         display: block;
         transform: rotate(270deg);

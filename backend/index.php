@@ -105,6 +105,10 @@ switch ($action) {
         require 'graficas/usuariosSemanal.php';
         break;
     
+    case 'obtenerPreguntaJuego';
+        require 'preguntas/select.php';
+        obtenerPreguntaJuego($input);
+        break;
 
 
     // Añadir casos para otras importaciones

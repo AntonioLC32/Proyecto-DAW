@@ -1,10 +1,9 @@
 <?php
 $data = [
-    'username' => 'admin',
-    'password' => 'qwe123',
+    'categoria' => 'Historia',
 ];
 
 $input = json_encode($data);
 $input = json_decode($input, true);
-require 'usuarios/auth.php';login($data)
+require 'preguntas/select.php';obtenerPreguntaJuego($data)
 ?>

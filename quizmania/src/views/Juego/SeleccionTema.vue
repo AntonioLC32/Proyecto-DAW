@@ -1,164 +1,45 @@
 <template>
   <section>
     <div class="contenedor">
-      <!-- IF MULTIJUGADOR-->
+      <!-- Se muestra en modo multijugador -->
       <div class="jugadores d-flex gap-2" v-if="modo === 'multijugador'">
-        <div class="temas">
-          <div class="temas_completados">
-            <img
-              :src="getImageUrl('perfil.jpg')"
-              alt="Perfil Image"
-              style="border-radius: 50%"
-            />
-            <img
-              v-for="theme in themes.slice(0, 4)"
-              :key="theme.name"
-              :src="theme.image"
-              alt="theme image"
-            />
-          </div>
-          <div class="temas_completados">
-            <img
-              v-for="theme in themes.slice(4)"
-              :key="theme.name"
-              :src="theme.image"
-              alt="theme image"
-            />
-          </div>
-        </div>
-        <div class="temas">
-          <div class="temas_completados">
-            <img
-              :src="getImageUrl('perfil.jpg')"
-              alt="Perfil Image"
-              style="border-radius: 50%"
-            />
-            <img
-              v-for="theme in themes.slice(0, 4)"
-              :key="theme.name"
-              :src="theme.image"
-              alt="theme image"
-            />
-          </div>
-          <div class="temas_completados">
-            <img
-              v-for="theme in themes.slice(4)"
-              :key="theme.name"
-              :src="theme.image"
-              alt="theme image"
-            />
-          </div>
-        </div>
+        <!-- Se utiliza el componente TemasJugador con la prop themes -->
+        <TemasJugador :themes="themes" />
+        <TemasJugador :themes="themes" />
       </div>
-      <!-- ENDIF MULTIJUGADOR-->
-      <!--
-      <div class="roulette">
-        <div class="arrow"></div>
-        <!-- Flecha indicadora 
-        <div
-          class="roller"
-          :style="{
-            transform: `translateX(${position}px)`,
-            transition: spinning
-              ? 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)'
-              : 'none',
-          }"
-        >
-          <div
-            v-for="(item, index) in shuffledThemes"
-            :key="index"
-            class="theme"
-            :class="{ selected: selectedIndex === index % themes.length }"
-          >
-            <img :src="item.image" alt="theme image" />
-          </div>
-        </div>
-      </div>
-      <button @click="spin" class="boton_girar">GIRA</button>
-      <br />
-      <div v-if="selectedTheme" class="selected-theme">
-        Tema seleccionado: {{ selectedTheme }}
-      </div>-->
 
-      <Roulette
-        ref="roulette"
-        :items="rouletteItems"
-        :firstItemIndex="{ value: 0 }"
-        :wheelResultIndex="{ value: null }"
-        displayCenterIndicator="true"
-        indicatorPosition="top"
-        :size="size"
-        :displayShadow="true"
-        :duration="5"
-        :resultVariation="10"
-        easing="ease"
-        :counterClockwise="false"
-        :horizontalContent="false"
-        :displayBorder="true"
-        :displayIndicator="true"
-        :baseDisplay="true"
-        :baseDisplayIndicator="true"
-        :baseSize="100"
-        baseBackground="#5759cd"
-        @wheelStart="onWheelStart"
-        @wheelEnd="onWheelEnd"
-      />
+      <!-- Resto de contenido -->
+      <Roulette ref="roulette" :items="rouletteItems" :firstItemIndex="{ value: 0 }" :wheelResultIndex="{ value: null }"
+        :displayCenterIndicator="true" indicatorPosition="top" :size="size" :displayShadow="true" :duration="5"
+        :resultVariation="10" easing="ease" :counterClockwise="false" :horizontalContent="false" :displayBorder="true"
+        :displayIndicator="true" :baseDisplay="true" :baseDisplayIndicator="true" :baseSize="100"
+        baseBackground="#5759cd" @wheelStart="onWheelStart" @wheelEnd="onWheelEnd" />
 
       <button @click="spinWheel" class="boton_girar">GIRA</button>
 
-      <!-- Se mostrará el tema seleccionado cuando el wheel termine -->
       <div v-if="selectedCategory" class="selected-theme">
         Tema seleccionado: {{ selectedCategory }}
       </div>
 
       <div>
-        <!-- Button trigger modal -->
-        <button
-          type="button"
-          class="btn button_rendirte"
-          data-bs-toggle="modal"
-          data-bs-target="#modalRendirte"
-        >
-          <img
-            :src="getImageUrl('bandera-blanca.png')"
-            alt="Rendirte Image"
-            id="bandera"
-          />
+        <!-- Botón para disparar el modal -->
+        <button type="button" class="btn button_rendirte" data-bs-toggle="modal" data-bs-target="#modalRendirte">
+          <img :src="getImageUrl('bandera-blanca.png')" alt="Rendirte Image" id="bandera" />
         </button>
 
         <!-- Modal -->
-        <div
-          class="modal fade"
-          id="modalRendirte"
-          ref="modalRendirte"
-          tabindex="-1"
-          aria-labelledby="modalRendirteLabel"
-          aria-hidden="true"
-        >
+        <div class="modal fade" id="modalRendirte" ref="modalRendirte" tabindex="-1"
+          aria-labelledby="modalRendirteLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header border-bottom-0">
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <div
-                class="modal-body d-flex flex-column align-items-center mb-3"
-              >
-                <h5
-                  class="modal-title text-center mb-3"
-                  id="modalRendirteLabel"
-                >
+              <div class="modal-body d-flex flex-column align-items-center mb-3">
+                <h5 class="modal-title text-center mb-3" id="modalRendirteLabel">
                   <b>¿Estás seguro que <br />quieres rendirte?</b>
                 </h5>
-                <button
-                  @click="exit"
-                  type="button"
-                  class="btn button_rendirte_aceptar text-white text-uppercase"
-                >
+                <button @click="exit" type="button" class="btn button_rendirte_aceptar text-white text-uppercase">
                   <b>Aceptar</b>
                 </button>
               </div>
@@ -172,10 +53,13 @@
 
 <script>
 import Roulette from "../../components/Roulette.vue";
+import TemasJugador from "@/components/TemasJugador.vue";
+
 export default {
   name: "SeleccionTema",
   components: {
     Roulette,
+    TemasJugador,
   },
   data() {
     const themes = [
@@ -193,17 +77,16 @@ export default {
 
     return {
       themes,
-      shuffledThemes: [...themes, ...themes, ...themes, ...themes], // Se repite para efecto infinito
+      shuffledThemes: [...themes, ...themes, ...themes, ...themes],
       position: 0,
       spinning: false,
       selectedTheme: null,
       selectedIndex: null,
-      modo: "", // Definir según lógica
+      modo: "",
       selectedCategory: null,
-      size: 500,
+      size: 300,
     };
   },
-
   computed: {
     rouletteItems() {
       return this.themes.map((theme) => ({
@@ -214,17 +97,26 @@ export default {
       }));
     },
   },
-
   mounted() {
     this.modo = sessionStorage.getItem("modo-juego");
-    sessionStorage.removeItem("modo-juego");
-
+    //sessionStorage.removeItem("modo-juego");
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
     if (this.modo === "multijugador") {
       this.size = 300;
     }
+
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   },
 
   methods: {
+    handleResize() {
+      const screenWidth = window.innerWidth;
+      this.size = screenWidth > 768 ? 500 : screenWidth * 0.8;
+    },
     spinWheel() {
       this.$refs.roulette.launchWheel();
     },
@@ -232,26 +124,21 @@ export default {
       console.log("Wheel started:", selectedItem);
     },
     onWheelEnd(selectedItem) {
-      console.log("Wheel ended:", selectedItem);
+      // console.log("Wheel ended:", selectedItem);
       sessionStorage.setItem("categoria", selectedItem.id);
       this.selectedCategory = selectedItem.id;
       setTimeout(() => {
         this.$router.push("/juego");
       }, 2000);
     },
-
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
     },
-
     exit() {
-      // Close the modal using Bootstrap's JavaScript API
       const modal = bootstrap.Modal.getInstance(this.$refs.modalRendirte);
       if (modal) {
-        modal.hide(); // Hide the modal
+        modal.hide();
       }
-
-      // Navigate to the home route
       this.$router.push("/");
     },
     spin() {
@@ -263,18 +150,11 @@ export default {
 
       const themeWidth = 300;
       const screenCenter = window.innerWidth / 2;
-      const totalThemes = this.shuffledThemes.length;
-
-      // Pick a safe stopping point inside shuffledThemes
       const targetIndex =
         Math.floor(Math.random() * this.themes.length) + this.themes.length * 2;
-      const finalPosition = -(
-        targetIndex * themeWidth -
-        screenCenter +
-        themeWidth / 2
-      );
+      const finalPosition = -(targetIndex * themeWidth - screenCenter + themeWidth / 2);
 
-      this.position = finalPosition; // Adjusted to stop in the middle
+      this.position = finalPosition;
 
       setTimeout(() => {
         this.spinning = false;
@@ -295,6 +175,7 @@ export default {
   font-family: "Montserrat", sans-serif;
 }
 
+/* Resto de estilos igual... */
 .button_rendirte {
   background-color: #5759cd;
   padding: 15px 70px;
@@ -310,6 +191,7 @@ export default {
   padding: 15px 70px;
   border-radius: 8px;
 }
+
 #bandera {
   height: 40px;
   width: 40px;
@@ -330,6 +212,7 @@ section {
   flex-direction: column;
   align-items: center;
   margin-top: 90px !important;
+  padding: 20px;
   padding-top: 50px;
 }
 
@@ -386,7 +269,7 @@ section {
 }
 
 .theme.selected {
-  background-color: #8d89f8; /* Resaltar el tema seleccionado */
+  background-color: #8d89f8;
 }
 
 .arrow {
@@ -403,13 +286,13 @@ section {
 }
 
 .boton_girar {
-  padding: 15px 50px;
+  padding: 12px 40px;
   background-color: #5759cd;
   border: 0;
   border-radius: 8px;
   color: white;
   margin-top: 20px;
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
@@ -431,12 +314,18 @@ section {
   }
 }
 
-@media (max-width: 768px) {
-}
-
 @media (max-width: 480px) {
   .temas {
     flex-direction: column;
+  }
+
+  .boton_girar {
+    font-size: 1rem;
+    padding: 10px 30px;
+  }
+
+  .wheel-wrapper {
+    max-width: 95vw;
   }
 }
 </style>
