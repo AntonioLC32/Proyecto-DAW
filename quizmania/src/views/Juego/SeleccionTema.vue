@@ -9,11 +9,29 @@
       </div>
 
       <!-- Resto de contenido -->
-      <Roulette ref="roulette" :items="rouletteItems" :firstItemIndex="{ value: 0 }" :wheelResultIndex="{ value: null }"
-        :displayCenterIndicator="true" indicatorPosition="top" :size="size" :displayShadow="true" :duration="5"
-        :resultVariation="10" easing="ease" :counterClockwise="false" :horizontalContent="false" :displayBorder="true"
-        :displayIndicator="true" :baseDisplay="true" :baseDisplayIndicator="true" :baseSize="100"
-        baseBackground="#5759cd" @wheelStart="onWheelStart" @wheelEnd="onWheelEnd" />
+      <Roulette
+        ref="roulette"
+        :items="rouletteItems"
+        :firstItemIndex="{ value: 0 }"
+        :wheelResultIndex="{ value: null }"
+        :displayCenterIndicator="true"
+        indicatorPosition="top"
+        :size="size"
+        :displayShadow="true"
+        :duration="5"
+        :resultVariation="10"
+        easing="ease"
+        :counterClockwise="false"
+        :horizontalContent="false"
+        :displayBorder="true"
+        :displayIndicator="true"
+        :baseDisplay="true"
+        :baseDisplayIndicator="true"
+        :baseSize="100"
+        baseBackground="#5759cd"
+        @wheelStart="onWheelStart"
+        @wheelEnd="onWheelEnd"
+      />
 
       <button @click="spinWheel" class="boton_girar">GIRA</button>
 
@@ -23,23 +41,52 @@
 
       <div>
         <!-- Botón para disparar el modal -->
-        <button type="button" class="btn button_rendirte" data-bs-toggle="modal" data-bs-target="#modalRendirte">
-          <img :src="getImageUrl('bandera-blanca.png')" alt="Rendirte Image" id="bandera" />
+        <button
+          type="button"
+          class="btn button_rendirte"
+          data-bs-toggle="modal"
+          data-bs-target="#modalRendirte"
+        >
+          <img
+            :src="getImageUrl('bandera-blanca.png')"
+            alt="Rendirte Image"
+            id="bandera"
+          />
         </button>
 
         <!-- Modal -->
-        <div class="modal fade" id="modalRendirte" ref="modalRendirte" tabindex="-1"
-          aria-labelledby="modalRendirteLabel" aria-hidden="true">
+        <div
+          class="modal fade"
+          id="modalRendirte"
+          ref="modalRendirte"
+          tabindex="-1"
+          aria-labelledby="modalRendirteLabel"
+          aria-hidden="true"
+        >
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header border-bottom-0">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
-              <div class="modal-body d-flex flex-column align-items-center mb-3">
-                <h5 class="modal-title text-center mb-3" id="modalRendirteLabel">
+              <div
+                class="modal-body d-flex flex-column align-items-center mb-3"
+              >
+                <h5
+                  class="modal-title text-center mb-3"
+                  id="modalRendirteLabel"
+                >
                   <b>¿Estás seguro que <br />quieres rendirte?</b>
                 </h5>
-                <button @click="exit" type="button" class="btn button_rendirte_aceptar text-white text-uppercase">
+                <button
+                  @click="exit"
+                  type="button"
+                  class="btn button_rendirte_aceptar text-white text-uppercase"
+                >
                   <b>Aceptar</b>
                 </button>
               </div>
@@ -85,6 +132,7 @@ export default {
       modo: "",
       selectedCategory: null,
       size: 300,
+      userData: null,
     };
   },
   computed: {
@@ -99,20 +147,54 @@ export default {
   },
   mounted() {
     this.modo = sessionStorage.getItem("modo-juego");
+    this.userData = this.$cookies.get("user");
     //sessionStorage.removeItem("modo-juego");
     this.handleResize();
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener("resize", this.handleResize);
     if (this.modo === "multijugador") {
       this.size = 300;
     }
 
+    this.crearPartida(this.modo);
   },
 
   beforeUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
+    async crearPartida(modo) {
+      if (modo === "multijugador") {
+      } else if (modo === "solitario") {
+        try {
+          const response = await fetch(
+            "/api/index.php?action=crearPartidaSolitario",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id_usuario: this.userData.id_usuario,
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.status === "error") {
+            this.$router.push("/");
+          } else {
+            sessionStorage.setItem("id_partida", data.id_partida);
+          }
+        } catch (e) {
+          console.error("Error al crear la partida", e);
+        }
+      } else {
+        this.$router.push("/");
+      }
+    },
+
     handleResize() {
       const screenWidth = window.innerWidth;
       this.size = screenWidth > 768 ? 500 : screenWidth * 0.8;
@@ -134,12 +216,33 @@ export default {
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
     },
-    exit() {
-      const modal = bootstrap.Modal.getInstance(this.$refs.modalRendirte);
-      if (modal) {
-        modal.hide();
+
+    async exit() {
+      try {
+        const id_partida = sessionStorage.getItem("id_partida");
+
+        const response = await fetch(
+          "/api/index.php?action=rendirsePartidaSolitario",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id_partida }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          sessionStorage.removeItem("id_partida");
+          this.$router.push("/");
+        } else {
+          console.error("Error al rendirse:", data.mensaje);
+        }
+      } catch (error) {
+        console.error("Error al rendirse:", error);
       }
-      this.$router.push("/");
     },
     spin() {
       if (this.spinning) return;
@@ -152,7 +255,11 @@ export default {
       const screenCenter = window.innerWidth / 2;
       const targetIndex =
         Math.floor(Math.random() * this.themes.length) + this.themes.length * 2;
-      const finalPosition = -(targetIndex * themeWidth - screenCenter + themeWidth / 2);
+      const finalPosition = -(
+        targetIndex * themeWidth -
+        screenCenter +
+        themeWidth / 2
+      );
 
       this.position = finalPosition;
 

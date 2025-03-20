@@ -1,9 +1,9 @@
 <?php
 $data = [
-    'categoria' => 'Historia',
+    'id_usuario' => 16,
 ];
 
 $input = json_encode($data);
 $input = json_decode($input, true);
-require 'preguntas/select.php';obtenerPreguntaJuego($data)
+require 'juego/insert.php';crearPartidaSolitario($data)
 ?>

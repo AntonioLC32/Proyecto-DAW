@@ -105,9 +105,19 @@ switch ($action) {
         require 'graficas/usuariosSemanal.php';
         break;
     
-    case 'obtenerPreguntaJuego';
+    case 'obtenerPreguntaJuego':
         require 'preguntas/select.php';
         obtenerPreguntaJuego($input);
+        break;
+
+    case 'crearPartidaSolitario':
+        require 'juego/insert.php';
+        crearPartidaSolitario($input);
+        break;
+    
+    case 'rendirsePartidaSolitario':
+        require 'juego/insert.php';
+        rendirsePartidaSolitario($input);
         break;
 
 
