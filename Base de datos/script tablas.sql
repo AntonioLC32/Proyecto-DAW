@@ -115,3 +115,50 @@ CREATE TABLE Estadisticas (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
 );
+
+
+--- POR AHORA NO SOLO EN CASO DE QUE NO QUERAMOS REPETIR PREGUNTAS
+/*
+CREATE TABLE HistorialPreguntas (
+  id_historial INT AUTO_INCREMENT PRIMARY KEY,
+  id_partida INT NOT NULL,
+  id_pregunta INT NOT NULL,
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE,
+  FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE
+);
+*/
+
+CREATE INDEX idx_usuario_fecha_registro ON Usuario(fecha_registro);
+CREATE INDEX idx_usuario_rol ON Usuario(rol);
+CREATE INDEX idx_usuario_victorias ON Usuario(num_victorias);
+CREATE INDEX idx_usuario_ult_conexion ON Usuario(ult_conexion);
+
+CREATE INDEX idx_ranking_puntos ON Ranking(puntos);
+CREATE INDEX idx_ranking_posicion ON Ranking(posicion);
+
+CREATE INDEX idx_partida_estado ON Partida(estado);
+CREATE INDEX idx_partida_modo ON Partida(modo);
+CREATE INDEX idx_partida_fecha ON Partida(fecha);
+
+CREATE INDEX idx_tarjeta_dificultad ON Tarjeta(dificultad);
+
+CREATE INDEX idx_pregunta_habilitado ON Pregunta(habilitado);
+
+CREATE INDEX idx_respuesta_correcta ON Respuesta(es_correcta);
+CREATE INDEX idx_respuesta_habilitado ON Respuesta(habilitado);
+
+CREATE INDEX idx_participante_partida ON Participante(id_partida);
+
+CREATE INDEX idx_historial_resultado ON Historial(resultado);
+CREATE INDEX idx_historial_fecha ON Historial(fecha);
+
+CREATE INDEX idx_comodin_nombre ON Comodin(nombre);
+
+CREATE INDEX idx_estadisticas_puntos ON Estadisticas(puntos);
+
+/*
+CREATE INDEX idx_historial_partida ON HistorialPreguntas (id_partida);
+CREATE INDEX idx_historial_pregunta ON HistorialPreguntas (id_pregunta);
+CREATE INDEX idx_historial_partida_pregunta ON HistorialPreguntas (id_partida, id_pregunta);
+*/

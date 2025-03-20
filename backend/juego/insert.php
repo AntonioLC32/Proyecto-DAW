@@ -73,6 +73,53 @@ function rendirsePartidaSolitario($data) {
     }
 }
 
+function insertarRonda($data) {
+    global $conn;
+    
+    $id_partida = $data['id_partida'];
+    $tiempo = $data['tiempo'];       
+    $nombre_categoria = $data['id_categoria'];
+
+    $conn->begin_transaction();
+
+    try {
+        $sqlCategoria = "SELECT id_categoria FROM Categoria WHERE nombre = ?";
+        $stmtCategoria = $conn->prepare($sqlCategoria);
+        if (!$stmtCategoria) {
+            throw new Exception("Error al preparar la consulta para la categoría: " . $conn->error);
+        }
+        $stmtCategoria->bind_param("s", $nombre_categoria);
+        if (!$stmtCategoria->execute()) {
+            throw new Exception("Error al ejecutar la consulta para la categoría: " . $stmtCategoria->error);
+        }
+        $result = $stmtCategoria->get_result();
+        if ($result->num_rows == 0) {
+            throw new Exception("No se encontró la categoría con el nombre: " . $nombre_categoria);
+        }
+        $row = $result->fetch_assoc();
+        $id_categoria = $row['id_categoria'];
+        $stmtCategoria->close();
+
+        $sql = "INSERT INTO Ronda (id_partida, tiempo, id_categoria) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conn->error);
+        }
+        $stmt->bind_param("isi", $id_partida, $tiempo, $id_categoria);
+        if (!$stmt->execute()) {
+            throw new Exception("Error al insertar la ronda: " . $stmt->error);
+        }
+        $stmt->close();
+        $conn->commit();
+        
+        echo json_encode(['status' => 'success']);
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['status' => 'error', 'mensaje' => $e->getMessage()]);
+    }
+}
+
+
 
 
 

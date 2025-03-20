@@ -48,7 +48,7 @@
           data-bs-target="#modalRendirte"
         >
           <img
-            :src="getImageUrl('bandera-blanca.png')"
+            :src="getImageUrl('bandera-blanca.webp')"
             alt="Rendirte Image"
             id="bandera"
           />
@@ -111,15 +111,15 @@ export default {
   data() {
     const themes = [
       { name: "Historia", image: this.getImageUrl("historia.png") },
-      { name: "Ciencias", image: this.getImageUrl("ciencia.png") },
+      { name: "Ciencia", image: this.getImageUrl("ciencia.png") },
       { name: "Deportes", image: this.getImageUrl("deportes.png") },
       { name: "Música", image: this.getImageUrl("musica.png") },
       { name: "Entretenimiento", image: this.getImageUrl("entre.png") },
-      { name: "Arte", image: this.getImageUrl("arte.png") },
+      { name: "Arte y Literatura", image: this.getImageUrl("arte.png") },
       { name: "Geografía", image: this.getImageUrl("geografia.png") },
       { name: "Matemáticas", image: this.getImageUrl("mates.png") },
       { name: "Tecnología", image: this.getImageUrl("tecno.png") },
-      { name: "Cultura", image: this.getImageUrl("cultura.png") },
+      { name: "Cultura General", image: this.getImageUrl("cultura.png") },
     ];
 
     return {
@@ -133,6 +133,7 @@ export default {
       selectedCategory: null,
       size: 300,
       userData: null,
+      id_partida: null,
     };
   },
   computed: {
@@ -155,7 +156,11 @@ export default {
       this.size = 300;
     }
 
-    this.crearPartida(this.modo);
+    if (sessionStorage.getItem("id_partida")) {
+      this.id_partida = sessionStorage.getItem("id_partida");
+    } else {
+      this.crearPartida(this.modo);
+    }
   },
 
   beforeUnmount() {
@@ -209,6 +214,7 @@ export default {
       // console.log("Wheel ended:", selectedItem);
       sessionStorage.setItem("categoria", selectedItem.id);
       this.selectedCategory = selectedItem.id;
+
       setTimeout(() => {
         this.$router.push("/juego");
       }, 2000);
@@ -236,7 +242,10 @@ export default {
 
         if (data.status === "success") {
           sessionStorage.removeItem("id_partida");
-          this.$router.push("/");
+          sessionStorage.removeItem("ronda");
+          this.$router.push("/").then(() => {
+            location.reload();
+          });
         } else {
           console.error("Error al rendirse:", data.mensaje);
         }
@@ -321,6 +330,10 @@ section {
   margin-top: 90px !important;
   padding: 20px;
   padding-top: 50px;
+  min-height: calc(100vh - 90px);
+  justify-content: center;
+  gap: 20px;
+  padding-bottom: 150px;
 }
 
 .temas {
@@ -408,10 +421,13 @@ section {
 }
 
 .selected-theme {
+  position: relative;
+  z-index: 1000;
   margin-top: 20px;
   font-size: 2em;
   font-weight: bold;
   color: #5759cd;
+  text-align: center;
 }
 
 @media (max-width: 1024px) {
@@ -433,6 +449,15 @@ section {
 
   .wheel-wrapper {
     max-width: 95vw;
+  }
+
+  .button_rendirte {
+    padding: 10px 40px;
+  }
+
+  .selected-theme {
+    font-size: 1.5em;
+    margin-bottom: 20px;
   }
 }
 </style>

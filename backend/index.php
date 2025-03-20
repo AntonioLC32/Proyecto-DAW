@@ -120,6 +120,15 @@ switch ($action) {
         rendirsePartidaSolitario($input);
         break;
 
+    case 'insertarRonda':
+        require 'juego/insert.php';
+        insertarRonda($input);
+        break;
+    case 'actualizarEstadisticas':
+        require 'estadisticas/update.php';
+        actualizarEstadisticas($input);
+        break;
+
 
     // Añadir casos para otras importaciones
     default:

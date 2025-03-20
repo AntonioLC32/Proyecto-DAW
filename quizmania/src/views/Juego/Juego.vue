@@ -3,32 +3,70 @@
     <div class="division">
       <div class="left">
         <div class="encase">
-          <div class="pregunta">
+          <div class="pregunta slide-in">
+            <span
+              v-if="preguntas[questionIndex].dificultad"
+              class="dificultad"
+              :class="{
+                'dificultad-facil':
+                  preguntas[questionIndex].dificultad === 'Fácil',
+                'dificultad-media':
+                  preguntas[questionIndex].dificultad === 'Media',
+                'dificultad-dificil':
+                  preguntas[questionIndex].dificultad === 'Difícil',
+              }"
+            >
+              {{ preguntas[questionIndex].dificultad.toUpperCase() }}
+            </span>
             <p>{{ preguntas[questionIndex].pregunta }}</p>
           </div>
 
-          <button class="respuesta" v-for="opcion in preguntas[questionIndex].opciones" :key="opcion" :class="{
-            correcta: isRespuestaCorrecta(opcion),
-            incorrecta: isRespuestaIncorrecta(opcion),
-          }" @click="seleccionarRespuesta(opcion)">
+          <button
+            class="respuesta slide-in-hidden"
+            v-for="(opcion, index) in preguntas[questionIndex].opciones"
+            :key="opcion"
+            :style="{ animationDelay: index * 0.4 + 0.8 + 's' }"
+            :class="{
+              correcta: isRespuestaCorrecta(opcion),
+              incorrecta: isRespuestaIncorrecta(opcion),
+            }"
+            @click="seleccionarRespuesta(opcion)"
+          >
             <p>{{ opcion }}</p>
           </button>
 
           <div class="misc">
             <div class="progreso">{{ progreso }}%</div>
             <a href="#" @click.prevent="usarPista">
-              <img src="../../assets/pista.png" alt="Pista" width="70px" height="70px" />
+              <img
+                src="../../assets/pista.png"
+                alt="Pista"
+                width="70px"
+                height="70px"
+              />
             </a>
             <a href="#" @click.prevent="siguientePregunta">
-              <img src="../../assets/siguiente.png" alt="Siguiente" width="70px" height="70px" />
+              <img
+                src="../../assets/siguiente.png"
+                alt="Siguiente"
+                width="70px"
+                height="70px"
+              />
             </a>
           </div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="encase gap-5">
-          <img v-for="(corazon, index) in vidas" :key="index" src="../../assets/corazon.png" alt="Corazón" width="80px"
-            height="80px" />
+
+          <!-- Corazones reposicionados debajo de los comodines -->
+          <div class="vidas-container">
+            <img
+              v-for="(corazon, index) in vidas"
+              :key="index"
+              src="../../assets/corazon.png"
+              alt="Corazón"
+              width="60px"
+              height="60px"
+              class="corazon"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -37,35 +75,31 @@
 
 <script>
 export default {
-  name: "PreguntaThriller",
+  name: "Juego",
   data() {
     return {
       preguntas: [
         {
           pregunta: "",
-          opciones: [
-            "",
-            "",
-            "",
-            "",
-          ],
+          opciones: ["", "", "", ""],
           respuestaCorrecta: "",
         },
       ],
-      questionIndex: 0, // Índice de la pregunta actual
+      questionIndex: 0,
       respuestaSeleccionada: null,
       seleccionado: false,
       pistaUsada: false,
       progreso: 50,
       vidas: 3,
       categoriaSeleccionada: null,
+      userData: null,
     };
   },
 
   mounted() {
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
-    sessionStorage.removeItem("categoria");
     //console.log(this.categoriaSeleccionada);
+    this.userData = this.$cookies.get("user");
     this.obtenerPregunta(this.categoriaSeleccionada);
   },
   computed: {
@@ -73,33 +107,37 @@ export default {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada ===
-        this.preguntas[this.questionIndex].respuestaCorrecta &&
+          this.preguntas[this.questionIndex].respuestaCorrecta &&
         opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada !==
-        this.preguntas[this.questionIndex].respuestaCorrecta &&
+          this.preguntas[this.questionIndex].respuestaCorrecta &&
         this.respuestaSeleccionada === opcion;
     },
   },
   methods: {
     async obtenerPregunta(categoriaSeleccionada) {
       try {
-        const response = await fetch("/api/index.php?action=obtenerPreguntaJuego", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ categoria: categoriaSeleccionada }),
-        });
+        const response = await fetch(
+          "/api/index.php?action=obtenerPreguntaJuego",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ categoria: categoriaSeleccionada }),
+          }
+        );
         const data = await response.json();
         if (data.status === "success") {
           const preguntaObtenida = {
             pregunta: data.data.pregunta,
             opciones: data.data.opciones,
             respuestaCorrecta: data.data.correcta,
+            dificultad: data.data.dificultad,
           };
           this.preguntas = [preguntaObtenida];
         } else {
@@ -114,13 +152,37 @@ export default {
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
 
-        // Reducimos vidas si la respuesta es incorrecta
-        if (opcion !== this.preguntas[this.questionIndex].respuestaCorrecta) {
-          this.vidas = Math.max(0, this.vidas - 1); // Aseguramos que no baje de 0
+        if (opcion === this.preguntas[this.questionIndex].respuestaCorrecta) {
+          const dificultad = this.preguntas[this.questionIndex].dificultad;
+          let puntos = 0;
+
+          switch (dificultad) {
+            case "Fácil":
+              puntos = 10;
+              break;
+            case "Media":
+              puntos = 20;
+              break;
+            case "Difícil":
+              puntos = 30;
+              break;
+            default:
+              console.warn("Dificultad no reconocida:", dificultad);
+              puntos = 0;
+          }
+
+          if (puntos > 0) {
+            this.actualizarEstadisticas(puntos);
+          }
+        } else {
+          this.vidas = Math.max(0, this.vidas - 1);
         }
+
         setTimeout(() => {
-          this.$router.push("/selecciontema");
-        }, 4000);
+          this.siguientePregunta();
+          this.seleccionado = false;
+          this.respuestaSeleccionada = null;
+        }, 2000);
       }
     },
     usarPista() {
@@ -147,8 +209,63 @@ export default {
         this.pistaUsada = true;
       }
     },
-    siguientePregunta() {
-      this.$router.push("/selecciontema");
+    async siguientePregunta() {
+      try {
+        const response = await fetch("/api/index.php?action=insertarRonda", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_partida: sessionStorage.getItem("id_partida"),
+            tiempo: "00:01:00",
+            id_categoria: sessionStorage.getItem("categoria"),
+          }),
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+          sessionStorage.removeItem("categoria");
+          let rondaActual = parseInt(
+            sessionStorage.getItem("ronda") || "1",
+            10
+          );
+          rondaActual++;
+          sessionStorage.setItem("ronda", rondaActual.toString());
+          setTimeout(() => {
+            this.$router.push("/selecciontema");
+          }, 1000);
+        } else {
+          console.error("Error insertando ronda:", data.mensaje);
+        }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    },
+
+    async actualizarEstadisticas(puntos) {
+      try {
+        const response = await fetch(
+          "/api/index.php?action=actualizarEstadisticas",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_usuario: this.userData.id_usuario,
+              nombre_categoria: sessionStorage.getItem("categoria"),
+              puntos: puntos,
+            }),
+          }
+        );
+        const data = await response.json();
+        if (data.status !== "success") {
+          console.error("Error actualizando estadísticas:", data.mensaje);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
   },
 };
@@ -167,32 +284,14 @@ export default {
   width: 100%;
   min-height: 100vh;
   position: relative;
-  margin-top: 20px;
+  margin-top: 60px;
 }
 
 .left {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 60%;
-}
-
-.right {
-  width: 20%;
-  position: absolute;
-  right: 10%;
-  top: 15%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.right .encase {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 70vw;
 }
 
 .encase {
@@ -211,15 +310,46 @@ section {
 
 .pregunta {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #5759cd;
   border-radius: 15px;
   width: 80%;
-  padding: 150px;
+  padding: 20px 30px;
   margin-bottom: 20px;
   text-align: center;
   filter: drop-shadow(0 10px 0px #5759cd35);
+  min-height: 120px;
+  max-width: 800px;
+}
+
+.dificultad {
+  font-size: 24px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.dificultad-facil {
+  color: #36ec5f;
+}
+
+.dificultad-media {
+  color: #ffc107;
+}
+
+.dificultad-dificil {
+  color: #dc3545;
+}
+
+.pregunta p {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
 }
 
 .pregunta p {
@@ -236,11 +366,13 @@ section {
   background-color: #5759cd;
   border-radius: 10px;
   width: 80%;
+  max-width: 800px;
   padding: 15px;
   margin-bottom: 20px;
   filter: drop-shadow(0 10px 0px #5759cd35);
   border: 0px;
   transition: background-color 0.3s ease-in-out;
+  min-height: 60px; /* Altura mínima para mantener proporción */
 }
 
 .respuesta:hover {
@@ -271,16 +403,15 @@ section {
   gap: 30px;
   max-height: 70px;
   margin-top: 20px;
+  margin-bottom: 20px;
   align-items: center;
 }
 
-.misc img,
-.right img {
+.misc img {
   transition: all 0.3s ease-in-out;
 }
 
-.misc img:hover,
-.right img:hover {
+.misc img:hover {
   transform: scale(1.1);
 }
 
@@ -297,68 +428,84 @@ section {
   font-size: 24px;
 }
 
-/* --- MEDIA QUERIES --- */
+.vidas-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.corazon {
+  animation: pulseHeart 1.5s infinite alternate;
+}
+
+@keyframes pulseHeart {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 1s ease-out forwards;
+}
+
+.slide-in-hidden {
+  opacity: 0;
+  animation: slideInWithVisibility 1.5s ease-out forwards;
+}
+
+@keyframes slideInWithVisibility {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  80% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @media (max-width: 1024px) {
   .pregunta {
-    width: 100%;
-    padding: 120px;
+    width: 90%;
   }
 
   .left {
-    width: 70%;
-  }
-
-  .right .encase {
-    padding-left: 200px;
-  }
-
-  .right img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .temas_completados img {
-    height: 80px;
-    width: 80px;
+    width: 80vw;
   }
 }
 
 @media (max-width: 768px) {
   .division {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    margin-top: 80px;
   }
 
-  .left,
-  .right {
+  .left {
     width: 100%;
-  }
-
-  .right {
-    flex-direction: row !important;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-
-  .right .encase {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .right img {
-    width: 60px;
-    height: 60px;
   }
 
   .pregunta {
     width: 95%;
-    padding: 40px;
     font-size: 22px;
-    margin-top: 180px !important;
   }
 
   .respuesta {
@@ -376,34 +523,18 @@ section {
 
 @media (max-width: 480px) {
   .pregunta {
-    font-size: 16px;
-    padding: 60px;
-    margin-top: 200px !important;
+    padding: 15px;
+    min-height: 100px;
+  }
+
+  .pregunta p {
+    font-size: 18px;
   }
 
   .respuesta {
-    font-size: 14px;
+    font-size: 16px;
     padding: 10px;
-  }
-
-  .right {
-    display: flex;
-    flex-direction: row !important;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-  }
-
-  .right .encase img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .right .encase {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
+    min-height: 50px;
   }
 
   .misc {
@@ -416,9 +547,15 @@ section {
     font-size: 16px;
   }
 
-  .right img {
-    width: 60px;
-    height: 60px;
+  .corazon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-height: 680px) {
+  .pregunta {
+    margin-top: 20px;
   }
 }
 </style>

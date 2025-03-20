@@ -13,19 +13,38 @@
         <ul class="nav-list">
           <li v-if="this.userData" class="nav-item">
             <router-link to="/perfil" class="nav-link perfil">
-              <img :src="getImageUserUrl(this.userData.imagen)" alt="Foto de perfil" class="profile-pic" />
+              <img
+                :src="getImageUserUrl(this.userData.imagen)"
+                alt="Foto de perfil"
+                class="profile-pic"
+              />
             </router-link>
           </li>
           <li v-else class="nav-item">
             <router-link to="/login" class="nav-link perfil">
-              <img src="../assets/users/default/default.png" alt="Foto de perfil" class="profile-pic" />
+              <img
+                src="../assets/users/default/default.png"
+                alt="Foto de perfil"
+                class="profile-pic"
+              />
             </router-link>
           </li>
           <li v-if="userData" class="nav-item">
             <button class="btn-sidebar" @click="toggleSidebar">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="hamburger-icon" :class="{ rotate: showSidebar }">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="hamburger-icon"
+                :class="{ rotate: showSidebar }"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
               </svg>
             </button>
           </li>
@@ -59,10 +78,19 @@
       </nav>
       <div class="logout-container">
         <button class="logout-button" @click="handleLogout">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="logout-icon">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="logout-icon"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+            />
           </svg>
           Cerrar Sesión
         </button>
@@ -72,7 +100,7 @@
   </div>
   <div v-else-if="$route.path === '/juego'">
     <header class="header header--centered">
-      <div class="logo">
+      <div v-if="this.width > 480" class="logo">
         <img src="../assets/logo.png" alt="Logo" />
       </div>
       <div class="juego-container">
@@ -81,7 +109,11 @@
         </div>
         <div class="category-info">
           <h1 class="titulo">{{ nombreCategoria }}</h1>
-          <img :src="getImageUrl(imagenCategoria)" :alt="nombreCategoria" class="category-image" />
+          <img
+            :src="getImageUrl(imagenCategoria)"
+            :alt="nombreCategoria"
+            class="category-image"
+          />
         </div>
       </div>
     </header>
@@ -111,6 +143,8 @@ export default {
       imagenCategoria: "musica.png",
       ronda: 1,
       userData: null,
+      width: window.innerWidth,
+      height: window.innerHeight,
     };
   },
   computed: {
@@ -132,7 +166,9 @@ export default {
       this.startTimer();
     }
     this.userData = this.$cookies.get("user");
-    console.log(this.userData);
+    this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
+
+    //console.log(this.userData);
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -150,9 +186,24 @@ export default {
         this.timerInterval = null;
         this.timer = 60;
       }
+      // Add this to update the ronda value when the route changes
+      if (newPath === "/selecciontema") {
+        this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
+      }
     },
   },
+  created() {
+    window.addEventListener("resize", this.onResize);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.onResize);
+  },
   methods: {
+    onResize(e) {
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+    },
+
     getImageUrl(path) {
       return new URL(`../assets/${path}`, import.meta.url).href;
     },
