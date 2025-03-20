@@ -21,7 +21,8 @@ if (!$user || !isset($user['id_usuario'])) {
 $usuario_id = $user['id_usuario'];
 
 $sql = "SELECT 
-    u.nombre,  
+    u.nombre,
+    u.imagen,   
     u.correo, 
     r.posicion, 
     r.puntos, 
