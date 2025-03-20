@@ -385,6 +385,8 @@ export default {
           this.user.nombre = this.settings.nombre;
           this.user.correo = this.settings.correo;
           this.userData = { ...this.userData, ...this.settings };
+
+          // actualiza la cookie con los nuevos datos (overwrite)
           document.cookie = `user=${encodeURIComponent(
             JSON.stringify(this.userData)
           )}; path=/`;
@@ -527,20 +529,6 @@ section {
 .btn-confirm-update:hover {
   background-color: #6acb72;
   color: #fff;
-  animation: shaking 0.3s linear 2;
-}
-@keyframes shaking {
-  0%,
-  50%,
-  100% {
-    transform: rotate(0deg);
-  }
-  20% {
-    transform: rotate(-5deg);
-  }
-  70% {
-    transform: rotate(5deg);
-  }
 }
 
 .btn-profile-update {

@@ -26,11 +26,7 @@
       <div class="right-column">
         <section class="edit-user">
           <!-- Imagen de perfil del administrador -->
-          <img 
-            :src="
-            nuevaImagenPreview || adminData.imagen
-            " alt="Admin" 
-          />
+          <img :src="nuevaImagenPreview || adminData.imagen" alt="Admin" />
 
           <form action="" @submit.prevent="actualizarAdmin">
             <label for="username">Nombre de usuario</label>
@@ -53,11 +49,19 @@
 
             <!-- Botón personalizado para seleccionar imagen -->
             <div class="custom-file-upload">
-              <button 
+              <button
+                v-if="!nuevaImagenPreview"
                 @click="$refs.fileInput.click()"
                 class="popup-btn cambiar-imagen-btn"
-                >
-                  Seleccionar Imagen
+              >
+                Seleccionar Imagen
+              </button>
+              <button
+                v-else
+                @click="guardarCambios"
+                class="btn btn-confirm-update mb-3"
+              >
+                Confirmar Cambio
               </button>
               <input
                 type="file"
@@ -69,12 +73,15 @@
             </div>
 
             <!-- Botones centrados -->
+            <!--
+            
             <div class="botones-form">
               <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
               <button type="button" class="btn-cancel" @click="cancelarEdicion">
                 Cancelar
               </button>
             </div>
+             -->
           </form>
         </section>
       </div>
@@ -133,6 +140,7 @@ export default {
         // pero si no hay imagen o es default, se usará la imagen default
         imagen: "src/assets/users/admin/default.png",
       },
+      selectedImage: null,
     };
   },
   mounted() {
@@ -147,7 +155,9 @@ export default {
         nombre: cookieData.nombre || "",
         email: cookieData.correo || "",
         // Si en la cookie hay imagen, se asigna; si no, se deja default.
-        imagen: cookieData.imagen ? "src/" + cookieData.imagen : "src/assets/users/admin/default.png",
+        imagen: cookieData.imagen
+          ? "src/" + cookieData.imagen
+          : "src/assets/users/admin/default.png",
       };
     }
   },
@@ -162,17 +172,24 @@ export default {
     // Si usas getUserImage para mostrar la imagen en el popup:
     getUserImage(imagePath) {
       const timestamp = new Date().getTime(); // Para evitar caché
-      return imagePath ? `${imagePath}?t=${timestamp}` : "src/assets/users/admin/default.png";
+      return imagePath
+        ? `${imagePath}?t=${timestamp}`
+        : "src/assets/users/admin/default.png";
     },
     async deshabilitarUsuario(usuario) {
       try {
-        const confirmar = confirm(`¿Deshabilitar al usuario "${usuario.user}"?`);
+        const confirmar = confirm(
+          `¿Deshabilitar al usuario "${usuario.user}"?`
+        );
         if (!confirmar) return;
-        const response = await fetch("/api/index.php?action=deshabilitarUsuario", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_usuario: usuario.id }),
-        });
+        const response = await fetch(
+          "/api/index.php?action=deshabilitarUsuario",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_usuario: usuario.id }),
+          }
+        );
         const data = await response.json();
         if (data.status === "success") {
           this.mensaje = "Usuario deshabilitado correctamente";
@@ -200,10 +217,15 @@ export default {
           }));
 
           // Buscar el administrador (por ejemplo, rol "admin")
-          const admin = data.data.find(u => u.rol && u.rol.toLowerCase() === "admin");
+          const admin = data.data.find(
+            (u) => u.rol && u.rol.toLowerCase() === "admin"
+          );
           if (admin) {
             // Si la imagen en BD es válida y no es "default.png", se actualiza adminData.imagen
-            if (admin.imagen && admin.imagen !== "assets/users/admin/default.png") {
+            if (
+              admin.imagen &&
+              admin.imagen !== "assets/users/admin/default.png"
+            ) {
               // admin.imagen ya debería contener la ruta correcta, por ejemplo: "assets/users/admin/andres.png"
               this.adminData.imagen = admin.imagen;
             } else {
@@ -231,7 +253,9 @@ export default {
     },
     async obtenerUsuariosConectados() {
       try {
-        const response = await fetch("/api/index.php?action=usuariosConectados");
+        const response = await fetch(
+          "/api/index.php?action=usuariosConectados"
+        );
         const json = await response.json();
         if (json.status === "success") {
           this.usuariosConectados = json.data;
@@ -249,8 +273,7 @@ export default {
           URL.revokeObjectURL(this.nuevaImagenPreview);
         }
         this.nuevaImagenPreview = URL.createObjectURL(file);
-        // Guardamos el archivo para enviarlo luego en la actualización
-        this.usuarioSeleccionado.imagenFile = file;
+        this.selectedImage = file; // Track the selected image
       } else {
         alert("Por favor selecciona un archivo de imagen válido.");
       }
@@ -266,48 +289,44 @@ export default {
     async guardarCambios() {
       try {
         let base64Image = null;
-        if (this.usuarioSeleccionado.imagenFile) {
-          base64Image = await this.convertFileToBase64(this.usuarioSeleccionado.imagenFile);
+        if (this.selectedImage) {
+          base64Image = await this.convertFileToBase64(this.selectedImage);
         }
         const payload = {
           action: "actualizarUsuario",
-          id_usuario: this.usuarioSeleccionado.id || this.adminData.id,
-          nombre: this.usuarioSeleccionado.nombre || this.adminData.nombre,
-          email: this.usuarioSeleccionado.email || this.adminData.email,
+          id_usuario: this.adminData.id,
+          nombre: this.adminData.nombre,
+          email: this.adminData.email,
           file: base64Image,
         };
-        const response = await fetch("/api/index.php?action=actualizarUsuario", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        const response = await fetch(
+          "/api/index.php?action=actualizarUsuario",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
         const data = await response.json();
-        console.log("Data: ", data);
         if (data.status === "success") {
           alert("Usuario actualizado correctamente");
-          this.mensaje = "Usuario actualizado correctamente";
-          this.mensajeTipo = "success";
-          // Actualiza adminData.imagen con la nueva ruta devuelta, si existe
-          if (data.nuevaImagen) {
-            this.adminData.imagen = data.nuevaImagen;
-          }
-          this.cerrarPopup();
-          await this.fetchUsuarios();
+          this.adminData.imagen = data.nuevaImagen || this.adminData.imagen;
           this.nuevaImagenPreview = null;
+          this.selectedImage = null; // Reset selected image
+
+          // actualiza la cookie con los nuevos datos (overwrite)
+          const updatedAdminData = {
+            id_usuario: this.adminData.id,
+            nombre: this.adminData.nombre,
+            correo: this.adminData.email,
+            imagen: this.adminData.imagen,
+          };
+          this.$cookies.set("user", updatedAdminData, "1d");
         } else {
           alert(data.mensaje || "Error al actualizar usuario");
-          this.mensaje = data.mensaje || "Error al actualizar usuario";
-          this.mensajeTipo = "error";
         }
       } catch (error) {
         alert("Error de conexión: " + error.message);
-        this.mensaje = "Error de conexión: " + error.message;
-        this.mensajeTipo = "error";
-      } finally {
-        setTimeout(() => {
-          this.mensaje = "";
-          this.mensajeTipo = "";
-        }, 5000);
       }
     },
     getImageUrl(path) {
@@ -319,7 +338,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .usuarios {
@@ -622,5 +640,19 @@ export default {
   .right-column {
     margin-top: 20px;
   }
+}
+
+/* Boton actualizar imagen */
+.btn-confirm-update {
+  background-color: #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073);
+  /* drop shadow */
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-confirm-update:hover {
+  background-color: #6acb72;
+  color: #fff;
 }
 </style>

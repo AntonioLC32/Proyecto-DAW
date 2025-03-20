@@ -84,6 +84,14 @@ function actualizarUsuario($data) {
         }
         
         $conn->commit();
+          
+        // actualiza la cookie con los nuevos datos (overwrite)
+        $userData = [
+            'id_usuario' => $id_usuario,
+            'nombre' => $nombre,
+            'imagen' => $newImageName ?? $oldImage,
+        ];
+        setcookie('user', json_encode($userData), time() + (86400 * 30), "/"); // 30 days expiration
 
         if (ob_get_length()) {
             ob_clean();
