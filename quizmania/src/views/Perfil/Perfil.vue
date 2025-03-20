@@ -10,7 +10,13 @@
         <div class="perfil-vista">
           <div id="perfil_img">
             <img
-              v-if="userData && userData.imagen"
+              v-if="previewImage"
+              :src="previewImage"
+              alt="Preview Image"
+              style="border-radius: 50%"
+            />
+            <img
+              v-else-if="userData && userData.imagen"
               :src="getImageUserUrl(userData.imagen)"
               alt="Perfil Image"
               style="border-radius: 50%"
@@ -22,7 +28,29 @@
               style="border-radius: 50%"
             />
           </div>
-
+          <div class="perfil_img_update">
+            <input
+              type="file"
+              accept="image/*"
+              style="display: none"
+              @change="onImageSelected"
+              ref="profileImageInput"
+            />
+            <button
+              v-if="!selectedImage"
+              class="btn btn-profile-update mb-3"
+              @click="$refs.profileImageInput.click()"
+            >
+              Cambiar Imagen
+            </button>
+            <button
+              v-else
+              class="btn btn-confirm-update mb-3"
+              @click="confirmImageChange"
+            >
+              Confirmar Cambio
+            </button>
+          </div>
           <h3 class="text-white">{{ user.nombre || "Cargando..." }}</h3>
           <h4 class="text-wrap">¡Comparte tu perfil con tus amigos!</h4>
           <div class="socials text-white">
@@ -30,17 +58,11 @@
               <img
                 src="../../assets/instagram2.png"
                 alt="instagram"
-                height="32px"
                 width="32px"
               />
             </a>
             <a href="#compartir" class="social-button">
-              <img
-                src="../../assets/share.png"
-                alt="share"
-                height="32px"
-                width="32px"
-              />
+              <img src="../../assets/share.png" alt="share" width="32px" />
             </a>
           </div>
         </div>
@@ -74,7 +96,7 @@
                 class="tab-pane"
                 :class="{ 'show active': activeTab === 'ajustes' }"
               >
-                <form @submit.prevent="saveSettings">
+                <form @submit.prevent="perfilUpdate">
                   <label for="nombre">Nombre de usuario</label><br />
                   <input
                     v-model="settings.nombre"
@@ -91,12 +113,12 @@
                   />
                   <button
                     type="button"
-                    class="btn btn-link mt-3"
+                    class="btn btn-link text-decoration-none mt-3"
                     @click="retrievePassword"
                   >
                     Te has olvidado de tu contraseña?
                   </button>
-                  
+
                   <label class="mt-3">Desea recibir notificaciones?</label>
                   <div class="form-check">
                     <input
@@ -116,7 +138,13 @@
                     />
                     <label for="no">No</label>
                   </div>
-                  <button class="btn w-100 mt-3">✍ Guardar Ajustes</button>
+                  <button 
+                    class="btn btn-profile-update w-100 mt-3"
+                    type="submit"
+                    @click="perfilUpdate"
+                    >
+                    Guardar Ajustes
+                  </button>
                 </form>
               </div>
 
@@ -185,6 +213,8 @@ export default {
       },
       userData: null,
       passwordVisible: false,
+      selectedImage: null,
+      previewImage: null,
     };
   },
 
@@ -224,9 +254,9 @@ export default {
         this.settings = {
           ...this.settings,
           nombre: data.nombre || this.settings.nombre,
-          correo: data.correo || this.settings.correo, 
+          correo: data.correo || this.settings.correo,
           notificaciones: data.notificaciones || this.settings.notificaciones,
-        }
+        };
 
         this.stats = {
           ...this.stats,
@@ -246,18 +276,128 @@ export default {
       return `/src/${imagen}`;
     },
 
-    async saveSettings() {
-      console.log("Ajustes guardados:", this.settings);
-      alert("Los ajustes han sido guardados exitosamente.");
-    },
-
     togglePasswordVisibility() {
       this.passwordVisible = !this.passwordVisible;
     },
 
     retrievePassword() {
-      alert("Función de recuperación de contraseña no implementada.");
+      alert("Ups :/ aún no se puede hacer esto.");
     },
+
+    async changeProfileImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Image = reader.result;
+          const payload = {
+            id_usuario: this.userData.id_usuario,
+            nombre: this.settings.nombre,
+            file: base64Image,
+          };
+
+          const response = await fetch("/api/perfil/updatePerfil.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (data.status === "success") {
+            alert("Imagen actualizada correctamente.");
+            console.log("Ajustes guardados:", this.settings);
+
+            this.user.imagen = data.imagen; // Update the image in the UI
+          } else {
+            console.error("Error al actualizar la imagen:", data.mensaje);
+            alert("Error al actualizar la imagen.");
+          }
+        } catch (error) {
+          console.error("Error al subir la imagen:", error.message);
+        }
+      };
+      reader.readAsDataURL(file);
+    },
+
+    onImageSelected(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedImage = file;
+
+        // Create a preview URL for the selected image
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.previewImage = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+
+    async confirmImageChange() {
+      if (!this.selectedImage) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Image = reader.result;
+          const payload = {
+            id_usuario: this.userData.id_usuario,
+            nombre: this.settings.nombre,
+            file: base64Image,
+          };
+
+          const response = await fetch("/api/perfil/updatePerfil.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+          if (data.status === "success") {
+            alert("Imagen actualizada correctamente.");
+            this.user.imagen = data.imagen; // Update the image in the UI
+            this.selectedImage = null; // Reset the selected image
+            this.previewImage = null; // Reset the preview image
+          } else {
+            console.error("Error al actualizar la imagen:", data.mensaje);
+            alert("Error al actualizar la imagen.");
+          }
+        } catch (error) {
+          console.error("Error al subir la imagen:", error.message);
+        }
+      };
+      reader.readAsDataURL(this.selectedImage);
+    },
+
+    async perfilUpdate() {
+      try {
+        const response = await fetch("/api/perfil/updatePerfil.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(this.settings),
+        });
+
+        const data = await response.json();
+        if (data.status === "success") {
+          alert("Perfil actualizado correctamente.");
+          this.user.nombre = this.settings.nombre;
+          this.user.correo = this.settings.correo;
+          this.userData = { ...this.userData, ...this.settings };
+          document.cookie = `user=${encodeURIComponent(
+            JSON.stringify(this.userData)
+          )}; path=/`;
+        } else {
+          console.error("Error al actualizar el perfil:", data.mensaje);
+          alert("Error al actualizar el perfil.");
+        }
+      } catch (error) {
+        console.error("Error al actualizar el perfil:", error.message);
+      }
+    },
+
+    // end of methods
   },
 
   mounted() {
@@ -362,15 +502,63 @@ section {
   width: 100%;
   max-width: 250px;
   height: 250px;
+  object-fit: cover;
 }
 
 .perfil-vista > #perfil_img {
   margin: 20px;
 }
 
+.btn-profile-update {
+  background-color: #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073);
+  /* drop shadow */
+  color: #fff;
+  font-weight: bold;
+}
+.btn-confirm-update {
+  background-color: #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073);
+  /* drop shadow */
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-confirm-update:hover {
+  background-color: #6acb72;
+  color: #fff;
+  animation: shaking 0.3s linear 2;
+}
+@keyframes shaking {
+  0%,
+  50%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-5deg);
+  }
+  70% {
+    transform: rotate(5deg);
+  }
+}
+
+.btn-profile-update {
+  background-color: #8d89f9;
+  filter: drop-shadow(0 2px 2px #00000073);
+  /* drop shadow */
+  color: #fff;
+  font-weight: bold;
+}
+
+.btn-profile-update:hover {
+  background-color: #6acb72;
+  color: #fff;
+}
+
 .perfil-vista h3 {
   font-weight: bold;
-  font-size: 32px;
+  font-size: 28px;
 }
 
 .perfil-vista > .socials {
@@ -381,8 +569,8 @@ section {
   /* drop shadow */
   background: #8d89f9;
   border-radius: 8px;
-  padding: 10px;
-  gap: 10px;
+  padding: 5px;
+  gap: 5px;
 }
 
 .perfil-vista .socials .social-button {
