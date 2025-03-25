@@ -337,9 +337,8 @@ export default {
           alert("Usuario actualizado correctamente");
           this.adminData.imagen = data.nuevaImagen || this.adminData.imagen;
           this.nuevaImagenPreview = null;
-          this.selectedImage = null; // Reset selected image
+          this.selectedImage = null;
 
-          // actualiza la cookie con los nuevos datos (overwrite)
           const updatedAdminData = {
             id_usuario: this.adminData.id,
             nombre: this.adminData.nombre,

@@ -208,7 +208,7 @@ export default {
       this.$refs.roulette.launchWheel();
     },
     onWheelStart(selectedItem) {
-      console.log("Wheel started:", selectedItem);
+      //console.log("Wheel started:", selectedItem);
     },
     onWheelEnd(selectedItem) {
       // console.log("Wheel ended:", selectedItem);

@@ -19,6 +19,7 @@ CREATE PROCEDURE ActualizarRanking(IN usuario_id INT)
 BEGIN
     DECLARE total_puntos INT;
     DECLARE categoria_top INT;
+    DECLARE total_rondas INT;
     
     -- Calcular puntos totales
     SELECT SUM(puntos) INTO total_puntos 
@@ -32,12 +33,19 @@ BEGIN
     ORDER BY puntos DESC
     LIMIT 1;
     
+    -- Calcular rondas totales
+    SELECT COUNT(*) INTO total_rondas
+    FROM Participante p
+    JOIN Ronda r ON p.id_partida = r.id_partida
+    WHERE p.id_usuario = usuario_id;
+    
     -- Actualizar o insertar en ranking
-    INSERT INTO Ranking (id_usuario, puntos, categoria_destacada)
-    VALUES (usuario_id, total_puntos, categoria_top)
+    INSERT INTO Ranking (id_usuario, puntos, categoria_destacada, rondas)
+    VALUES (usuario_id, total_puntos, categoria_top, total_rondas)
     ON DUPLICATE KEY UPDATE
         puntos = total_puntos,
-        categoria_destacada = categoria_top;
+        categoria_destacada = categoria_top,
+        rondas = total_rondas;
 END$$
 DELIMITER ;
 

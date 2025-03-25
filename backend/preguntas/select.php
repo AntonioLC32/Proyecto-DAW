@@ -71,75 +71,92 @@ function obtenerPreguntaJuego($data) {
     try {
         $categoria = $data['categoria'];
 
-        // Consulta para obtener una pregunta aleatoria de la categoría
+        // Consulta mejorada con joins correctos y selección de campos
         $sql_pregunta = "
             SELECT
-                p.id_pregunta AS id,
+                p.id_pregunta,
                 p.texto AS pregunta,
                 t.dificultad,
                 c.nombre AS categoria,
-                (SELECT texto FROM Respuesta WHERE id_pregunta = p.id_pregunta AND es_correcta = 1 LIMIT 1) AS correcta
+                (SELECT texto 
+                 FROM Respuesta 
+                 WHERE id_pregunta = p.id_pregunta 
+                 AND es_correcta = 1 
+                 AND habilitado = 1 
+                 LIMIT 1) AS correcta
             FROM Pregunta p
             JOIN Tarjeta t ON p.id_tarjeta = t.id_tarjeta
             JOIN Categoria c ON t.id_categoria = c.id_categoria
-            WHERE p.habilitado = 1 AND c.nombre = ?
+            WHERE p.habilitado = 1
+            AND c.nombre = ?
             ORDER BY RAND()
             LIMIT 1
         ";
 
         $stmt_pregunta = $conn->prepare($sql_pregunta);
+        if (!$stmt_pregunta) {
+            throw new Exception("Error al preparar consulta: " . $conn->error);
+        }
+        
         $stmt_pregunta->bind_param('s', $categoria);
-        $result_pregunta = $stmt_pregunta->execute() ? $stmt_pregunta->get_result() : false;
+        if (!$stmt_pregunta->execute()) {
+            throw new Exception("Error al ejecutar consulta: " . $stmt_pregunta->error);
+        }
+        
+        $result_pregunta = $stmt_pregunta->get_result();
+        $pregunta = $result_pregunta->fetch_assoc();
+        $stmt_pregunta->close();
 
-        if (!$result_pregunta) {
-            throw new Exception("Error en la consulta de pregunta: " . $conn->error);
+        if (!$pregunta) {
+            throw new Exception("No hay preguntas disponibles para esta categoría");
         }
 
-        $pregunta = $result_pregunta->fetch_assoc();
+        // Consulta de respuestas mejorada
+        $sql_respuestas = "
+            SELECT texto 
+            FROM Respuesta 
+            WHERE id_pregunta = ? 
+            AND habilitado = 1
+            ORDER BY RAND()
+        ";
 
-        if ($pregunta) {
-            // Consulta para obtener las respuestas de la pregunta
-            $sql_respuestas = "
-                SELECT texto
-                FROM Respuesta
-                WHERE id_pregunta = ? AND habilitado = 1
-            ";
+        $stmt_respuestas = $conn->prepare($sql_respuestas);
+        if (!$stmt_respuestas) {
+            throw new Exception("Error al preparar consulta de respuestas: " . $conn->error);
+        }
+        
+        $stmt_respuestas->bind_param('i', $pregunta['id_pregunta']);
+        if (!$stmt_respuestas->execute()) {
+            throw new Exception("Error al ejecutar consulta de respuestas: " . $stmt_respuestas->error);
+        }
+        
+        $result_respuestas = $stmt_respuestas->get_result();
+        $opciones = [];
+        while ($row = $result_respuestas->fetch_assoc()) {
+            $opciones[] = $row['texto'];
+        }
+        $stmt_respuestas->close();
 
-            $stmt_respuestas = $conn->prepare($sql_respuestas);
-            $stmt_respuestas->bind_param('i', $pregunta['id']);
-            $result_respuestas = $stmt_respuestas->execute() ? $stmt_respuestas->get_result() : false;
+        // Verificar que la respuesta correcta esté presente
+        $correcta = $pregunta['correcta'];
+        if (!in_array($correcta, $opciones)) {
+            throw new Exception("La respuesta correcta no está entre las opciones disponibles");
+        }
 
-            if (!$result_respuestas) {
-                throw new Exception("Error en la consulta de respuestas: " . $conn->error);
-            }
+        // Mezclar opciones aleatoriamente
+        shuffle($opciones);
 
-            // Construir el array de opciones
-            $opciones = [];
-            while ($row = $result_respuestas->fetch_assoc()) {
-                $opciones[] = $row['texto'];
-            }
-
-            // Estructurar el resultado
-            $resultado = [
-                'id' => $pregunta['id'],
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'id_pregunta' => $pregunta['id_pregunta'],
                 'pregunta' => $pregunta['pregunta'],
                 'dificultad' => $pregunta['dificultad'],
                 'categoria' => $pregunta['categoria'],
-                'opciones' => $opciones, // Array de respuestas
-                'correcta' => $pregunta['correcta']
-            ];
-
-            // Devolver el resultado en JSON
-            echo json_encode([
-                'status' => 'success',
-                'data' => $resultado
-            ]);
-        } else {
-            echo json_encode([
-                'status' => 'error',
-                'mensaje' => 'No se encontró ninguna pregunta para la categoría especificada.'
-            ]);
-        }
+                'opciones' => $opciones,
+                'correcta' => $correcta
+            ]
+        ]);
 
     } catch (Exception $e) {
         echo json_encode([

@@ -123,7 +123,7 @@ CREATE TABLE HistorialPreguntas (
   id_historial INT AUTO_INCREMENT PRIMARY KEY,
   id_partida INT NOT NULL,
   id_pregunta INT NOT NULL,
-  acertada BOOLEAN NOT NULL,
+  acertada TINYINT(1) NOT NULL,
   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE,
   FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE

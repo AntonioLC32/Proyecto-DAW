@@ -120,15 +120,60 @@ function insertarRonda($data) {
 }
 
 
-
-
-
-
-
-
-
-
-
+function guardarHistorialPregunta($data) {
+    global $conn;
+    
+    $conn->begin_transaction();
+    
+    try {
+        if(empty($data['id_partida']) || empty($data['id_pregunta'])) {
+            throw new Exception("Datos incompletos para registrar historial");
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO HistorialPreguntas 
+                              (id_partida, id_pregunta, acertada) 
+                              VALUES (?, ?, ?)");
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conn->error);
+        }
+        
+        $stmt->bind_param("iii", 
+            $data['id_partida'], 
+            $data['id_pregunta'], 
+            $data['acertada']
+        );
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+        
+        $stmt_update = $conn->prepare("
+            UPDATE Ranking r
+            JOIN Participante p ON r.id_usuario = p.id_usuario
+            SET r.rondas = (
+                SELECT COUNT(*) 
+                FROM Ronda 
+                WHERE id_partida = p.id_partida
+            )
+            WHERE p.id_partida = ?
+        ");
+        $stmt_update->bind_param("i", $data['id_partida']);
+        $stmt_update->execute();
+        
+        $conn->commit();
+        echo json_encode(["status" => "success"]);
+        
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode([
+            "status" => "error",
+            "mensaje" => $e->getMessage()
+        ]);
+    } finally {
+        if (isset($stmt)) $stmt->close();
+        if (isset($stmt_update)) $stmt_update->close();
+    }
+}
 
 
 ?>

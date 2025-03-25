@@ -134,6 +134,7 @@ export default {
         const data = await response.json();
         if (data.status === "success") {
           const preguntaObtenida = {
+            id_pregunta: data.data.id_pregunta,
             pregunta: data.data.pregunta,
             opciones: data.data.opciones,
             respuestaCorrecta: data.data.correcta,
@@ -147,12 +148,14 @@ export default {
         console.error("Error al obtener pregunta:", error);
       }
     },
-    seleccionarRespuesta(opcion) {
+    async seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
+        const esCorrecta =
+          opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
 
-        if (opcion === this.preguntas[this.questionIndex].respuestaCorrecta) {
+        if (esCorrecta) {
           const dificultad = this.preguntas[this.questionIndex].dificultad;
           let puntos = 0;
 
@@ -172,10 +175,12 @@ export default {
           }
 
           if (puntos > 0) {
-            this.actualizarEstadisticas(puntos);
+            await this.actualizarEstadisticas(puntos);
+            await this.guardarHistorialPregunta(esCorrecta);
           }
         } else {
           this.vidas = Math.max(0, this.vidas - 1);
+          await this.guardarHistorialPregunta(esCorrecta);
         }
 
         setTimeout(() => {
@@ -185,6 +190,33 @@ export default {
         }, 2000);
       }
     },
+
+    async guardarHistorialPregunta(acertada) {
+      try {
+        const response = await fetch(
+          "/api/index.php?action=guardarHistorialPregunta",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_partida: sessionStorage.getItem("id_partida"),
+              id_pregunta: this.preguntas[this.questionIndex].id_pregunta,
+              acertada: acertada ? 1 : 0,
+            }),
+          }
+        );
+
+        const data = await response.json();
+        if (data.status !== "success") {
+          console.error("Error guardando historial:", data.mensaje);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+
     usarPista() {
       if (!this.pistaUsada) {
         const incorrectas = this.preguntas[this.questionIndex].opciones.filter(
@@ -222,19 +254,32 @@ export default {
             id_categoria: sessionStorage.getItem("categoria"),
           }),
         });
+
         const data = await response.json();
 
         if (data.status === "success") {
-          sessionStorage.removeItem("categoria");
-          let rondaActual = parseInt(
-            sessionStorage.getItem("ronda") || "1",
-            10
-          );
-          rondaActual++;
-          sessionStorage.setItem("ronda", rondaActual.toString());
-          setTimeout(() => {
+          await fetch("/api/index.php?action=actualizarEstadoPartida", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id_partida: sessionStorage.getItem("id_partida"),
+              estado: this.vidas > 0 ? "activa" : "finalizada",
+            }),
+          });
+
+          if (this.vidas > 0) {
+            let rondaActual = parseInt(
+              sessionStorage.getItem("ronda") || "1",
+              10
+            );
+            rondaActual++;
+            sessionStorage.setItem("ronda", rondaActual.toString());
             this.$router.push("/selecciontema");
-          }, 1000);
+          } else {
+            this.$router.push("/resultado");
+          }
         } else {
           console.error("Error insertando ronda:", data.mensaje);
         }
@@ -242,7 +287,6 @@ export default {
         console.error("Error en la solicitud:", error);
       }
     },
-
     async actualizarEstadisticas(puntos) {
       try {
         const response = await fetch(
@@ -448,39 +492,35 @@ section {
   }
 }
 
-@keyframes slideIn {
+@keyframes scaleIn {
   0% {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: scale(0.5);
   }
   100% {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1);
   }
 }
 
 .slide-in {
-  animation: slideIn 1s ease-out forwards;
+  animation: scaleIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes scaleInWithDelay {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .slide-in-hidden {
   opacity: 0;
-  animation: slideInWithVisibility 1.5s ease-out forwards;
-}
-
-@keyframes slideInWithVisibility {
-  0% {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  80% {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  animation: scaleInWithDelay 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @media (max-width: 1024px) {
