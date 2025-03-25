@@ -21,22 +21,21 @@ if (!$user || !isset($user['id_usuario'])) {
 
 $usuario_id = $user['id_usuario'];
 
+// Se obtiene todas las categorías y se unen (LEFT JOIN) los puntos registrados en Estadisticas para el usuario.
+// Si no existen datos en Estadisticas para alguna categoría, se mostrará 0.
 $sql = "SELECT 
-        e.id_usuario AS id_usuario, -- Specify table alias for id_usuario
-        e.id_categoria AS categoria, 
-        r.puntos AS puntos_totales,
-        r.rondas AS rondas_jugadas 
-        FROM Estadisticas e
-        JOIN Ranking r ON e.id_usuario = r.id_usuario
-        WHERE e.id_usuario = ? -- Specify table alias in WHERE clause
-        ORDER BY puntos_totales DESC";
-
-$estadisticas = [];
+            c.id_categoria AS categoria, 
+            IFNULL(e.puntos, 0) AS puntos_totales
+        FROM Categoria c
+        LEFT JOIN Estadisticas e ON c.id_categoria = e.id_categoria AND e.id_usuario = ?
+        ORDER BY c.id_categoria";
 
 if ($stmt = $conn->prepare($sql)) {
-    $stmt->bind_param("i", $usuario_id); // Bind the parameter (integer type)
+    $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
     $result = $stmt->get_result();
+
+    $estadisticas = [];
 
     if ($result) {
         if ($result->num_rows === 0) {
@@ -46,8 +45,7 @@ if ($stmt = $conn->prepare($sql)) {
         while ($row = $result->fetch_assoc()) {
             $estadisticas[] = [
                 "categoria" => $row["categoria"],
-                "puntos_totales" => $row["puntos_totales"],
-                "rondas_jugadas" => $row["rondas_jugadas"]
+                "puntos_totales" => (int)$row["puntos_totales"]
             ];
         }
     } else {

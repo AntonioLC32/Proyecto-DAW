@@ -45,15 +45,35 @@ export default {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        partidasData.value = data;
-        PartidasDiarias();
+        if (chartPartidas.value) {
+          new Chart(chartPartidas.value, {
+            type: "bar",
+            data: {
+              labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+              datasets: [
+                {
+                  label: "Partidas Jugadas",
+                  data: [
+                    data.Lunes || 0,
+                    data.Martes || 0,
+                    data.Miércoles || 0,
+                    data.Jueves || 0,
+                    data.Viernes || 0,
+                    data.Sábado || 0,
+                    data.Domingo || 0,
+                  ],
+                  backgroundColor: "red",
+                },
+              ],
+            },
+          });
+        }
       } catch (error) {
         console.error("Error al obtener partidas diarias:", error);
       }
     };
 
     // Función para obtener la participación de usuarios semanal desde la API
-    const usuariosData = ref({});
     const fetchUsuariosSemanal = async () => {
       try {
         const response = await fetch("/api/index.php?action=usuariosSemanal");
@@ -61,8 +81,29 @@ export default {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        usuariosData.value = Array.isArray(data) ? data[0] : data;
-        UsuariosSemanal();
+        if (chartUsuarios.value) {
+          new Chart(chartUsuarios.value, {
+            type: "bar",
+            data: {
+              labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+              datasets: [
+                {
+                  label: "Usuarios Únicos",
+                  data: [
+                    data.Lunes || 0,
+                    data.Martes || 0,
+                    data.Miércoles || 0,
+                    data.Jueves || 0,
+                    data.Viernes || 0,
+                    data.Sábado || 0,
+                    data.Domingo || 0,
+                  ],
+                  backgroundColor: "green",
+                },
+              ],
+            },
+          });
+        }
       } catch (error) {
         console.error("Error al obtener datos de usuariosSemanal:", error);
       }
@@ -97,121 +138,40 @@ export default {
     };
     
     // Función para obtener los aciertos por dificultad
-    const fetchDificultad = async () => {
-      const response = await fetch("/api/index.php?action=aciertosDificultad", {
-        method: "GET",
-      });
-      const data = await response.json();
-      partidasData.value = data;
-      AciertosDificultad();
-    };
-
-    /*------------------------- Funciónes para actualizar los gráficos -------------------------*/
-    
-    const PartidasDiarias = () => {
-      if (chartPartidas.value) {
-        new Chart(chartPartidas.value, {
-          type: "bar",
-          data: {
-            labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-            datasets: [
-              {
-                label: "Partidas Jugadas",
-                data: [
-                  partidasData.value.Lunes,
-                  partidasData.value.Martes,
-                  partidasData.value.Miércoles,
-                  partidasData.value.Jueves,
-                  partidasData.value.Viernes,
-                  partidasData.value.Sábado,
-                  partidasData.value.Domingo,
-                ],
-                backgroundColor: "red",
-              },
-            ],
-          },
-        });
-      }
-    };
-
-    // Inicialización de los otros gráficos
-    const AciertosCategoria = () => {
-      if (chartAciertos.value) {
-        new Chart(chartAciertos.value, {
-          type: "bar",
-          data: {
-            labels: [
-              "Ciencia",
-              "Historia",
-              "Geografía",
-              "Deportes",
-              "Arte",
-              "Entretenimiento",
-              "Tecnología",
-              "Mates",
-              "Cultura",
-              "Música",
-            ],
-            datasets: [],
-          },
-        });
-      }
-    };
-
-    const UsuariosSemanal = () => {
-      if (!chartUsuarios.value || !usuariosData.value) {
-        console.warn("UsuariosSemanal: No se encontró chartUsuarios o datos inválidos");
-        return;
-      }
-
-      const dataArray = [
-        usuariosData.value.Lunes || 0,
-        usuariosData.value.Martes || 0,
-        usuariosData.value.Miércoles || 0,
-        usuariosData.value.Jueves || 0,
-        usuariosData.value.Viernes || 0,
-        usuariosData.value.Sábado || 0,
-        usuariosData.value.Domingo || 0,
-      ];
-
-      new Chart(chartUsuarios.value, {
-        type: "bar",
-        data: {
-          labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-          datasets: [
-            {
-              label: "Usuarios Únicos",
-              data: dataArray,
-              backgroundColor: "green",
+    const fetchAciertosDificultad = async () => {
+      try {
+        const response = await fetch("/api/index.php?action=aciertosDificultad");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (chartDificultad.value) {
+          new Chart(chartDificultad.value, {
+            type: "bar",
+            data: {
+              labels: data.map(item => item.dificultad),
+              datasets: [
+                {
+                  label: "Aciertos",
+                  data: data.map(item => item.porcentaje),
+                  backgroundColor: "orange",
+                },
+              ],
             },
-          ],
-        },
-      });
-    };
-
-    const AciertosDificultad = () => {
-      if (chartDificultad.value) {
-        new Chart(chartDificultad.value, {
-          type: "bar",
-          data: {
-            labels: ["Fácil", "Medio", "Difícil"],
-            datasets: [
-              {
-                label: "Aciertos",
-                data: [50, 70, 30],
-                backgroundColor: "orange",
-              },
-            ],
-          },
-        });
+          });
+        }
+      } catch (error) {
+        console.error("Error al obtener datos de aciertos por dificultad:", error);
       }
     };
+
+
 
     onMounted(() => {
       fetchPartidasDiarias();
       fetchUsuariosSemanal();
       fetchAciertosCategorias();
-      fetchDificultad();
+      fetchAciertosDificultad();
     });
 
     return {
