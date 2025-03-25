@@ -28,7 +28,7 @@ $sql = "SELECT
             IFNULL(e.puntos, 0) AS puntos_totales
         FROM Categoria c
         LEFT JOIN Estadisticas e ON c.id_categoria = e.id_categoria AND e.id_usuario = ?
-        ORDER BY c.id_categoria";
+        ORDER BY puntos_totales DESC";
 
 if ($stmt = $conn->prepare($sql)) {
     $stmt->bind_param("i", $usuario_id);
