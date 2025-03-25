@@ -1,0 +1,11 @@
+id_categoria;nombre;imagen
+1;Science;assets/ciencia.png
+2;History;assets/historia.png
+3;Geography;assets/geografia.png
+4;Sports;assets/deportes.png
+5;Art and Literature;assets/arte.png
+6;Entertainment;assets/entre.png
+7;Technology;assets/tecno.png
+8;Mathematics;assets/mates.png
+9;General Culture;assets/cultura.png
+10;Music;assets/musica.png
