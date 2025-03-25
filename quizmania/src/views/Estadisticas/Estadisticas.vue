@@ -78,7 +78,6 @@
               :key="index"
               class="estadisticas-item"
             >
-              <p>Categoria</p>
               <img
                 :src="obtenerImagenCategoria(categoria.categoria)"
                 :alt="`Categoría: ${categoria.categoria}`"
@@ -86,7 +85,6 @@
               />
 
               <div class="d-flex ptot">
-                <p>Puntos Totales</p>
                 <p class="puntos">{{ categoria.puntos }} pts</p>
               </div>
               <!--
@@ -382,7 +380,7 @@ section {
 
 .estadisticas-item {
   background-color: #4a4da5;
-  padding: 15px;
+  padding: 5px;
   border-radius: 8px;
   text-align: center;
   color: #fff;
@@ -401,14 +399,15 @@ section {
 }
 
 .estadisticas-img {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
+  margin-top: 20px;
   margin-bottom: 10px;
   border-radius: 8px;
 }
 
 .puntos {
-  font-size: 20px;
+  font-size: 25px;
 }
 
 .posicion {

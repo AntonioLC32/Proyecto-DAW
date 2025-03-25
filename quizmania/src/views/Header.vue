@@ -61,7 +61,7 @@
           </li>
           <li class="sidebar-item">
             <router-link to="/ranking" class="sidebar-link">
-              <span>RÁNKING</span>
+              <span>RANKING</span>
             </router-link>
           </li>
           <li class="sidebar-item">
