@@ -23,7 +23,7 @@
             />
             <img
               v-else
-              src="../assets/users/default/default.png"
+              src="../../assets/users/default.png"
               alt="Imagen predeterminada"
               style="border-radius: 50%"
             />
@@ -118,7 +118,7 @@
                   >
                     Te has olvidado de tu contraseña?
                   </button>
-                  
+
                   <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
@@ -222,12 +222,16 @@ export default {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
+
+        // Set userData with the complete response
+        this.userData = data;
+
         this.user = {
           ...this.user,
           nombre: data.nombre,
           imagen: data.imagen,
         };
-        
+
         this.settings = {
           ...this.settings,
           nombre: data.nombre,
@@ -269,7 +273,7 @@ export default {
           const base64Image = reader.result;
           const payload = {
             id_usuario: this.userData.id_usuario,
-            nombre:  data.nombre,
+            nombre: this.userData.nombre,
             file: base64Image,
           };
 
@@ -283,7 +287,6 @@ export default {
           if (data.status === "success") {
             alert("Imagen actualizada correctamente.");
             console.log("Ajustes guardados:", this.settings);
-
             this.user.imagen = data.imagen; // Update the image in the UI
           } else {
             console.error("Error al actualizar la imagen:", data.mensaje);
@@ -298,16 +301,30 @@ export default {
 
     onImageSelected(event) {
       const file = event.target.files[0];
-      if (file) {
-        this.selectedImage = file;
+      if (!file) return;
 
-        // Create a preview URL for the selected image
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.previewImage = e.target.result;
-        };
-        reader.readAsDataURL(file);
+      // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        alert("El archivo es demasiado grande. El tamaño máximo permitido es de 5MB.");
+        return;
       }
+
+      // Validate file type
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Formato de archivo no válido. Solo se permiten imágenes .png, .jpg y .jpeg.");
+        return;
+      }
+
+      this.selectedImage = file;
+
+      // Create a preview URL for the selected image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImage = e.target.result;
+      };
+      reader.readAsDataURL(file);
     },
 
     async confirmImageChange() {
@@ -318,8 +335,8 @@ export default {
         try {
           const base64Image = reader.result;
           const payload = {
-            id_usuario: this.userData.id_usuario,
-            nombre:  data.nombre,
+            id_usuario: this.userData.id_usuario, // Now userData should be available
+            nombre: this.userData.nombre, // Changed from data.nombre to this.userData.nombre
             file: base64Image,
           };
 
@@ -359,11 +376,11 @@ export default {
           alert("Perfil actualizado correctamente.");
           this.user.nombre = this.settings.nombre;
           this.user.correo = this.settings.correo;
-          this.userData = { ...this.userData, ...this.settings };
+          this.user = { ...this.user, ...this.settings };
 
           // actualiza la cookie con los nuevos datos (overwrite)
           document.cookie = `user=${encodeURIComponent(
-            JSON.stringify(this.userData)
+            JSON.stringify(this.user)
           )}; path=/`;
         } else {
           console.error("Error al actualizar el perfil:", data.mensaje);
@@ -378,7 +395,7 @@ export default {
   },
 
   mounted() {
-    this.cargarPerfil(); 
+    this.cargarPerfil();
   },
 };
 </script>
