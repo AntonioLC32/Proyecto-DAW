@@ -176,6 +176,10 @@ export default {
   border-radius: 3px;
 }
 
+.powerups:hover {
+  transform: translateY(-5px);
+}
+
 .powerups {
   max-width: 1200px;
   margin: 4rem auto 0;
@@ -183,6 +187,7 @@ export default {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
 }
 
 .powerups-title {
