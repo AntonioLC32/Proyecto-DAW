@@ -16,8 +16,8 @@
               style="border-radius: 50%"
             />
             <img
-              v-else-if="userData && userData.imagen"
-              :src="getImageUserUrl(userData.imagen)"
+              v-else-if="user && user.imagen"
+              :src="getImageUserUrl(user.imagen)"
               alt="Perfil Image"
               style="border-radius: 50%"
             />
@@ -118,26 +118,7 @@
                   >
                     Te has olvidado de tu contraseña?
                   </button>
-
-                  <label class="mt-3">Desea recibir notificaciones?</label>
-                  <div class="form-check">
-                    <input
-                      v-model="settings.notificaciones"
-                      type="radio"
-                      name="notificaciones"
-                      id="si"
-                      value="si"
-                    />
-                    <label for="si">Sí</label><br />
-                    <input
-                      v-model="settings.notificaciones"
-                      type="radio"
-                      name="notificaciones"
-                      id="no"
-                      value="no"
-                    />
-                    <label for="no">No</label>
-                  </div>
+                  
                   <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
@@ -200,6 +181,7 @@ export default {
       activeTab: "ajustes",
       user: {
         nombre: "Cargando...",
+        imagen: "Cargando...",
       },
       settings: {
         nombre: "Cargando...",
@@ -228,8 +210,6 @@ export default {
     },
 
     async cargarPerfil() {
-      // solo para debuggear
-      // console.log("cargarPerfil method called");
       try {
         const response = await fetch("/api/perfil/select_perfil.php", {
           credentials: "include",
@@ -242,20 +222,17 @@ export default {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        // solo para debuggear
-        //console.log("Datos devueltos por la API:", data);
-
         this.user = {
           ...this.user,
-          nombre: data.nombre || this.user.nombre,
-          imagen: data.imagen || this.user.imagen,
+          nombre: data.nombre,
+          imagen: data.imagen,
         };
-
+        
         this.settings = {
           ...this.settings,
-          nombre: data.nombre || this.settings.nombre,
-          correo: data.correo || this.settings.correo,
-          notificaciones: data.notificaciones || this.settings.notificaciones,
+          nombre: data.nombre,
+          correo: data.correo,
+          notificaciones: data.notificaciones,
         };
 
         this.stats = {
@@ -264,8 +241,6 @@ export default {
           puntosUltimaPartida: data.puntos || "--",
           imagenCategoria: data.imagen_categoria || "--",
         };
-
-        this.settings.nombre = this.user.nombre;
       } catch (error) {
         console.error("Error obteniendo el perfil:", error.message);
       }
@@ -294,7 +269,7 @@ export default {
           const base64Image = reader.result;
           const payload = {
             id_usuario: this.userData.id_usuario,
-            nombre: this.settings.nombre,
+            nombre:  data.nombre,
             file: base64Image,
           };
 
@@ -344,7 +319,7 @@ export default {
           const base64Image = reader.result;
           const payload = {
             id_usuario: this.userData.id_usuario,
-            nombre: this.settings.nombre,
+            nombre:  data.nombre,
             file: base64Image,
           };
 
@@ -403,31 +378,7 @@ export default {
   },
 
   mounted() {
-    const userCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("user="))
-      ?.split("=")[1];
-
-    if (userCookie) {
-      try {
-        this.userData = JSON.parse(decodeURIComponent(userCookie));
-        this.user = { ...this.user, ...this.userData };
-        this.settings.nombre = this.user.nombre;
-        this.user.imagen = this.user.imagen || "Imagen no encontrada";
-
-        // solo para debuggear
-        // console.log("Usuario cargado desde cookies:", this.user);
-
-        // Now fetch the latest profile data from the API
-        this.cargarPerfil();
-      } catch (error) {
-        console.error("Error parsing user cookie:", error.message);
-      }
-    } else {
-      //console.warn("No user found in cookies. Fetching profile from API...");
-      // If no cookie, directly load data from the API
-      this.cargarPerfil();
-    }
+    this.cargarPerfil(); 
   },
 };
 </script>
