@@ -55,7 +55,6 @@
             </a>
           </div>
 
-          <!-- Corazones reposicionados debajo de los comodines -->
           <div class="vidas-container">
             <img
               v-for="(corazon, index) in vidas"
@@ -68,6 +67,13 @@
             />
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showGameOver" class="game-over-popup">
+      <div class="popup-content">
+        <h2>¡HAS PERDIDO!</h2>
+        <p>Rondas completadas: {{ rondasTotales }}</p>
       </div>
     </div>
   </section>
@@ -93,15 +99,23 @@ export default {
       vidas: 3,
       categoriaSeleccionada: null,
       userData: null,
+      showGameOver: false,
+      rondasTotales: 0,
     };
   },
 
   mounted() {
+    window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
-    //console.log(this.categoriaSeleccionada);
     this.userData = this.$cookies.get("user");
+    this.cargarVidas();
     this.obtenerPregunta(this.categoriaSeleccionada);
   },
+
+  beforeDestroy() {
+    window.removeEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
+  },
+
   computed: {
     isRespuestaCorrecta() {
       return (opcion) =>
@@ -118,36 +132,104 @@ export default {
         this.respuestaSeleccionada === opcion;
     },
   },
+
   methods: {
+    tiempoAgotadoHandler() {
+      if (!this.seleccionado) {
+        this.seleccionado = true;
+        this.procesarTiempoAgotado();
+      }
+    },
+
+    async procesarTiempoAgotado() {
+      try {
+        const response = await fetch(
+          "/api/index.php?action=actualizarVidasPartida",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id_partida: sessionStorage.getItem("id_partida"),
+              cambio: -1,
+            }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          this.vidas = data.vidas;
+
+          if (data.estado === "finalizada") {
+            this.mostrarGameOver();
+            return;
+          }
+        }
+
+        await this.guardarHistorialPregunta(false);
+        this.redirigirASeleccionTema();
+      } catch (error) {
+        console.error("Error procesando tiempo agotado:", error);
+      }
+    },
+
+    mostrarGameOver() {
+      const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
+      this.rondasTotales = ronda;
+      this.showGameOver = true;
+      setTimeout(() => {
+        sessionStorage.removeItem("ronda");
+        sessionStorage.removeItem("id_partida");
+        this.$router.push("/");
+      }, 3000);
+    },
+
+    async redirigirASeleccionTema() {
+      const tiempo = sessionStorage.getItem("tiempoTranscurrido") || 0;
+
+      await fetch("/api/index.php?action=insertarRonda", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_partida: sessionStorage.getItem("id_partida"),
+          tiempo: tiempo,
+          id_categoria: this.categoriaSeleccionada,
+        }),
+      });
+
+      setTimeout(() => {
+        this.seleccionado = false;
+        this.$router.push("/selecciontema");
+      }, 2000);
+    },
+
     async obtenerPregunta(categoriaSeleccionada) {
       try {
         const response = await fetch(
           "/api/index.php?action=obtenerPreguntaJuego",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ categoria: categoriaSeleccionada }),
           }
         );
         const data = await response.json();
         if (data.status === "success") {
-          const preguntaObtenida = {
-            id_pregunta: data.data.id_pregunta,
-            pregunta: data.data.pregunta,
-            opciones: data.data.opciones,
-            respuestaCorrecta: data.data.correcta,
-            dificultad: data.data.dificultad,
-          };
-          this.preguntas = [preguntaObtenida];
-        } else {
-          console.error("Error al obtener la pregunta:", data.mensaje);
+          this.preguntas = [
+            {
+              id_pregunta: data.data.id_pregunta,
+              pregunta: data.data.pregunta,
+              opciones: data.data.opciones,
+              respuestaCorrecta: data.data.correcta,
+              dificultad: data.data.dificultad,
+            },
+          ];
         }
       } catch (error) {
         console.error("Error al obtener pregunta:", error);
       }
     },
+
     async seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
@@ -155,63 +237,104 @@ export default {
         const esCorrecta =
           opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
 
-        if (esCorrecta) {
-          const dificultad = this.preguntas[this.questionIndex].dificultad;
-          let puntos = 0;
+        try {
+          if (!esCorrecta) {
+            const response = await fetch(
+              "/api/index.php?action=actualizarVidasPartida",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  id_partida: sessionStorage.getItem("id_partida"),
+                  cambio: -1,
+                }),
+              }
+            );
 
-          switch (dificultad) {
-            case "Fácil":
-              puntos = 10;
-              break;
-            case "Media":
-              puntos = 20;
-              break;
-            case "Difícil":
-              puntos = 30;
-              break;
-            default:
-              console.warn("Dificultad no reconocida:", dificultad);
-              puntos = 0;
+            const data = await response.json();
+            if (data.status === "success") {
+              this.vidas = data.vidas;
+              if (data.estado === "finalizada") this.mostrarGameOver();
+            }
           }
 
-          if (puntos > 0) {
-            await this.actualizarEstadisticas(puntos);
-            await this.guardarHistorialPregunta(esCorrecta);
-          }
-        } else {
-          this.vidas = Math.max(0, this.vidas - 1);
           await this.guardarHistorialPregunta(esCorrecta);
-        }
 
-        setTimeout(() => {
-          this.siguientePregunta();
-          this.seleccionado = false;
-          this.respuestaSeleccionada = null;
-        }, 2000);
+          if (esCorrecta) {
+            const puntos = {
+              Fácil: 10,
+              Media: 20,
+              Difícil: 30,
+            }[this.preguntas[this.questionIndex].dificultad];
+
+            if (puntos) await this.actualizarEstadisticas(puntos);
+          }
+        } finally {
+          setTimeout(() => {
+            this.siguientePregunta();
+            this.seleccionado = false;
+            this.respuestaSeleccionada = null;
+          }, 2000);
+        }
       }
     },
 
-    async guardarHistorialPregunta(acertada) {
+    async cargarVidas() {
       try {
         const response = await fetch(
-          "/api/index.php?action=guardarHistorialPregunta",
+          "/api/index.php?action=obtenerVidasPartida",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               id_partida: sessionStorage.getItem("id_partida"),
-              id_pregunta: this.preguntas[this.questionIndex].id_pregunta,
-              acertada: acertada ? 1 : 0,
             }),
           }
         );
 
         const data = await response.json();
-        if (data.status !== "success") {
-          console.error("Error guardando historial:", data.mensaje);
+        if (data.status === "success") {
+          this.vidas = data.vidas;
+          if (data.estado === "finalizada") this.mostrarGameOver();
         }
+      } catch (error) {
+        console.error("Error de conexión:", error);
+      }
+    },
+
+    async siguientePregunta() {
+      const tiempo = sessionStorage.getItem("tiempoTranscurrido") || 0;
+
+      await fetch("/api/index.php?action=insertarRonda", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_partida: sessionStorage.getItem("id_partida"),
+          tiempo: tiempo,
+          id_categoria: this.categoriaSeleccionada,
+        }),
+      });
+
+      if (this.vidas > 0) {
+        let ronda = parseInt(sessionStorage.getItem("ronda") || 1);
+        sessionStorage.setItem("ronda", ++ronda);
+        this.$router.push("/selecciontema");
+      } else {
+        this.mostrarGameOver();
+      }
+    },
+
+    async actualizarEstadisticas(puntos) {
+      try {
+        await fetch("/api/index.php?action=actualizarEstadisticas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_usuario: this.userData.id_usuario,
+            nombre_categoria: this.categoriaSeleccionada,
+            puntos: puntos,
+          }),
+        });
       } catch (error) {
         console.error("Error:", error);
       }
@@ -224,7 +347,7 @@ export default {
             opcion !== this.preguntas[this.questionIndex].respuestaCorrecta
         );
 
-        if (incorrectas.length > 0) {
+        if (incorrectas.length) {
           const eliminarIndex = this.preguntas[
             this.questionIndex
           ].opciones.indexOf(
@@ -237,76 +360,21 @@ export default {
             );
           }
         }
-
         this.pistaUsada = true;
       }
     },
-    async siguientePregunta() {
+
+    async guardarHistorialPregunta(acertada) {
       try {
-        const response = await fetch("/api/index.php?action=insertarRonda", {
+        await fetch("/api/index.php?action=guardarHistorialPregunta", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id_partida: sessionStorage.getItem("id_partida"),
-            tiempo: "00:01:00",
-            id_categoria: sessionStorage.getItem("categoria"),
+            id_pregunta: this.preguntas[this.questionIndex].id_pregunta,
+            acertada: acertada ? 1 : 0,
           }),
         });
-
-        const data = await response.json();
-
-        if (data.status === "success") {
-          await fetch("/api/index.php?action=actualizarEstadoPartida", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id_partida: sessionStorage.getItem("id_partida"),
-              estado: this.vidas > 0 ? "activa" : "finalizada",
-            }),
-          });
-
-          if (this.vidas > 0) {
-            let rondaActual = parseInt(
-              sessionStorage.getItem("ronda") || "1",
-              10
-            );
-            rondaActual++;
-            sessionStorage.setItem("ronda", rondaActual.toString());
-            this.$router.push("/selecciontema");
-          } else {
-            this.$router.push("/resultado");
-          }
-        } else {
-          console.error("Error insertando ronda:", data.mensaje);
-        }
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
-    },
-    async actualizarEstadisticas(puntos) {
-      try {
-        const response = await fetch(
-          "/api/index.php?action=actualizarEstadisticas",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id_usuario: this.userData.id_usuario,
-              nombre_categoria: sessionStorage.getItem("categoria"),
-              puntos: puntos,
-            }),
-          }
-        );
-        const data = await response.json();
-        if (data.status !== "success") {
-          console.error("Error actualizando estadísticas:", data.mensaje);
-        }
       } catch (error) {
         console.error("Error:", error);
       }
@@ -319,6 +387,141 @@ export default {
 * {
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
+}
+
+.game-over-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(225, 224, 255, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background: #5759cd;
+  padding: 2.5rem;
+  border-radius: 15px;
+  text-align: center;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 20px rgba(87, 89, 205, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.popup-content h2 {
+  color: #fff;
+  font-size: 2.5rem;
+  margin: 0 0 1rem 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.popup-content p {
+  color: #fff;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.popup-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.popup-header h2 {
+  color: #fff;
+  font-size: 2.8rem;
+  margin: 1.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.popup-logo {
+  width: 100px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.stats-container {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin: 1rem 0;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.stat-label {
+  color: #ffffffcc;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.dificultad-final {
+  color: #ff4757;
+  text-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+}
+
+.action-button {
+  background: #26fb09;
+  color: #1a1d28;
+  border: none;
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 1.5rem;
+  box-shadow: 0 5px 15px rgba(38, 251, 9, 0.3);
+}
+
+.action-button:hover {
+  background: #1fd600;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(38, 251, 9, 0.4);
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.8) translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    padding: 1.8rem;
+  }
+  .popup-content h2 {
+    font-size: 2rem;
+  }
+  .popup-content p {
+    font-size: 1.3rem;
+  }
 }
 
 .division {
@@ -396,13 +599,6 @@ section {
   margin: 0;
 }
 
-.pregunta p {
-  font-size: 24px;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-}
-
 .respuesta {
   display: flex;
   align-items: center;
@@ -414,9 +610,9 @@ section {
   padding: 15px;
   margin-bottom: 20px;
   filter: drop-shadow(0 10px 0px #5759cd35);
-  border: 0px;
+  border: 0;
   transition: background-color 0.3s ease-in-out;
-  min-height: 60px; /* Altura mínima para mantener proporción */
+  min-height: 60px;
 }
 
 .respuesta:hover {
@@ -430,7 +626,6 @@ section {
   margin: 0;
 }
 
-/* Colores de respuestas */
 .correcta {
   background-color: #26fb09 !important;
   filter: drop-shadow(0 10px 0px #26fb0935);
@@ -527,7 +722,6 @@ section {
   .pregunta {
     width: 90%;
   }
-
   .left {
     width: 80vw;
   }
@@ -538,22 +732,18 @@ section {
     flex-direction: column;
     margin-top: 80px;
   }
-
   .left {
     width: 100%;
   }
-
   .pregunta {
     width: 95%;
     font-size: 22px;
   }
-
   .respuesta {
     width: 95%;
     font-size: 18px;
     padding: 12px;
   }
-
   .progreso {
     width: 60px;
     height: 60px;
@@ -566,27 +756,22 @@ section {
     padding: 15px;
     min-height: 100px;
   }
-
   .pregunta p {
     font-size: 18px;
   }
-
   .respuesta {
     font-size: 16px;
     padding: 10px;
     min-height: 50px;
   }
-
   .misc {
     gap: 15px;
   }
-
   .progreso {
     width: 50px;
     height: 50px;
     font-size: 16px;
   }
-
   .corazon {
     width: 40px;
     height: 40px;

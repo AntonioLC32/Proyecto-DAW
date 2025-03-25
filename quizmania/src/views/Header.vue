@@ -253,9 +253,21 @@ export default {
       this.timerInterval = setInterval(() => {
         if (this.timer > 0) {
           this.timer--;
+          const elapsed = 60 - this.timer;
+          sessionStorage.setItem("tiempoTranscurrido", elapsed.toString());
+
+          const minutes = Math.floor(elapsed / 60);
+          const seconds = elapsed % 60;
+          sessionStorage.setItem(
+            "tiempoRonda",
+            `${minutes.toString().padStart(2, "0")}:${seconds
+              .toString()
+              .padStart(2, "0")}`
+          );
         } else {
           clearInterval(this.timerInterval);
-          this.timerInterval = null;
+          sessionStorage.setItem("tiempoTranscurrido", "60");
+          window.dispatchEvent(new Event("tiempoAgotado"));
         }
       }, 1000);
     },

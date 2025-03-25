@@ -136,7 +136,6 @@ switch ($action) {
         require 'estadisticas/update.php';
         actualizarEstadisticas($input);
         break;
-
     
     case 'guardarHistorialPregunta':
         require 'juego/insert.php';
@@ -148,6 +147,15 @@ switch ($action) {
         actualizarEstadoPartida($input);
         break;
 
+    case 'actualizarVidasPartida':
+        require 'juego/update.php';
+        actualizarVidasPartida($input);
+        break;
+
+    case 'obtenerVidasPartida':
+        require 'juego/select.php';
+        obtenerVidasPartida($input);
+        break;
 
     // Añadir casos para otras importaciones
     default:

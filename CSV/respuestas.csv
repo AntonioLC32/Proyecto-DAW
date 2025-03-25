@@ -567,10 +567,10 @@ id_respuesta;texto;es_correcta;id_pregunta
 566;15;True;142
 567;16;False;142
 568;17;False;142
-569;52;False;143
-570;54;True;143
-571;56;False;143
-572;59;False;143
+569;7;False;143
+570;8;True;143
+571;12;False;143
+572;6;False;143
 573;30;True;144
 574;28;False;144
 575;32;False;144

@@ -12,11 +12,6 @@ VALUES
 ('PEDRO_KLK', 'pedro@example.com', 'hashed_password_9', 9, 5, NOW(), TRUE),
 ('SOFIA_GHI', 'sofia@example.com', 'hashed_password_10', 10, 3, NOW(), TRUE);
 
-UPDATE Usuario 
-SET imagen = 'https://www.qanimals.com/wp-content/uploads/2024/10/pexels-river-augustin-1370012990-28934371.jpg', 
-    ult_conexion = NOW()
-WHERE id_usuario = 1;
-
 INSERT INTO Ranking (id_usuario, rondas, puntos, posicion, categoria_destacada)
 VALUES 
 (1, 50, 15648, 1, 2),  -- Historia

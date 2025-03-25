@@ -109,4 +109,70 @@ BEGIN
 END$$
 DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE ActualizarEstadoPartidaSP(
+    IN p_id_partida INT,
+    IN p_estado ENUM('activa','finalizada')
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    
+    START TRANSACTION;
+    
+    -- Verificar existencia de la partida
+    IF NOT EXISTS (SELECT 1 FROM Partida WHERE id_partida = p_id_partida) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'La partida no existe';
+    END IF;
+    
+    -- Actualizar estado
+    UPDATE Partida 
+    SET estado = p_estado 
+    WHERE id_partida = p_id_partida;
+    
+    COMMIT;
+END$$
+DELIMITER ;
+
+
+
+DELIMITER $$
+CREATE PROCEDURE ActualizarVidasPartida(
+    IN p_id_partida INT,
+    IN p_cambio TINYINT
+)
+BEGIN
+    DECLARE current_vidas TINYINT;
+    DECLARE current_modo ENUM('solitario','multijugador');
+    
+    START TRANSACTION;
+    
+    SELECT vidas, modo INTO current_vidas, current_modo 
+    FROM Partida 
+    WHERE id_partida = p_id_partida
+    FOR UPDATE;
+    
+    IF current_modo != 'solitario' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Solo partidas en solitario tienen vidas';
+    END IF;
+    
+    UPDATE Partida 
+    SET vidas = GREATEST(0, LEAST(3, current_vidas + p_cambio))
+    WHERE id_partida = p_id_partida;
+    
+    -- Actualizar estado si llega a 0 vidas
+    IF (current_vidas + p_cambio) <= 0 THEN
+        UPDATE Partida SET estado = 'finalizada' 
+        WHERE id_partida = p_id_partida;
+    END IF;
+    
+    COMMIT;
+END$$
+DELIMITER ;
+
 
