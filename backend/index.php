@@ -104,6 +104,14 @@ switch ($action) {
     case 'usuariosSemanal':
         require 'graficas/usuariosSemanal.php';
         break;
+
+    case 'aciertosDificultad':
+        require 'graficas/aciertosDificultad.php';
+        break;
+
+    case 'aciertosCategorias':
+        require 'graficas/aciertosCategorias.php';
+        break;
     
     case 'obtenerPreguntaJuego':
         require 'preguntas/select.php';

@@ -3,7 +3,7 @@
     <h1 class="admin-titulo">Datos generales</h1>
     <div class="general">
       <div class="datos">
-        <h2>Aciertos por Categoría</h2>
+        <h2>% Aciertos por Categoría</h2>
         <canvas ref="chartAciertos"></canvas>
       </div>
       <div class="datos">
@@ -11,7 +11,7 @@
         <canvas ref="chartUsuarios"></canvas>
       </div>
       <div class="datos">
-        <h2>Aciertos por Dificultad</h2>
+        <h2>% Aciertos por Dificultad</h2>
         <canvas ref="chartDificultad"></canvas>
       </div>
       <div class="datos">
@@ -69,18 +69,36 @@ export default {
     };
     
     // Función para obtener los aciertos por categoría (se asume que la API devuelve los datos correctos)
-    const fetchAciertos = async () => {
-      const response = await fetch("index.php?action=aciertosCategoria", {
-        method: "GET",
-      });
-      const data = await response.json();
-      partidasData.value = data;
-      AciertosCategoria();
+    const fetchAciertosCategorias = async () => {
+      try {
+        const response = await fetch("/api/index.php?action=aciertosCategorias");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (chartAciertos.value) {
+          new Chart(chartAciertos.value, {
+            type: "bar",
+            data: {
+              labels: data.map(item => item.categoria),
+              datasets: [
+                {
+                  label: "Aciertos",
+                  data: data.map(item => item.porcentaje),
+                  backgroundColor: "blue",
+                },
+              ],
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error al obtener datos de aciertos por categoría:", error);
+      }
     };
     
     // Función para obtener los aciertos por dificultad
     const fetchDificultad = async () => {
-      const response = await fetch("index.php?action=aciertosDificultad", {
+      const response = await fetch("/api/index.php?action=aciertosDificultad", {
         method: "GET",
       });
       const data = await response.json();
@@ -134,13 +152,7 @@ export default {
               "Cultura",
               "Música",
             ],
-            datasets: [
-              {
-                label: "Aciertos",
-                data: [40, 20, 50, 35, 45, 13, 27, 42, 31, 37],
-                backgroundColor: "blue",
-              },
-            ],
+            datasets: [],
           },
         });
       }
@@ -198,7 +210,7 @@ export default {
     onMounted(() => {
       fetchPartidasDiarias();
       fetchUsuariosSemanal();
-      fetchAciertos();
+      fetchAciertosCategorias();
       fetchDificultad();
     });
 

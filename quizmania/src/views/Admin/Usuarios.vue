@@ -26,7 +26,7 @@
       <div class="right-column">
         <section class="edit-user">
           <!-- Imagen de perfil del administrador -->
-          <img :src="nuevaImagenPreview || adminData.imagen" alt="Admin" />
+          <img :src="getImageUrl(adminData.imagen)" alt="Admin" />
 
           <form action="" @submit.prevent="actualizarAdmin">
             <label for="username">Nombre de usuario</label>
@@ -100,7 +100,7 @@
             <p>Puntos: {{ usuarioSeleccionado.puntos }}</p>
           </div>
           <img
-            :src="getUserImage(usuarioSeleccionado.imagen)"
+            :src="getImageUrl(usuarioSeleccionado.imagen)"
             :alt="usuarioSeleccionado.user"
             class="popup-img"
           />
@@ -136,9 +136,7 @@ export default {
         id: "",
         nombre: "",
         email: "",
-        // Inicialmente se asigna lo que venga de las cookies,
-        // pero si no hay imagen o es default, se usará la imagen default
-        imagen: "src/assets/users/admin/default.png",
+        imagen: "",
       },
       selectedImage: null,
     };
@@ -148,8 +146,8 @@ export default {
     this.obtenerUsuariosConectados();
     this.fetchUsuarios();
     // Asignamos datos de las cookies
-    const cookieData = this.$cookies.get("user");
-    if (cookieData) {
+    //const cookieData = this.$cookies.get("user");
+    /*if (cookieData) {
       this.adminData = {
         id: cookieData.id_usuario || "",
         nombre: cookieData.nombre || "",
@@ -159,9 +157,36 @@ export default {
           ? "src/" + cookieData.imagen
           : "src/assets/users/admin/default.png",
       };
-    }
+    }*/
+    this.cargarUsuario();
   },
   methods: {
+    async cargarUsuario() {
+      try {
+        const response = await fetch("/api/perfil/select_perfil.php", {
+          credentials: "include",
+        });
+
+        if (!response.ok)
+          throw new Error(`Error HTTP! estado: ${response.status}`);
+
+        const data = await response.json();
+
+        if (data.error) {
+          console.error("Error en la API:", data.error);
+          return;
+        }
+
+        this.adminData = {
+          ...this.adminData,
+          nombre: data.nombre || this.adminData?.nombre,
+          imagen: data.imagen || this.adminData?.imagen,
+          email: data.correo || this.adminData?.email,
+        };
+      } catch (error) {
+        console.error("Error cargando perfil:", error.message);
+      }
+    },
     abrirPopup(usuario) {
       this.usuarioSeleccionado = { ...usuario };
       this.popupVisible = true;
@@ -170,12 +195,12 @@ export default {
       this.popupVisible = false;
     },
     // Si usas getUserImage para mostrar la imagen en el popup:
-    getUserImage(imagePath) {
+    /*getUserImage(imagePath) {
       const timestamp = new Date().getTime(); // Para evitar caché
-      return imagePath
+      return "../../" + imagePath
         ? `${imagePath}?t=${timestamp}`
         : "src/assets/users/admin/default.png";
-    },
+    },*/
     async deshabilitarUsuario(usuario) {
       try {
         const confirmar = confirm(
@@ -330,7 +355,11 @@ export default {
       }
     },
     getImageUrl(path) {
-      return `/assets/users/admin/${path}`;
+      if (!path) {
+        return "/src/assets/users/default/default.png";
+      } else {
+        return `/src/${path}`;
+      }
     },
     cancelarEdicion() {
       window.location.reload();
