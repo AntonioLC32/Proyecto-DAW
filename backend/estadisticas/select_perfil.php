@@ -1,4 +1,5 @@
 <?php
+
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET");
@@ -20,6 +21,7 @@ if (!$user || !isset($user['id_usuario'])) {
 }
 
 $usuario_id = $user['id_usuario'];
+
 
 // SQL query with a placeholder for the user ID
 $sql = "SELECT 

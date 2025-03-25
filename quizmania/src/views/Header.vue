@@ -143,7 +143,6 @@ export default {
       imagenCategoria: "musica.png",
       ronda: 1,
       userData: null,
-      user: null,
       width: window.innerWidth,
       height: window.innerHeight,
     };
@@ -169,7 +168,7 @@ export default {
     this.userData = this.$cookies.get("user");
     this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
     this.cargarUsuario();
-    console.log(this.user);
+    //console.log(this.userData);
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -216,24 +215,25 @@ export default {
           return;
         }
 
-        // Actualizar todos los campos del usuario
-        this.user = {
-          ...this.user,
-          nombre: data.nombre || this.user.nombre,
-          imagen: data.imagen || this.user.imagen,
-          posicion: data.posicion ?? this.user.posicion,
-          puntos: data.puntos ?? this.user.puntos,
-          rondasJugadas: data.rondasJugadas ?? this.user.rondasJugadas,
-          victorias: data.victorias ?? this.user.victorias,
-          categoria_destacada: {
-            id: data.categoria_destacada ?? this.user.categoria_destacada?.id,
-            imagen:
-              data.imagen_categoria || this.user.categoria_destacada?.imagen,
-          },
+        this.userData = {
+          ...this.userData,
+          nombre: data.nombre || this.userData?.nombre,
+          imagen: data.imagen || this.userData?.imagen,
+          //posicion: data.posicion ?? this.userData?.posicion,
+          //puntos: data.puntos ?? this.userData?.puntos,
+          //rondasJugadas: data.rondasJugadas ?? this.userData?.rondasJugadas,
+          //victorias: data.victorias ?? this.userData?.victorias,
+          //categoria_destacada: {
+          //  id:
+          //    data.categoria_destacada ??
+          //    this.userData?.categoria_destacada?.id,
+          //  imagen:
+          //    data.imagen_categoria ||
+          //    this.userData?.categoria_destacada?.imagen,
+          //},
         };
       } catch (error) {
         console.error("Error cargando perfil:", error.message);
-        // Opcional: manejar estado de error en la UI
       }
     },
 

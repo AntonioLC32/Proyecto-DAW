@@ -22,16 +22,16 @@ $usuario_id = $user['id_usuario'];
 
 $sql = "SELECT 
     u.nombre,
-    u.imagen,   
+    u.imagen,
     u.correo, 
-    r.posicion, 
-    r.puntos, 
-    r.categoria_destacada, 
-    c.imagen AS imagen_categoria 
-FROM Usuario u
-JOIN Ranking r ON u.id_usuario = r.id_usuario
-JOIN Categoria c ON r.categoria_destacada = c.id_categoria 
-WHERE r.id_usuario = ?";
+    COALESCE(r.posicion, 0) AS posicion,
+    COALESCE(r.puntos, 0) AS puntos,
+    COALESCE(r.categoria_destacada, 0) AS categoria_destacada,
+    COALESCE(c.imagen) AS imagen_categoria 
+    FROM Usuario u
+    LEFT JOIN Ranking r ON u.id_usuario = r.id_usuario
+    LEFT JOIN Categoria c ON r.categoria_destacada = c.id_categoria 
+    WHERE u.id_usuario = ?";
 
 if ($stmt = $conn->prepare($sql)) {
     $stmt->bind_param("i", $usuario_id);
