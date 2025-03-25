@@ -18,7 +18,6 @@ if (!$user || !isset($user['id_usuario'])) {
     echo json_encode(["error" => "Cookie de usuario inválida"]);
     exit;
 }
-
 $usuario_id = $user['id_usuario'];
 
 // Se obtiene todas las categorías y se unen (LEFT JOIN) los puntos registrados en Estadisticas para el usuario.
