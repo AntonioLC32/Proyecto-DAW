@@ -23,7 +23,7 @@
             />
             <img
               v-else
-              src="../../assets/users/default.png"
+              src="../../assets/users/default/default.png"
               alt="Imagen predeterminada"
               style="border-radius: 50%"
             />
@@ -251,7 +251,7 @@ export default {
     },
 
     obtenerImagenCategoria(imagen) {
-      if (!imagen || imagen === "--") return "/src/assets/default.png";
+      if (!imagen || imagen === "--") return "/src/assets/users/default/default.png";
       return `/src/${imagen}`;
     },
 
