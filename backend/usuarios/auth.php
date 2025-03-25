@@ -50,8 +50,10 @@ function login($input) {
             
             echo json_encode([
                 'status' => 'success',
-                'user'   => $userData
-            ]);
+                'user'   => [
+                    'id_usuario' => $userData['id_usuario'],
+                    'rol' => $userData['rol'],
+            ]]);
         } else {
             echo json_encode([
                 'status'  => 'error',
@@ -143,15 +145,15 @@ function register($input) {
                 'mensaje' => 'Usuario registrado correctamente',
                 'user'    => [
                     'id_usuario' => $new_id,
-                    'nombre'     => $username,
-                    'correo'     => $email,
-                    'num_derrotas' => 0,
-                    'num_victorias' => 0,
-                    'fecha_registro' => date("Y-m-d H:i:s"),
-                    'habilitado' => 1,
+                    //'nombre'     => $username,
+                    //'correo'     => $email,
+                    //'num_derrotas' => 0,
+                    //'num_victorias' => 0,
+                    //'fecha_registro' => date("Y-m-d H:i:s"),
+                    //'habilitado' => 1,
                     'rol' => 'jugador',
-                    'ult_conexion' => date("Y-m-d H:i:s"),
-                    'imagen'     => $imagePath
+                    //'ult_conexion' => date("Y-m-d H:i:s"),
+                    //'imagen'     => $imagePath
                 ]
             ]);
         } else {

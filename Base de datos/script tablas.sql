@@ -118,16 +118,17 @@ CREATE TABLE Estadisticas (
 
 
 --- POR AHORA NO SOLO EN CASO DE QUE NO QUERAMOS REPETIR PREGUNTAS
-/*
+
 CREATE TABLE HistorialPreguntas (
   id_historial INT AUTO_INCREMENT PRIMARY KEY,
   id_partida INT NOT NULL,
   id_pregunta INT NOT NULL,
+  acertada BOOLEAN NOT NULL,
   fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE,
   FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE
 );
-*/
+
 
 CREATE INDEX idx_usuario_fecha_registro ON Usuario(fecha_registro);
 CREATE INDEX idx_usuario_rol ON Usuario(rol);
@@ -157,8 +158,7 @@ CREATE INDEX idx_comodin_nombre ON Comodin(nombre);
 
 CREATE INDEX idx_estadisticas_puntos ON Estadisticas(puntos);
 
-/*
+
 CREATE INDEX idx_historial_partida ON HistorialPreguntas (id_partida);
 CREATE INDEX idx_historial_pregunta ON HistorialPreguntas (id_pregunta);
 CREATE INDEX idx_historial_partida_pregunta ON HistorialPreguntas (id_partida, id_pregunta);
-*/

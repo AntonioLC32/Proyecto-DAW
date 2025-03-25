@@ -143,6 +143,7 @@ export default {
       imagenCategoria: "musica.png",
       ronda: 1,
       userData: null,
+      user: null,
       width: window.innerWidth,
       height: window.innerHeight,
     };
@@ -167,8 +168,8 @@ export default {
     }
     this.userData = this.$cookies.get("user");
     this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
-
-    //console.log(this.userData);
+    this.cargarUsuario();
+    console.log(this.user);
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -186,7 +187,7 @@ export default {
         this.timerInterval = null;
         this.timer = 60;
       }
-      // Add this to update the ronda value when the route changes
+
       if (newPath === "/selecciontema") {
         this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
       }
@@ -199,6 +200,43 @@ export default {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    async cargarUsuario() {
+      try {
+        const response = await fetch("/api/perfil/select_perfil.php", {
+          credentials: "include",
+        });
+
+        if (!response.ok)
+          throw new Error(`Error HTTP! estado: ${response.status}`);
+
+        const data = await response.json();
+
+        if (data.error) {
+          console.error("Error en la API:", data.error);
+          return;
+        }
+
+        // Actualizar todos los campos del usuario
+        this.user = {
+          ...this.user,
+          nombre: data.nombre || this.user.nombre,
+          imagen: data.imagen || this.user.imagen,
+          posicion: data.posicion ?? this.user.posicion,
+          puntos: data.puntos ?? this.user.puntos,
+          rondasJugadas: data.rondasJugadas ?? this.user.rondasJugadas,
+          victorias: data.victorias ?? this.user.victorias,
+          categoria_destacada: {
+            id: data.categoria_destacada ?? this.user.categoria_destacada?.id,
+            imagen:
+              data.imagen_categoria || this.user.categoria_destacada?.imagen,
+          },
+        };
+      } catch (error) {
+        console.error("Error cargando perfil:", error.message);
+        // Opcional: manejar estado de error en la UI
+      }
+    },
+
     onResize(e) {
       this.width = window.innerWidth;
       this.height = window.innerHeight;

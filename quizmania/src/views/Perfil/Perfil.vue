@@ -138,11 +138,11 @@
                     />
                     <label for="no">No</label>
                   </div>
-                  <button 
+                  <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
                     @click="perfilUpdate"
-                    >
+                  >
                     Guardar Ajustes
                   </button>
                 </form>
@@ -424,7 +424,7 @@ export default {
         console.error("Error parsing user cookie:", error.message);
       }
     } else {
-      console.warn("No user found in cookies. Fetching profile from API...");
+      //console.warn("No user found in cookies. Fetching profile from API...");
       // If no cookie, directly load data from the API
       this.cargarPerfil();
     }
