@@ -108,12 +108,22 @@ export default {
     window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
     this.userData = this.$cookies.get("user");
-    this.cargarVidas();
-    this.obtenerPregunta(this.categoriaSeleccionada);
+    const preguntaGuardada = sessionStorage.getItem("preguntaActual");
+    if (preguntaGuardada) {
+      this.preguntas[this.questionIndex] = JSON.parse(preguntaGuardada);
+      this.progreso = sessionStorage.getItem("progreso") || 50;
+    } else {
+      this.cargarVidas();
+      this.obtenerPregunta(this.categoriaSeleccionada);
+    }
   },
 
   beforeDestroy() {
     window.removeEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
+    if (!this.showGameOver) {
+      sessionStorage.removeItem("preguntaActual");
+      sessionStorage.removeItem("preguntasUsadas");
+    }
   },
 
   computed: {
@@ -177,13 +187,17 @@ export default {
       const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
       this.rondasTotales = ronda;
       this.showGameOver = true;
+
+      sessionStorage.removeItem("ronda");
+      sessionStorage.removeItem("id_partida");
+      sessionStorage.removeItem("preguntaActual");
+      sessionStorage.removeItem("preguntasUsadas");
+      sessionStorage.removeItem("tiempoRestante");
+
       setTimeout(() => {
-        sessionStorage.removeItem("ronda");
-        sessionStorage.removeItem("id_partida");
         this.$router.push("/");
       }, 3000);
     },
-
     async redirigirASeleccionTema() {
       const tiempo = sessionStorage.getItem("tiempoTranscurrido") || 0;
 
@@ -210,26 +224,44 @@ export default {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ categoria: categoriaSeleccionada }),
+            body: JSON.stringify({
+              categoria: categoriaSeleccionada,
+              exclude: JSON.parse(
+                sessionStorage.getItem("preguntasUsadas") || "[]"
+              ),
+            }),
           }
         );
         const data = await response.json();
         if (data.status === "success") {
-          this.preguntas = [
-            {
-              id_pregunta: data.data.id_pregunta,
-              pregunta: data.data.pregunta,
-              opciones: data.data.opciones,
-              respuestaCorrecta: data.data.correcta,
-              dificultad: data.data.dificultad,
-            },
-          ];
+          const nuevaPregunta = {
+            id_pregunta: data.data.id_pregunta,
+            pregunta: data.data.pregunta,
+            opciones: data.data.opciones,
+            respuestaCorrecta: data.data.correcta,
+            dificultad: data.data.dificultad,
+          };
+
+          sessionStorage.setItem(
+            "preguntaActual",
+            JSON.stringify(nuevaPregunta)
+          );
+
+          const preguntasUsadas = JSON.parse(
+            sessionStorage.getItem("preguntasUsadas") || "[]"
+          );
+          preguntasUsadas.push(data.data.id_pregunta);
+          sessionStorage.setItem(
+            "preguntasUsadas",
+            JSON.stringify(preguntasUsadas)
+          );
+
+          this.preguntas = [nuevaPregunta];
         }
       } catch (error) {
         console.error("Error al obtener pregunta:", error);
       }
     },
-
     async seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
@@ -314,6 +346,9 @@ export default {
           id_categoria: this.categoriaSeleccionada,
         }),
       });
+
+      sessionStorage.removeItem("preguntaActual");
+      sessionStorage.removeItem("tiempoRestante");
 
       if (this.vidas > 0) {
         let ronda = parseInt(sessionStorage.getItem("ronda") || 1);

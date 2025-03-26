@@ -70,6 +70,14 @@ function obtenerPreguntaJuego($data) {
 
     try {
         $categoria = $data['categoria'];
+        $excluir = isset($data['exclude']) ? $data['exclude'] : [];
+        
+        // Construir parte de la consulta para excluir preguntas
+        $excluir_sql = '';
+        if (!empty($excluir)) {
+            $excluir_ids = implode(',', array_map('intval', $excluir));
+            $excluir_sql = " AND p.id_pregunta NOT IN ($excluir_ids)";
+        }
 
         // Consulta mejorada con joins correctos y selección de campos
         $sql_pregunta = "
@@ -89,6 +97,7 @@ function obtenerPreguntaJuego($data) {
             JOIN Categoria c ON t.id_categoria = c.id_categoria
             WHERE p.habilitado = 1
             AND c.nombre = ?
+            $excluir_sql
             ORDER BY RAND()
             LIMIT 1
         ";
@@ -108,7 +117,17 @@ function obtenerPreguntaJuego($data) {
         $stmt_pregunta->close();
 
         if (!$pregunta) {
-            throw new Exception("No hay preguntas disponibles para esta categoría");
+            // Si no hay preguntas disponibles (todas han sido usadas)
+            if (!empty($excluir)) {
+                // Opción 1: Reiniciar el listado de excluidas
+                // $excluir = [];
+                // return obtenerPreguntaJuego(['categoria' => $categoria, 'exclude' => $excluir]);
+                
+                // Opción 2: Mostrar mensaje de error
+                throw new Exception("No hay más preguntas disponibles en esta categoría");
+            } else {
+                throw new Exception("No hay preguntas disponibles para esta categoría");
+            }
         }
 
         // Consulta de respuestas mejorada

@@ -178,13 +178,13 @@ export default {
   watch: {
     "$route.path"(newPath) {
       if (newPath === "/juego" && !this.timerInterval) {
-        this.timer = 60;
+        // No resetear el timer aquí, se recuperará del sessionStorage
         this.startTimer();
       }
       if (newPath !== "/juego" && this.timerInterval) {
         clearInterval(this.timerInterval);
         this.timerInterval = null;
-        this.timer = 60;
+        // No resetear el timer aquí para mantener el estado
       }
 
       if (newPath === "/selecciontema") {
@@ -250,9 +250,14 @@ export default {
       return `src/${path}`;
     },
     startTimer() {
+      const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
+      this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
+
       this.timerInterval = setInterval(() => {
         if (this.timer > 0) {
           this.timer--;
+          sessionStorage.setItem("tiempoRestante", this.timer.toString());
+
           const elapsed = 60 - this.timer;
           sessionStorage.setItem("tiempoTranscurrido", elapsed.toString());
 
@@ -266,6 +271,7 @@ export default {
           );
         } else {
           clearInterval(this.timerInterval);
+          sessionStorage.removeItem("tiempoRestante");
           sessionStorage.setItem("tiempoTranscurrido", "60");
           window.dispatchEvent(new Event("tiempoAgotado"));
         }
