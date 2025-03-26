@@ -81,7 +81,7 @@ export default {
         imagen: "",
       },
       ranking: [],
-      defaultImagePath: "/assets/users/default/default.png", // Standardized default image path
+      defaultImagePath: "/src/assets/users/default/default.png", // Standardized default image path
     };
   },
   methods: {
@@ -98,14 +98,12 @@ export default {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        // solo para debuggear
-        // console.log("Datos devueltos por la API:", data);
 
         this.perfil = {
           ...this.perfil,
           nombre: data.nombre || this.perfil.nombre,
           posicion: data.posicion || "--",
-          imagen: this.perfil.imagen || this.defaultImagePath,
+          imagen: data.imagen || this.defaultImagePath,
         };
       } catch (error) {
         console.error("Error obteniendo el perfil:", error);
@@ -126,7 +124,8 @@ export default {
       }
     },
     obtenerImagenCategoria(imagen_categoria) {
-      if (!imagen_categoria || imagen_categoria === "--") return "/src/assets/default.png";
+      if (!imagen_categoria || imagen_categoria === "--")
+        return "/src/assets/default.png";
       return `/src/${imagen_categoria}`;
     },
     getImageUserUrl(path) {
@@ -143,9 +142,8 @@ export default {
       try {
         const userData = JSON.parse(decodeURIComponent(userCookie));
         this.perfil = { ...this.perfil, ...userData };
-        this.perfil.imagen =
-          this.perfil.imagen || this.defaultImagePath;
-        
+        this.perfil.imagen = this.perfil.imagen || this.defaultImagePath;
+
         // solo para debuggear
         //console.log("Usuario cargado desde cookies:", this.perfil);
 
