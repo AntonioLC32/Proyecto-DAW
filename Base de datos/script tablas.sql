@@ -4,7 +4,8 @@ USE quizmania;
 CREATE TABLE Categoria (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
-    imagen VARCHAR(255)
+    imagen VARCHAR(255),
+    idioma TINYINT NOT NULL
 );
 
 -- Tabla dependiente de Ranking
@@ -48,6 +49,7 @@ CREATE TABLE Tarjeta (
     id_tarjeta INT AUTO_INCREMENT PRIMARY KEY,
     dificultad ENUM('Fácil','Media','Difícil') NOT NULL,
     id_categoria INT NOT NULL,
+    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
 );
 
@@ -57,6 +59,7 @@ CREATE TABLE Pregunta (
     texto TEXT NOT NULL,
     habilitado BOOLEAN DEFAULT TRUE,
     id_tarjeta INT NOT NULL,
+    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_tarjeta) REFERENCES Tarjeta(id_tarjeta)
 );
 
@@ -66,6 +69,7 @@ CREATE TABLE Respuesta (
     es_correcta BOOLEAN NOT NULL DEFAULT FALSE,
     habilitado BOOLEAN DEFAULT TRUE,
     id_pregunta INT NOT NULL,
+    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE
 );
 
