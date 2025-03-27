@@ -1,76 +1,202 @@
 <template>
-  <!-- Botón instrucciones -->
   <section class="inicio">
     <button class="instrucciones-btn" @click="showPopup = true">
-      INSTRUCCIONES
+      {{ textosTraducidos["INSTRUCCIONES"] || "INSTRUCCIONES" }}
     </button>
-    <!-- POP UP -->
+
     <div v-if="showPopup" class="popup">
       <div class="popup-content">
         <button class="close-btn" @click="showPopup = false">✖</button>
         <section class="instrucciones">
           <div class="modos">
             <div class="modo">
-              <h2><u>Modo solitario</u></h2>
-              <p>Acierta tantas preguntas como puedas y supérate a ti mismo.</p>
-              <p>Tienes 3 vidas y pierdes una cada vez que fallas.</p>
-              <p>El juego termina cuando pierdas todas tus vidas.</p>
+              <h2>
+                <u>{{
+                  textosTraducidos["Modo solitario"] || "Modo solitario"
+                }}</u>
+              </h2>
+              <p>
+                {{
+                  textosTraducidos[
+                    "Acierta tantas preguntas como puedas y supérate a ti mismo."
+                  ] ||
+                  "Acierta tantas preguntas como puedas y supérate a ti mismo."
+                }}
+              </p>
+              <p>
+                {{
+                  textosTraducidos[
+                    "Tienes 3 vidas y pierdes una cada vez que fallas."
+                  ] || "Tienes 3 vidas y pierdes una cada vez que fallas."
+                }}
+              </p>
+              <p>
+                {{
+                  textosTraducidos[
+                    "El juego termina cuando pierdas todas tus vidas."
+                  ] || "El juego termina cuando pierdas todas tus vidas."
+                }}
+              </p>
             </div>
             <div class="barra"></div>
             <div class="modo">
-              <h2><u>Modo multijugador</u></h2>
-              <p>Responde preguntas de todo tipo.</p>
+              <h2>
+                <u>{{
+                  textosTraducidos["Modo multijugador"] || "Modo multijugador"
+                }}</u>
+              </h2>
               <p>
-                Cada 3 preguntas correctas, en la siguiente puedes ganar una
-                corona.
+                {{
+                  textosTraducidos["Responde preguntas de todo tipo."] ||
+                  "Responde preguntas de todo tipo."
+                }}
               </p>
-              <p>Cada categoría tiene una corona propia.</p>
-              <p>Consigue las 10 coronas y gana la partida.</p>
+              <p>
+                {{
+                  textosTraducidos[
+                    "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona."
+                  ] ||
+                  "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona."
+                }}
+              </p>
+              <p>
+                {{
+                  textosTraducidos["Cada categoría tiene una corona propia."] ||
+                  "Cada categoría tiene una corona propia."
+                }}
+              </p>
+              <p>
+                {{
+                  textosTraducidos[
+                    "Consigue las 10 coronas y gana la partida."
+                  ] || "Consigue las 10 coronas y gana la partida."
+                }}
+              </p>
             </div>
             <div class="barra2"></div>
           </div>
           <div class="comodines">
-            <h2><u>Comodines</u></h2>
+            <h2>
+              <u>{{ textosTraducidos["Comodines"] || "Comodines" }}</u>
+            </h2>
             <p>
-              50/50: Se eliminarán 2 opciones incorrectas de las opciones a
-              elegir de la pregunta.
+              50/50:
+              {{
+                textosTraducidos[
+                  "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta."
+                ] ||
+                "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta."
+              }}
             </p>
             <p>
-              Pista: Se eliminará 1 opción incorrecta de las opciones a elegir
-              de la pregunta.
+              {{ textosTraducidos["Pista"] || "Pista" }}:
+              {{
+                textosTraducidos[
+                  "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta."
+                ] ||
+                "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta."
+              }}
             </p>
             <p>
-              Salto: Se salta la pregunta actual y se continúa con otra pregunta
-              (no cuenta como correcta).
+              {{ textosTraducidos["Salto"] || "Salto" }}:
+              {{
+                textosTraducidos[
+                  "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta)."
+                ] ||
+                "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta)."
+              }}
             </p>
           </div>
         </section>
       </div>
     </div>
-    <!-- Botones juego -->
+
     <div class="juegos">
       <button class="juego" @click="navegarA('solitario')">
-        <span class="juego-link">Modo solitario</span>
+        <span class="juego-link">{{
+          textosTraducidos["Modo solitario"] || "Modo solitario"
+        }}</span>
       </button>
       <button class="juego" @click="navegarA('multijugador')">
-        <span class="juego-link">Modo multijugador</span>
+        <span class="juego-link">{{
+          textosTraducidos["Modo multijugador"] || "Modo multijugador"
+        }}</span>
       </button>
     </div>
   </section>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Quizmania",
   data() {
     return {
       showPopup: false,
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      idiomaUsuario: "es",
     };
+  },
+  async mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
   },
   methods: {
     navegarA(modo) {
       sessionStorage.setItem("modo-juego", modo);
       this.$router.push("/selecciontema");
+    },
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+
+      const textosOriginales = [
+        "INSTRUCCIONES",
+        "Modo solitario",
+        "Acierta tantas preguntas como puedas y supérate a ti mismo.",
+        "Tienes 3 vidas y pierdes una cada vez que fallas.",
+        "El juego termina cuando pierdas todas tus vidas.",
+        "Modo multijugador",
+        "Responde preguntas de todo tipo.",
+        "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.",
+        "Cada categoría tiene una corona propia.",
+        "Consigue las 10 coronas y gana la partida.",
+        "Comodines",
+        "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta.",
+        "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta.",
+        "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta).",
+        "Pista",
+        "Salto",
+      ];
+
+      const traducciones = await Promise.all(
+        textosOriginales.map((texto) => this.traducirTexto(texto))
+      );
+
+      textosOriginales.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      this.traduccionesCargando = false;
     },
   },
 };

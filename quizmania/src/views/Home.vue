@@ -2,53 +2,121 @@
   <section class="game-landing">
     <div class="hero">
       <div class="hero-content">
-        <router-link v-if="userData" to="/quizmania" class="play-link"> ¡A JUGAR! </router-link>
-        <router-link v-else to="/login" class="play-link"> Inicia sesión </router-link>
+        <router-link v-if="userData" to="/quizmania" class="play-link">
+          {{ textosTraducidos["¡A JUGAR!"] || "¡A JUGAR!" }}
+        </router-link>
+        <router-link v-else to="/login" class="play-link">
+          {{ textosTraducidos["Inicia sesión"] || "Inicia sesión" }}
+        </router-link>
       </div>
-      <img src="../assets/background_inicio.png" alt="Fondo de inicio del juego" class="hero-image" />
+      <img
+        src="../assets/background_inicio.png"
+        alt="Fondo de inicio del juego"
+        class="hero-image"
+      />
     </div>
 
     <section class="game-modes">
       <div class="modes-container">
         <div class="mode-card">
-          <h2 class="mode-title">Modo solitario</h2>
+          <h2 class="mode-title">
+            {{ textosTraducidos["Modo solitario"] || "Modo solitario" }}
+          </h2>
           <div class="mode-content">
-            <p>Acierta tantas preguntas como puedas y supérate a ti mismo.</p>
-            <p>Tienes 3 vidas y pierdes una cada vez que fallas.</p>
-            <p>El juego termina cuando pierdas todas tus vidas.</p>
+            <p>
+              {{
+                textosTraducidos[
+                  "Acierta tantas preguntas como puedas y supérate a ti mismo."
+                ] ||
+                "Acierta tantas preguntas como puedas y supérate a ti mismo."
+              }}
+            </p>
+            <p>
+              {{
+                textosTraducidos[
+                  "Tienes 3 vidas y pierdes una cada vez que fallas."
+                ] || "Tienes 3 vidas y pierdes una cada vez que fallas."
+              }}
+            </p>
+            <p>
+              {{
+                textosTraducidos[
+                  "El juego termina cuando pierdas todas tus vidas."
+                ] || "El juego termina cuando pierdas todas tus vidas."
+              }}
+            </p>
           </div>
         </div>
 
         <div class="mode-divider"></div>
 
         <div class="mode-card">
-          <h2 class="mode-title">Modo multijugador</h2>
+          <h2 class="mode-title">
+            {{ textosTraducidos["Modo multijugador"] || "Modo multijugador" }}
+          </h2>
           <div class="mode-content">
-            <p>Responde preguntas de todo tipo.</p>
             <p>
-              Cada 3 preguntas correctas, en la siguiente puedes ganar una
-              corona.
+              {{
+                textosTraducidos["Responde preguntas de todo tipo."] ||
+                "Responde preguntas de todo tipo."
+              }}
             </p>
-            <p>Cada categoría tiene una corona propia.</p>
-            <p>Consigue las 10 coronas y gana la partida.</p>
+            <p>
+              {{
+                textosTraducidos[
+                  "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona."
+                ] ||
+                "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona."
+              }}
+            </p>
+            <p>
+              {{
+                textosTraducidos["Cada categoría tiene una corona propia."] ||
+                "Cada categoría tiene una corona propia."
+              }}
+            </p>
+            <p>
+              {{
+                textosTraducidos[
+                  "Consigue las 10 coronas y gana la partida."
+                ] || "Consigue las 10 coronas y gana la partida."
+              }}
+            </p>
           </div>
         </div>
       </div>
 
       <div class="powerups">
-        <h2 class="powerups-title">Comodines</h2>
+        <h2 class="powerups-title">
+          {{ textosTraducidos["Comodines"] || "Comodines" }}
+        </h2>
         <div class="powerups-content">
           <p>
-            <strong>50/50:</strong> Se eliminarán 2 opciones incorrectas de las
-            opciones a elegir de la pregunta.
+            <strong>{{ textosTraducidos["50/50"] || "50/50:" }}</strong>
+            {{
+              textosTraducidos[
+                "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta."
+              ] ||
+              "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta."
+            }}
           </p>
           <p>
-            <strong>Pista:</strong> Se eliminará 1 opción incorrecta de las
-            opciones a elegir de la pregunta.
+            <strong>{{ textosTraducidos["Pista"] || "Pista:" }}</strong>
+            {{
+              textosTraducidos[
+                "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta."
+              ] ||
+              "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta."
+            }}
           </p>
           <p>
-            <strong>Salto:</strong> Se salta la pregunta actual y se continúa
-            con otra pregunta (no cuenta como correcta).
+            <strong>{{ textosTraducidos["Salto"] || "Salto:" }}</strong>
+            {{
+              textosTraducidos[
+                "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta)."
+              ] ||
+              "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta)."
+            }}
           </p>
         </div>
       </div>
@@ -57,8 +125,8 @@
     <Footer />
   </section>
 </template>
-
 <script>
+import axios from "axios";
 import Footer from "./Footer.vue";
 
 export default {
@@ -69,11 +137,85 @@ export default {
   data() {
     return {
       userData: null,
+      idiomaUsuario: "es",
+      textosTraducidos: {},
+      traduccionesCargando: false,
     };
   },
-  mounted() {
+
+  async mounted() {
     this.userData = this.$cookies.get("user");
-  }
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
+  },
+
+  methods: {
+    async traducirTexto(texto) {
+      if (/(^\d|:)/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+
+      const textosOriginales = {
+        solo: [
+          "Modo solitario",
+          "Acierta tantas preguntas como puedas y supérate a ti mismo.",
+          "Tienes 3 vidas y pierdes una cada vez que fallas.",
+          "El juego termina cuando pierdas todas tus vidas.",
+        ],
+        multi: [
+          "Modo multijugador",
+          "Responde preguntas de todo tipo.",
+          "Cada 3 preguntas correctas, en la siguiente puedes ganar una corona.",
+          "Cada categoría tiene una corona propia.",
+          "Consigue las 10 coronas y gana la partida.",
+        ],
+        powerups: [
+          "Comodines",
+          "50/50",
+          "Se eliminarán 2 opciones incorrectas de las opciones a elegir de la pregunta.",
+          "Pista",
+          "Se eliminará 1 opción incorrecta de las opciones a elegir de la pregunta.",
+          "Salto",
+          "Se salta la pregunta actual y se continúa con otra pregunta (no cuenta como correcta).",
+          "¡A JUGAR!",
+          "Inicia sesión",
+        ],
+      };
+
+      const todosTextos = [
+        ...textosOriginales.solo,
+        ...textosOriginales.multi,
+        ...textosOriginales.powerups,
+      ];
+
+      const traducciones = await Promise.all(
+        todosTextos.map((texto) => this.traducirTexto(texto))
+      );
+
+      todosTextos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      this.traduccionesCargando = false;
+    },
+  },
 };
 </script>
 
