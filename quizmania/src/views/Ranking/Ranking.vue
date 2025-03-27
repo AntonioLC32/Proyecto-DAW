@@ -322,7 +322,6 @@ h3.num {
 .ranking th {
   padding: 10px;
   font-size: 15px;
-  text-decoration: underline;
   color: #fff !important;
   text-align: center;
 }
