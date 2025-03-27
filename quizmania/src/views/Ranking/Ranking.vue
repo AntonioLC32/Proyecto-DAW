@@ -2,7 +2,9 @@
   <section>
     <div class="encase">
       <div class="container-fluid title text-white">
-        <h1><b>Ránking Global</b></h1>
+        <h1>
+          <b>{{ textosTraducidos["Ránking Global"] || "Ránking Global" }}</b>
+        </h1>
       </div>
       <div class="container-fluid pantalla-ranking">
         <div class="perfil-vista">
@@ -18,11 +20,19 @@
             alt="Imagen predeterminada"
             style="border-radius: 50%"
           />
-          <h3 class="text-white">{{ perfil.nombre || "Cargando..." }}</h3>
+          <h3 class="text-white">
+            {{
+              perfil.nombre || textosTraducidos["Cargando..."] || "Cargando..."
+            }}
+          </h3>
           <div>
-            <p class="pos"><u>ESTADÍSTICAS</u></p>
+            <p class="pos">
+              <u>{{ textosTraducidos["ESTADÍSTICAS"] || "ESTADÍSTICAS" }}</u>
+            </p>
             <div class="d-flex posicion">
-              <p class="me-2">Última posición:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Última posición:"] || "Última posición:" }}
+              </p>
               <div class="num text-white">
                 <u
                   ><b>{{ perfil.posicion || "--" }}</b></u
@@ -32,25 +42,30 @@
           </div>
         </div>
 
-        <!-- Tabla ranking -->
         <div class="ranking">
           <table>
             <thead>
               <tr>
-                <th>Jugador</th>
-                <th>Posición</th>
-                <th>Puntos</th>
-                <th>Categoría Destacada</th>
+                <th>{{ textosTraducidos["Jugador"] || "Jugador" }}</th>
+                <th>{{ textosTraducidos["Posición"] || "Posición" }}</th>
+                <th>{{ textosTraducidos["Puntos"] || "Puntos" }}</th>
+                <th>
+                  {{
+                    textosTraducidos["Categoría Destacada"] ||
+                    "Categoría Destacada"
+                  }}
+                </th>
               </tr>
             </thead>
             <tbody>
-              <!-- Si no hay jugadores -->
               <tr v-if="ranking.length === 0">
                 <td colspan="4" class="text-white text-center py-3">
-                  No hay jugadores en el ranking.
+                  {{
+                    textosTraducidos["No hay jugadores en el ranking."] ||
+                    "No hay jugadores en el ranking."
+                  }}
                 </td>
               </tr>
-              <!-- Muestra los registros en la bbdd -->
               <tr v-for="(jugador, index) in ranking" :key="index">
                 <td class="jugador py-3">{{ jugador.nombre }}</td>
                 <td class="posicion py-3">{{ jugador.posicion }}</td>
@@ -58,7 +73,10 @@
                 <td class="categoria py-3">
                   <img
                     :src="obtenerImagenCategoria(jugador.imagen_categoria)"
-                    :alt="`Categoría destacada: ${jugador.categoria_destacada}`"
+                    :alt="
+                      textosTraducidos['Categoría destacada:'] +
+                      jugador.categoria_destacada
+                    "
                     width="50px"
                   />
                 </td>
@@ -72,6 +90,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -81,7 +101,9 @@ export default {
         imagen: "",
       },
       ranking: [],
-      defaultImagePath: "/src/assets/users/default/default.png", // Standardized default image path
+      defaultImagePath: "/src/assets/users/default/default.png",
+      textosTraducidos: {},
+      idiomaUsuario: "es",
     };
   },
   methods: {
@@ -90,18 +112,11 @@ export default {
         const response = await fetch("/api/perfil/select_perfil.php", {
           credentials: "include",
         });
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const data = await response.json();
-        if (!data || data.error) {
-          console.error("API Error:", data?.error || "Invalid response");
-          return;
-        }
-
         this.perfil = {
-          ...this.perfil,
-          nombre: data.nombre || this.perfil.nombre,
+          nombre: data.nombre || "",
           posicion: data.posicion || "--",
           imagen: data.imagen || this.defaultImagePath,
         };
@@ -113,26 +128,57 @@ export default {
       try {
         const response = await fetch("/api/ranking/select.php");
         const data = await response.json();
-        if (!data || data.error) {
-          console.error("API Error:", data?.error || "Invalid response");
-          this.ranking = [];
-          return;
-        }
-        this.ranking = data;
+        this.ranking = data || [];
       } catch (error) {
         console.error("Error obteniendo el ranking:", error);
       }
     },
     obtenerImagenCategoria(imagen_categoria) {
-      if (!imagen_categoria || imagen_categoria === "--")
-        return "/src/assets/default.png";
-      return `/src/${imagen_categoria}`;
+      return imagen_categoria && imagen_categoria !== "--"
+        ? `/src/${imagen_categoria}`
+        : "/src/assets/default.png";
     },
     getImageUserUrl(path) {
       return path ? `/src/${path}` : this.defaultImagePath;
     },
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      const textos = [
+        "Ránking Global",
+        "ESTADÍSTICAS",
+        "Última posición:",
+        "Jugador",
+        "Posición",
+        "Puntos",
+        "Categoría Destacada",
+        "No hay jugadores en el ranking.",
+        "Cargando...",
+      ];
+
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+    },
   },
-  mounted() {
+  async mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+
     const userCookie = document.cookie
       .split("; ")
       .find((row) => row.startsWith("user="))
@@ -142,22 +188,18 @@ export default {
       try {
         const userData = JSON.parse(decodeURIComponent(userCookie));
         this.perfil = { ...this.perfil, ...userData };
-        this.perfil.imagen = this.perfil.imagen || this.defaultImagePath;
-
-        // solo para debuggear
-        //console.log("Usuario cargado desde cookies:", this.perfil);
-
-        // Fetch additional data from the API
-        this.obtenerEstadisticasPerfil();
-        this.obtenerRanking();
       } catch (error) {
-        console.error("Error parsing user cookie:", error.message);
+        console.error("Error parsing user cookie:", error);
       }
-    } else {
-      console.warn("No user found in cookies. Fetching profile from API...");
-      // If no cookie, directly load data from the API
-      this.obtenerEstadisticasPerfil();
-      this.obtenerRanking();
+    }
+
+    await Promise.all([
+      this.obtenerEstadisticasPerfil(),
+      this.obtenerRanking(),
+    ]);
+
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
     }
   },
 };

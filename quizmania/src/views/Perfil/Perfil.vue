@@ -2,11 +2,10 @@
   <section>
     <div class="perfil">
       <div class="perfil-title">
-        <h1>PERFIL</h1>
+        <h1>{{ textosTraducidos["PERFIL"] || "PERFIL" }}</h1>
       </div>
 
       <div class="division">
-        <!-- Perfil -->
         <div class="perfil-vista">
           <div id="perfil_img">
             <img
@@ -16,7 +15,7 @@
               style="border-radius: 50%"
             />
             <img
-              v-else-if="user && user.imagen"
+              v-else-if="user?.imagen"
               :src="getImageUserUrl(user.imagen)"
               alt="Perfil Image"
               style="border-radius: 50%"
@@ -41,18 +40,27 @@
               class="btn btn-profile-update mb-3"
               @click="$refs.profileImageInput.click()"
             >
-              Cambiar Imagen
+              {{ textosTraducidos["Cambiar Imagen"] || "Cambiar Imagen" }}
             </button>
             <button
               v-else
               class="btn btn-confirm-update mb-3"
               @click="confirmImageChange"
             >
-              Confirmar Cambio
+              {{ textosTraducidos["Confirmar Cambio"] || "Confirmar Cambio" }}
             </button>
           </div>
-          <h3 class="text-white">{{ user.nombre || "Cargando..." }}</h3>
-          <h4 class="text-wrap">¡Comparte tu perfil con tus amigos!</h4>
+          <h3 class="text-white">
+            {{
+              user?.nombre || textosTraducidos["Cargando..."] || "Cargando..."
+            }}
+          </h3>
+          <h4 class="text-wrap">
+            {{
+              textosTraducidos["¡Comparte tu perfil con tus amigos!"] ||
+              "¡Comparte tu perfil con tus amigos!"
+            }}
+          </h4>
           <div class="socials text-white">
             <a href="#instagram" class="social-button" aria-label="Instagram">
               <img
@@ -67,7 +75,6 @@
           </div>
         </div>
 
-        <!-- Opciones (Tabs) -->
         <div class="ajustes">
           <div class="container-fluid p-0">
             <ul class="nav nav-tabs w-100">
@@ -77,7 +84,10 @@
                   :class="{ active: activeTab === 'ajustes' }"
                   class="nav-link"
                 >
-                  Ajustes de la cuenta
+                  {{
+                    textosTraducidos["Ajustes de la cuenta"] ||
+                    "Ajustes de la cuenta"
+                  }}
                 </a>
               </li>
               <li class="nav-item" style="width: 50%; text-align: center">
@@ -86,7 +96,10 @@
                   :class="{ active: activeTab === 'estadisticas' }"
                   class="nav-link"
                 >
-                  Resumen de tus estadísticas
+                  {{
+                    textosTraducidos["Resumen de tus estadísticas"] ||
+                    "Resumen de tus estadísticas"
+                  }}
                 </a>
               </li>
             </ul>
@@ -97,14 +110,21 @@
                 :class="{ 'show active': activeTab === 'ajustes' }"
               >
                 <form @submit.prevent="perfilUpdate">
-                  <label for="nombre">Nombre de usuario</label><br />
+                  <label for="nombre">{{
+                    textosTraducidos["Nombre de usuario"] || "Nombre de usuario"
+                  }}</label
+                  ><br />
                   <input
                     v-model="settings.nombre"
                     type="text"
                     placeholder="Tu nombre"
                     class="form-control mb-3"
                   />
-                  <label for="correo">Correo Electrónico</label><br />
+                  <label for="correo">{{
+                    textosTraducidos["Correo Electrónico"] ||
+                    "Correo Electrónico"
+                  }}</label
+                  ><br />
                   <input
                     v-model="settings.correo"
                     type="email"
@@ -116,20 +136,23 @@
                     class="btn btn-link text-decoration-none mt-3"
                     @click="retrievePassword"
                   >
-                    Te has olvidado de tu contraseña?
+                    {{
+                      textosTraducidos["Te has olvidado de tu contraseña?"] ||
+                      "Te has olvidado de tu contraseña?"
+                    }}
                   </button>
-
                   <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
                     @click="perfilUpdate"
                   >
-                    Guardar Ajustes
+                    {{
+                      textosTraducidos["Guardar Ajustes"] || "Guardar Ajustes"
+                    }}
                   </button>
                 </form>
               </div>
 
-              <!-- Contenido de Estadísticas -->
               <div
                 v-if="activeTab === 'estadisticas'"
                 class="tab-pane"
@@ -137,19 +160,34 @@
               >
                 <div class="estadisticas-container">
                   <div class="estadistica-item">
-                    <h4>Pos. Última Partida</h4>
+                    <h4>
+                      {{
+                        textosTraducidos["Pos. Última Partida"] ||
+                        "Pos. Última Partida"
+                      }}
+                    </h4>
                     <p class="estadistica-valor">
                       {{ stats.posUltimaPartida || "--" }}
                     </p>
                   </div>
                   <div class="estadistica-item">
-                    <h4>Puntos Última Partida</h4>
+                    <h4>
+                      {{
+                        textosTraducidos["Puntos Última Partida"] ||
+                        "Puntos Última Partida"
+                      }}
+                    </h4>
                     <p class="estadistica-valor">
                       {{ stats.puntosUltimaPartida || "--" }}
                     </p>
                   </div>
                   <div class="estadistica-item">
-                    <h4>Categoría Destacada</h4>
+                    <h4>
+                      {{
+                        textosTraducidos["Categoría Destacada"] ||
+                        "Categoría Destacada"
+                      }}
+                    </h4>
                     <p class="estadistica-valor">
                       <img
                         :src="obtenerImagenCategoria(stats.imagenCategoria)"
@@ -160,9 +198,12 @@
                   </div>
                 </div>
                 <div class="my-5">
-                  <a href="/estadisticas" class="btn btn-outline-light"
-                    >Ver tus estadísticas completas</a
-                  >
+                  <a href="/estadisticas" class="btn btn-outline-light">
+                    {{
+                      textosTraducidos["Ver tus estadísticas completas"] ||
+                      "Ver tus estadísticas completas"
+                    }}
+                  </a>
                 </div>
               </div>
             </div>
@@ -174,18 +215,20 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Perfil",
   data() {
     return {
       activeTab: "ajustes",
       user: {
-        nombre: "Cargando...",
-        imagen: "Cargando...",
+        nombre: "",
+        imagen: "",
       },
       settings: {
-        nombre: "Cargando...",
-        correo: "Cargando...",
+        nombre: "",
+        correo: "",
         notificaciones: "si",
       },
       stats: {
@@ -193,176 +236,145 @@ export default {
         puntosUltimaPartida: "--",
         imagenCategoria: "--",
       },
-      userData: null,
-      passwordVisible: false,
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      idiomaUsuario: "es",
       selectedImage: null,
       previewImage: null,
     };
   },
-
+  async mounted() {
+    await this.cargarPerfil();
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
+  },
   methods: {
     setTab(tab) {
       this.activeTab = tab;
     },
-
     getImageUserUrl(path) {
       return path ? `/src/${path}` : "/src/assets/users/default.png";
     },
-
     async cargarPerfil() {
       try {
         const response = await fetch("/api/perfil/select_perfil.php", {
           credentials: "include",
         });
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const data = await response.json();
-        if (!data || data.error) {
-          console.error("API Error:", data?.error || "Invalid response");
-          return;
-        }
-
-        // Set userData with the complete response
-        this.userData = data;
 
         this.user = {
-          ...this.user,
-          nombre: data.nombre,
-          imagen: data.imagen,
+          nombre: data.nombre || "",
+          imagen: data.imagen || "",
         };
 
         this.settings = {
-          ...this.settings,
-          nombre: data.nombre,
-          correo: data.correo,
-          notificaciones: data.notificaciones,
+          nombre: data.nombre || "",
+          correo: data.correo || "",
+          notificaciones: data.notificaciones || "si",
         };
 
         this.stats = {
-          ...this.stats,
           posUltimaPartida: data.posicion || "--",
           puntosUltimaPartida: data.puntos || "--",
           imagenCategoria: data.imagen_categoria || "--",
         };
       } catch (error) {
-        console.error("Error obteniendo el perfil:", error.message);
+        console.error("Error obteniendo el perfil:", error);
+        this.user = { nombre: "Error", imagen: "" };
       }
     },
-
     obtenerImagenCategoria(imagen) {
-      if (!imagen || imagen === "--") return "/src/assets/users/default/default.png";
-      return `/src/${imagen}`;
+      return imagen && imagen !== "--"
+        ? `/src/${imagen}`
+        : "/src/assets/users/default/default.png";
     },
-
-    togglePasswordVisibility() {
-      this.passwordVisible = !this.passwordVisible;
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
     },
-
-    retrievePassword() {
-      alert("Ups :/ aún no se puede hacer esto.");
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textos = [
+        "PERFIL",
+        "Cambiar Imagen",
+        "Confirmar Cambio",
+        "¡Comparte tu perfil con tus amigos!",
+        "Ajustes de la cuenta",
+        "Resumen de tus estadísticas",
+        "Nombre de usuario",
+        "Correo Electrónico",
+        "Te has olvidado de tu contraseña?",
+        "Guardar Ajustes",
+        "Pos. Última Partida",
+        "Puntos Última Partida",
+        "Categoría Destacada",
+        "Ver tus estadísticas completas",
+        "Cargando...",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
-
-    async changeProfileImage(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const base64Image = reader.result;
-          const payload = {
-            id_usuario: this.userData.id_usuario,
-            nombre: this.userData.nombre,
-            file: base64Image,
-          };
-
-          const response = await fetch("/api/perfil/updatePerfil.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          const data = await response.json();
-          if (data.status === "success") {
-            alert("Imagen actualizada correctamente.");
-            console.log("Ajustes guardados:", this.settings);
-            this.user.imagen = data.imagen; // Update the image in the UI
-          } else {
-            console.error("Error al actualizar la imagen:", data.mensaje);
-            alert("Error al actualizar la imagen.");
-          }
-        } catch (error) {
-          console.error("Error al subir la imagen:", error.message);
-        }
-      };
-      reader.readAsDataURL(file);
-    },
-
     onImageSelected(event) {
       const file = event.target.files[0];
       if (!file) return;
-
-      // Validate file size (5MB = 5 * 1024 * 1024 bytes)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        alert("El archivo es demasiado grande. El tamaño máximo permitido es de 5MB.");
+      if (file.size > 5 * 1024 * 1024) {
+        alert("El archivo es demasiado grande (máx 5MB)");
         return;
       }
-
-      // Validate file type
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-      if (!allowedTypes.includes(file.type)) {
-        alert("Formato de archivo no válido. Solo se permiten imágenes .png, .jpg y .jpeg.");
+      if (!["image/png", "image/jpeg", "image/jpg"].includes(file.type)) {
+        alert("Formato no válido (solo PNG/JPG)");
         return;
       }
-
       this.selectedImage = file;
-
-      // Create a preview URL for the selected image
       const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewImage = e.target.result;
-      };
+      reader.onload = (e) => (this.previewImage = e.target.result);
       reader.readAsDataURL(file);
     },
-
     async confirmImageChange() {
       if (!this.selectedImage) return;
-
       const reader = new FileReader();
       reader.onload = async () => {
         try {
-          const base64Image = reader.result;
-          const payload = {
-            id_usuario: this.userData.id_usuario, // Now userData should be available
-            nombre: this.userData.nombre, // Changed from data.nombre to this.userData.nombre
-            file: base64Image,
-          };
-
           const response = await fetch("/api/perfil/updatePerfil.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+              id_usuario: this.userData?.id_usuario,
+              nombre: this.userData?.nombre,
+              file: reader.result,
+            }),
           });
-
           const data = await response.json();
           if (data.status === "success") {
-            alert("Imagen actualizada correctamente.");
-            this.user.imagen = data.imagen; // Update the image in the UI
-            this.selectedImage = null; // Reset the selected image
-            this.previewImage = null; // Reset the preview image
-          } else {
-            console.error("Error al actualizar la imagen:", data.mensaje);
-            alert("Error al actualizar la imagen.");
+            this.user.imagen = data.imagen;
+            this.selectedImage = null;
+            this.previewImage = null;
           }
         } catch (error) {
-          console.error("Error al subir la imagen:", error.message);
+          console.error("Error actualizando imagen:", error);
         }
       };
       reader.readAsDataURL(this.selectedImage);
     },
-
     async perfilUpdate() {
       try {
         const response = await fetch("/api/perfil/updatePerfil.php", {
@@ -370,32 +382,20 @@ export default {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(this.settings),
         });
-
         const data = await response.json();
         if (data.status === "success") {
-          alert("Perfil actualizado correctamente.");
           this.user.nombre = this.settings.nombre;
-          this.user.correo = this.settings.correo;
-          this.user = { ...this.user, ...this.settings };
-
-          // actualiza la cookie con los nuevos datos (overwrite)
           document.cookie = `user=${encodeURIComponent(
             JSON.stringify(this.user)
           )}; path=/`;
-        } else {
-          console.error("Error al actualizar el perfil:", data.mensaje);
-          alert("Error al actualizar el perfil.");
         }
       } catch (error) {
-        console.error("Error al actualizar el perfil:", error.message);
+        console.error("Error actualizando perfil:", error);
       }
     },
-
-    // end of methods
-  },
-
-  mounted() {
-    this.cargarPerfil();
+    retrievePassword() {
+      alert("Ups :/ aún no se puede hacer esto.");
+    },
   },
 };
 </script>
