@@ -154,17 +154,18 @@ export default {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada ===
-          this.preguntas[this.questionIndex].respuestaCorrecta &&
-        opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
+          this.preguntas[this.questionIndex].correcta &&
+        opcion === this.preguntas[this.questionIndex].correcta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
         this.respuestaSeleccionada !==
-          this.preguntas[this.questionIndex].respuestaCorrecta &&
+          this.preguntas[this.questionIndex].correcta &&
         this.respuestaSeleccionada === opcion;
     },
   },
+
 
   methods: {
     startTimer() {
@@ -256,6 +257,7 @@ export default {
 
         if (response.data.status === "success") {
           const nuevaPregunta = response.data.data;
+          console.log(nuevaPregunta);
 
           // Forzar traducción si el idioma es diferente
           if (this.idiomaUsuario !== "es") {
@@ -325,7 +327,6 @@ export default {
       this.rondasTotales = ronda;
       this.showGameOver = true;
 
-      sessionStorage.removeItem("ronda");
       sessionStorage.removeItem("id_partida");
       sessionStorage.removeItem("preguntaActual");
       sessionStorage.removeItem("preguntasUsadas");
@@ -333,7 +334,10 @@ export default {
 
       setTimeout(() => {
         this.backgroundMusic.stop();
-        this.$router.push("/");
+        this.$router.push("/").then(() => {
+          location.reload();
+          sessionStorage.removeItem("ronda");
+        });
       }, 3000);
     },
 
@@ -355,8 +359,8 @@ export default {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
-        const esCorrecta =
-          opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
+        const esCorrecta = opcion === this.preguntas[this.questionIndex].correcta;
+
 
         try {
           if (!esCorrecta) {
