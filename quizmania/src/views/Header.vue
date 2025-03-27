@@ -139,12 +139,24 @@ export default {
       timer: 60,
       timerInterval: null,
       perfil: "perfil.jpg",
-      nombreCategoria: "Música",
-      imagenCategoria: "musica.png",
+      nombreCategoria: null,
+      imagenCategoria: null,
       ronda: 1,
       userData: null,
       width: window.innerWidth,
       height: window.innerHeight,
+      imageMap: {
+        "Historia": "historia.png",
+        "Ciencia": "ciencia.png",
+        "Deportes": "deportes.png",
+        "Música": "musica.png",
+        "Entretenimiento": "entre.png",
+        "Arte y Literatura": "arte.png",
+        "Geografía": "geografia.png",
+        "Matemáticas": "mates.png",
+        "Tecnología": "tecno.png",
+        "Cultura General": "cultura.png",
+      },
     };
   },
   computed: {
@@ -162,11 +174,10 @@ export default {
     },
   },
   mounted() {
-    if (this.$route.path === "/juego") {
-      this.startTimer();
-    }
+
     this.userData = this.$cookies.get("user");
     this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
+    
     this.cargarUsuario();
     //console.log(this.userData);
   },
@@ -179,6 +190,8 @@ export default {
     "$route.path"(newPath) {
       if (newPath === "/juego" && !this.timerInterval) {
         // No resetear el timer aquí, se recuperará del sessionStorage
+        this.nombreCategoria = sessionStorage.getItem("categoria");
+        this.imagenCategoria = this.imageMap[this.nombreCategoria] || "";
         this.startTimer();
       }
       if (newPath !== "/juego" && this.timerInterval) {
@@ -250,6 +263,7 @@ export default {
       return `src/${path}`;
     },
     startTimer() {
+
       const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
       this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
 

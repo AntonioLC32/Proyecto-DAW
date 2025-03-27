@@ -152,16 +152,12 @@ export default {
   computed: {
     isRespuestaCorrecta() {
       return (opcion) =>
-        this.seleccionado &&
-        this.respuestaSeleccionada ===
-          this.preguntas[this.questionIndex].correcta &&
-        opcion === this.preguntas[this.questionIndex].correcta;
+        this.seleccionado && opcion === this.preguntas[this.questionIndex].correcta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
-        this.respuestaSeleccionada !==
-          this.preguntas[this.questionIndex].correcta &&
+        this.respuestaSeleccionada !== this.preguntas[this.questionIndex].correcta &&
         this.respuestaSeleccionada === opcion;
     },
   },
