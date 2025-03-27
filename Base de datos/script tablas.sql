@@ -137,6 +137,8 @@ CREATE TABLE Traducciones (
     UNIQUE KEY unica_traduccion (texto_original(255), idioma_origen, idioma_destino)
 );
 
+-- Añadir índice para búsquedas más rápidas
+ALTER TABLE Traducciones ADD FULLTEXT INDEX idx_texto_original (texto_original);
 
 
 CREATE INDEX idx_usuario_fecha_registro ON Usuario(fecha_registro);

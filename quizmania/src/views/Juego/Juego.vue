@@ -76,10 +76,16 @@
         <p>Rondas completadas: {{ rondasTotales }}</p>
       </div>
     </div>
+
+    <div v-if="traduccionesCargando" class="cargando-traduccion">
+      Traduciendo pregunta...
+    </div>
   </section>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Juego",
   data() {
@@ -89,6 +95,7 @@ export default {
           pregunta: "",
           opciones: ["", "", "", ""],
           respuestaCorrecta: "",
+          dificultad: "",
         },
       ],
       questionIndex: 0,
@@ -101,13 +108,19 @@ export default {
       userData: null,
       showGameOver: false,
       rondasTotales: 0,
+      idiomaUsuario: "es",
+      traduccionesCargando: false,
     };
   },
 
   mounted() {
     window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
+    //this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    this.idiomaUsuario = "en";
+
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
     this.userData = this.$cookies.get("user");
+
     const preguntaGuardada = sessionStorage.getItem("preguntaActual");
     if (preguntaGuardada) {
       this.preguntas[this.questionIndex] = JSON.parse(preguntaGuardada);
@@ -144,6 +157,104 @@ export default {
   },
 
   methods: {
+    async traducirTexto(texto) {
+      if (
+        /^\d+$/.test(texto) ||
+        ["Fácil", "Media", "Difícil"].includes(texto)
+      ) {
+        return texto;
+      }
+      if (this.idiomaUsuario === "es") return texto;
+      try {
+        this.traduccionesCargando = true;
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      } finally {
+        this.traduccionesCargando = false;
+      }
+    },
+    async obtenerPreguntaTraducida(preguntaOriginal) {
+      try {
+        const numOpciones = preguntaOriginal.opciones.length;
+        const traducciones = await Promise.all([
+          this.traducirTexto(preguntaOriginal.pregunta),
+          ...preguntaOriginal.opciones.map((op) => this.traducirTexto(op)),
+          this.traducirTexto(preguntaOriginal.dificultad),
+          this.traducirTexto(preguntaOriginal.correcta || ""), // Asegurar que la traducción no sea undefined
+        ]);
+
+        return {
+          ...preguntaOriginal,
+          pregunta: traducciones[0],
+          opciones: traducciones.slice(1, 1 + numOpciones),
+          dificultad: traducciones[1 + numOpciones],
+          respuestaCorrecta:
+            traducciones[2 + numOpciones] || preguntaOriginal.correcta, // Fallback al original
+        };
+      } catch (error) {
+        console.error("Error traduciendo pregunta:", error);
+        return preguntaOriginal;
+      }
+    },
+
+    async obtenerPregunta(categoriaSeleccionada) {
+      try {
+        const response = await axios.post(
+          "/api/index.php?action=obtenerPreguntaJuego",
+          {
+            categoria: categoriaSeleccionada,
+            exclude: JSON.parse(
+              sessionStorage.getItem("preguntasUsadas") || "[]"
+            ),
+          }
+        );
+
+        if (response.data.status === "success") {
+          const nuevaPregunta = response.data.data;
+
+          // Forzar traducción si el idioma es diferente
+          if (this.idiomaUsuario !== "es") {
+            //console.log("Iniciando traducción...");
+            const preguntaTraducida = await this.obtenerPreguntaTraducida(
+              nuevaPregunta
+            );
+            //console.log("Pregunta traducida:", preguntaTraducida);
+            this.preguntas = [preguntaTraducida];
+            sessionStorage.setItem(
+              "preguntaActual",
+              JSON.stringify(preguntaTraducida)
+            );
+          } else {
+            this.preguntas = [nuevaPregunta];
+            sessionStorage.setItem(
+              "preguntaActual",
+              JSON.stringify(nuevaPregunta)
+            );
+          }
+
+          const preguntasUsadas = JSON.parse(
+            sessionStorage.getItem("preguntasUsadas") || "[]"
+          );
+          preguntasUsadas.push(nuevaPregunta.id_pregunta);
+          sessionStorage.setItem(
+            "preguntasUsadas",
+            JSON.stringify(preguntasUsadas)
+          );
+        }
+      } catch (error) {
+        console.error("Error al obtener pregunta:", error);
+      }
+    },
+
     tiempoAgotadoHandler() {
       if (!this.seleccionado) {
         this.seleccionado = true;
@@ -153,27 +264,17 @@ export default {
 
     async procesarTiempoAgotado() {
       try {
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=actualizarVidasPartida",
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id_partida: sessionStorage.getItem("id_partida"),
-              cambio: -1,
-            }),
+            id_partida: sessionStorage.getItem("id_partida"),
+            cambio: -1,
           }
         );
 
-        const data = await response.json();
-
-        if (data.status === "success") {
-          this.vidas = data.vidas;
-
-          if (data.estado === "finalizada") {
-            this.mostrarGameOver();
-            return;
-          }
+        if (response.data.status === "success") {
+          this.vidas = response.data.vidas;
+          if (response.data.estado === "finalizada") this.mostrarGameOver();
         }
 
         await this.guardarHistorialPregunta(false);
@@ -184,31 +285,23 @@ export default {
     },
 
     mostrarGameOver() {
-      const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
-      this.rondasTotales = ronda;
+      this.rondasTotales = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
       this.showGameOver = true;
-
-      sessionStorage.removeItem("ronda");
-      sessionStorage.removeItem("id_partida");
-      sessionStorage.removeItem("preguntaActual");
-      sessionStorage.removeItem("preguntasUsadas");
-      sessionStorage.removeItem("tiempoRestante");
-
-      setTimeout(() => {
-        this.$router.push("/");
-      }, 3000);
+      [
+        "ronda",
+        "id_partida",
+        "preguntaActual",
+        "preguntasUsadas",
+        "tiempoRestante",
+      ].forEach((k) => sessionStorage.removeItem(k));
+      setTimeout(() => this.$router.push("/"), 3000);
     },
-    async redirigirASeleccionTema() {
-      const tiempo = sessionStorage.getItem("tiempoTranscurrido") || 0;
 
-      await fetch("/api/index.php?action=insertarRonda", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_partida: sessionStorage.getItem("id_partida"),
-          tiempo: tiempo,
-          id_categoria: this.categoriaSeleccionada,
-        }),
+    async redirigirASeleccionTema() {
+      await axios.post("/api/index.php?action=insertarRonda", {
+        id_partida: sessionStorage.getItem("id_partida"),
+        tiempo: sessionStorage.getItem("tiempoTranscurrido") || 0,
+        id_categoria: this.categoriaSeleccionada,
       });
 
       setTimeout(() => {
@@ -217,51 +310,6 @@ export default {
       }, 2000);
     },
 
-    async obtenerPregunta(categoriaSeleccionada) {
-      try {
-        const response = await fetch(
-          "/api/index.php?action=obtenerPreguntaJuego",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              categoria: categoriaSeleccionada,
-              exclude: JSON.parse(
-                sessionStorage.getItem("preguntasUsadas") || "[]"
-              ),
-            }),
-          }
-        );
-        const data = await response.json();
-        if (data.status === "success") {
-          const nuevaPregunta = {
-            id_pregunta: data.data.id_pregunta,
-            pregunta: data.data.pregunta,
-            opciones: data.data.opciones,
-            respuestaCorrecta: data.data.correcta,
-            dificultad: data.data.dificultad,
-          };
-
-          sessionStorage.setItem(
-            "preguntaActual",
-            JSON.stringify(nuevaPregunta)
-          );
-
-          const preguntasUsadas = JSON.parse(
-            sessionStorage.getItem("preguntasUsadas") || "[]"
-          );
-          preguntasUsadas.push(data.data.id_pregunta);
-          sessionStorage.setItem(
-            "preguntasUsadas",
-            JSON.stringify(preguntasUsadas)
-          );
-
-          this.preguntas = [nuevaPregunta];
-        }
-      } catch (error) {
-        console.error("Error al obtener pregunta:", error);
-      }
-    },
     async seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
         this.respuestaSeleccionada = opcion;
@@ -271,35 +319,29 @@ export default {
 
         try {
           if (!esCorrecta) {
-            const response = await fetch(
+            const response = await axios.post(
               "/api/index.php?action=actualizarVidasPartida",
               {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  id_partida: sessionStorage.getItem("id_partida"),
-                  cambio: -1,
-                }),
+                id_partida: sessionStorage.getItem("id_partida"),
+                cambio: -1,
               }
             );
-
-            const data = await response.json();
-            if (data.status === "success") {
-              this.vidas = data.vidas;
-              if (data.estado === "finalizada") this.mostrarGameOver();
-            }
+            this.vidas = response.data.vidas;
+            if (response.data.estado === "finalizada") this.mostrarGameOver();
           }
 
           await this.guardarHistorialPregunta(esCorrecta);
 
           if (esCorrecta) {
-            const puntos = {
-              Fácil: 10,
-              Media: 20,
-              Difícil: 30,
-            }[this.preguntas[this.questionIndex].dificultad];
-
-            if (puntos) await this.actualizarEstadisticas(puntos);
+            const puntos = { Fácil: 10, Media: 20, Difícil: 30 }[
+              this.preguntas[this.questionIndex].dificultad
+            ];
+            if (puntos)
+              await axios.post("/api/index.php?action=actualizarEstadisticas", {
+                id_usuario: this.userData.id_usuario,
+                nombre_categoria: this.categoriaSeleccionada,
+                puntos: puntos,
+              });
           }
         } finally {
           setTimeout(() => {
@@ -313,38 +355,24 @@ export default {
 
     async cargarVidas() {
       try {
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=obtenerVidasPartida",
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id_partida: sessionStorage.getItem("id_partida"),
-            }),
+            id_partida: sessionStorage.getItem("id_partida"),
           }
         );
-
-        const data = await response.json();
-        if (data.status === "success") {
-          this.vidas = data.vidas;
-          if (data.estado === "finalizada") this.mostrarGameOver();
-        }
+        this.vidas = response.data.vidas;
+        if (response.data.estado === "finalizada") this.mostrarGameOver();
       } catch (error) {
         console.error("Error de conexión:", error);
       }
     },
 
     async siguientePregunta() {
-      const tiempo = sessionStorage.getItem("tiempoTranscurrido") || 0;
-
-      await fetch("/api/index.php?action=insertarRonda", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_partida: sessionStorage.getItem("id_partida"),
-          tiempo: tiempo,
-          id_categoria: this.categoriaSeleccionada,
-        }),
+      await axios.post("/api/index.php?action=insertarRonda", {
+        id_partida: sessionStorage.getItem("id_partida"),
+        tiempo: sessionStorage.getItem("tiempoTranscurrido") || 0,
+        id_categoria: this.categoriaSeleccionada,
       });
 
       sessionStorage.removeItem("preguntaActual");
@@ -356,22 +384,6 @@ export default {
         this.$router.push("/selecciontema");
       } else {
         this.mostrarGameOver();
-      }
-    },
-
-    async actualizarEstadisticas(puntos) {
-      try {
-        await fetch("/api/index.php?action=actualizarEstadisticas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id_usuario: this.userData.id_usuario,
-            nombre_categoria: this.categoriaSeleccionada,
-            puntos: puntos,
-          }),
-        });
-      } catch (error) {
-        console.error("Error:", error);
       }
     },
 
@@ -401,14 +413,10 @@ export default {
 
     async guardarHistorialPregunta(acertada) {
       try {
-        await fetch("/api/index.php?action=guardarHistorialPregunta", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id_partida: sessionStorage.getItem("id_partida"),
-            id_pregunta: this.preguntas[this.questionIndex].id_pregunta,
-            acertada: acertada ? 1 : 0,
-          }),
+        await axios.post("/api/index.php?action=guardarHistorialPregunta", {
+          id_partida: sessionStorage.getItem("id_partida"),
+          id_pregunta: this.preguntas[this.questionIndex].id_pregunta,
+          acertada: acertada ? 1 : 0,
         });
       } catch (error) {
         console.error("Error:", error);

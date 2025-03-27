@@ -156,6 +156,11 @@ switch ($action) {
         require 'juego/select.php';
         obtenerVidasPartida($input);
         break;
+    
+    case 'traducir':
+        require 'traducciones/translate.php';
+        traducir($input);
+        break;
 
     // Añadir casos para otras importaciones
     default:
