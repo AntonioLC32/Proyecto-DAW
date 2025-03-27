@@ -360,7 +360,11 @@ export default {
 
         try {
           if (!esCorrecta) {
-            
+            const soundWrong = new Howl({
+                src: '/src/assets/sounds/wrong.wav',
+                volume: 1,
+              });
+            soundWrong.play();
             const response = await axios.post(
               "/api/index.php?action=actualizarVidasPartida",
               {
@@ -376,7 +380,7 @@ export default {
 
           if (esCorrecta) {
             const soundCorrect = new Howl({
-              src: [require('/src/assets/sounds/correct.wav')],
+              src: '/src/assets/sounds/correct.wav',
               volume: 1,
             });
             soundCorrect.play();
@@ -389,12 +393,6 @@ export default {
                 nombre_categoria: this.categoriaSeleccionada,
                 puntos: puntos,
               });
-          } else {
-              const soundWrong = new Howl({
-                src: [require('/src/assets/sounds/wrong.wav')],
-                volume: 1,
-              });
-            soundWrong.play();
           }
         } finally {
           setTimeout(() => {
