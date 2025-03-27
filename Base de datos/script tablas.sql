@@ -4,8 +4,7 @@ USE quizmania;
 CREATE TABLE Categoria (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
-    imagen VARCHAR(255),
-    idioma TINYINT NOT NULL
+    imagen VARCHAR(255)
 );
 
 -- Tabla dependiente de Ranking
@@ -49,7 +48,6 @@ CREATE TABLE Tarjeta (
     id_tarjeta INT AUTO_INCREMENT PRIMARY KEY,
     dificultad ENUM('Fácil','Media','Difícil') NOT NULL,
     id_categoria INT NOT NULL,
-    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
 );
 
@@ -59,7 +57,6 @@ CREATE TABLE Pregunta (
     texto TEXT NOT NULL,
     habilitado BOOLEAN DEFAULT TRUE,
     id_tarjeta INT NOT NULL,
-    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_tarjeta) REFERENCES Tarjeta(id_tarjeta)
 );
 
@@ -69,7 +66,6 @@ CREATE TABLE Respuesta (
     es_correcta BOOLEAN NOT NULL DEFAULT FALSE,
     habilitado BOOLEAN DEFAULT TRUE,
     id_pregunta INT NOT NULL,
-    idioma TINYINT NOT NULL,
     FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE
 );
 
@@ -130,6 +126,17 @@ CREATE TABLE HistorialPreguntas (
   FOREIGN KEY (id_partida) REFERENCES Partida(id_partida) ON DELETE CASCADE,
   FOREIGN KEY (id_pregunta) REFERENCES Pregunta(id_pregunta) ON DELETE CASCADE
 );
+
+CREATE TABLE Traducciones (
+    id_traduccion INT AUTO_INCREMENT PRIMARY KEY,
+    texto_original TEXT NOT NULL,
+    idioma_origen VARCHAR(5) NOT NULL,
+    idioma_destino VARCHAR(5) NOT NULL,
+    texto_traducido TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unica_traduccion (texto_original(255), idioma_origen, idioma_destino)
+);
+
 
 
 CREATE INDEX idx_usuario_fecha_registro ON Usuario(fecha_registro);
