@@ -85,6 +85,7 @@
 
 <script>
 import axios from "axios";
+import { Howl } from 'howler';
 
 export default {
   name: "Juego",
@@ -98,6 +99,7 @@ export default {
           dificultad: "",
         },
       ],
+      backgroundMusic: null,
       questionIndex: 0,
       respuestaSeleccionada: null,
       seleccionado: false,
@@ -114,9 +116,17 @@ export default {
   },
 
   mounted() {
+    this.backgroundMusic = new Howl({
+      src: '/src/assets/sounds/trivia.mp3',
+      loop: false,
+      volume: 0.5,
+    });
+    this.backgroundMusic.play();
+    this.startTimer();
+
     window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
-    //this.idiomaUsuario = navigator.language.split("-")[0] || "es";
-    this.idiomaUsuario = "en";
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    //this.idiomaUsuario = "en";
 
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
     this.userData = this.$cookies.get("user");
@@ -157,6 +167,32 @@ export default {
   },
 
   methods: {
+    startTimer() {
+      const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
+      this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
+
+      this.timerInterval = setInterval(() => {
+        if (this.timer > 0) {
+          this.timer--;
+          sessionStorage.setItem("tiempoRestante", this.timer.toString());
+
+          const elapsed = 60 - this.timer;
+          sessionStorage.setItem("tiempoTranscurrido", elapsed.toString());
+
+          const minutes = Math.floor(elapsed / 60);
+          const seconds = elapsed % 60;
+          sessionStorage.setItem(
+            "tiempoRonda",
+            `${minutes.toString().padStart(2, "0")}:${seconds
+              .toString()
+              .padStart(2, "0")}`
+          );
+        } else {
+          this.backgroundMusic.stop();
+        }
+      }, 1000);
+    },
+
     async traducirTexto(texto) {
       if (
         /^\d+$/.test(texto) ||
@@ -285,17 +321,22 @@ export default {
     },
 
     mostrarGameOver() {
-      this.rondasTotales = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
+      const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
+      this.rondasTotales = ronda;
       this.showGameOver = true;
-      [
-        "ronda",
-        "id_partida",
-        "preguntaActual",
-        "preguntasUsadas",
-        "tiempoRestante",
-      ].forEach((k) => sessionStorage.removeItem(k));
-      setTimeout(() => this.$router.push("/"), 3000);
+
+      sessionStorage.removeItem("ronda");
+      sessionStorage.removeItem("id_partida");
+      sessionStorage.removeItem("preguntaActual");
+      sessionStorage.removeItem("preguntasUsadas");
+      sessionStorage.removeItem("tiempoRestante");
+
+      setTimeout(() => {
+        this.backgroundMusic.stop();
+        this.$router.push("/");
+      }, 3000);
     },
+
 
     async redirigirASeleccionTema() {
       await axios.post("/api/index.php?action=insertarRonda", {
@@ -319,6 +360,7 @@ export default {
 
         try {
           if (!esCorrecta) {
+            
             const response = await axios.post(
               "/api/index.php?action=actualizarVidasPartida",
               {
@@ -333,6 +375,11 @@ export default {
           await this.guardarHistorialPregunta(esCorrecta);
 
           if (esCorrecta) {
+            const soundCorrect = new Howl({
+              src: [require('/src/assets/sounds/correct.wav')],
+              volume: 1,
+            });
+            soundCorrect.play();
             const puntos = { Fácil: 10, Media: 20, Difícil: 30 }[
               this.preguntas[this.questionIndex].dificultad
             ];
@@ -342,6 +389,12 @@ export default {
                 nombre_categoria: this.categoriaSeleccionada,
                 puntos: puntos,
               });
+          } else {
+              const soundWrong = new Howl({
+                src: [require('/src/assets/sounds/wrong.wav')],
+                volume: 1,
+              });
+            soundWrong.play();
           }
         } finally {
           setTimeout(() => {
@@ -379,6 +432,7 @@ export default {
       sessionStorage.removeItem("tiempoRestante");
 
       if (this.vidas > 0) {
+        this.backgroundMusic.stop();
         let ronda = parseInt(sessionStorage.getItem("ronda") || 1);
         sessionStorage.setItem("ronda", ++ronda);
         this.$router.push("/selecciontema");
