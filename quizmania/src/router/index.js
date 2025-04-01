@@ -48,8 +48,8 @@ const routes = [
     component: Register,
   },
   {
-    path: "/resetcontraseña",
-    name: "ResetContraseña",
+    path: "/reset-password",
+    name: "ResetPassword",
     component: ResetContraseña,
   },
   {

@@ -5,11 +5,10 @@
         <h2 class="form-title">
           {{ textosTraducidos["Iniciar Sesión"] || "Iniciar Sesión" }}
         </h2>
-
         <div class="form-group">
-          <label for="user" class="form-label">{{
-            textosTraducidos["Nombre de usuario"] || "Nombre de usuario"
-          }}</label>
+          <label for="user" class="form-label">
+            {{ textosTraducidos["Nombre de usuario"] || "Nombre de usuario" }}
+          </label>
           <input
             type="text"
             id="user"
@@ -23,11 +22,10 @@
             "
           />
         </div>
-
         <div class="form-group">
-          <label for="password" class="form-label">{{
-            textosTraducidos["Contraseña"] || "Contraseña"
-          }}</label>
+          <label for="password" class="form-label">
+            {{ textosTraducidos["Contraseña"] || "Contraseña" }}
+          </label>
           <div class="password-input-container">
             <input
               :type="passwordVisible ? 'text' : 'password'"
@@ -85,13 +83,9 @@
             </button>
           </div>
         </div>
-
         <button type="submit" class="submit-btn">
           {{ textosTraducidos["INICIAR SESIÓN"] || "INICIAR SESIÓN" }}
         </button>
-
-        <!-- No se ha traduido esta parte nueva -->
-
         <button
           type="button"
           class="forgot-btn"
@@ -102,9 +96,18 @@
             "¿Te has olvidado de tu contraseña?"
           }}
         </button>
-
-        <div v-show="showForgotPasswordModal" class="modal-overlay">
-          <div class="modal">
+        <div
+          v-show="showForgotPasswordModal"
+          class="modal-overlay"
+          @click="showForgotPasswordModal = false"
+        >
+          <div class="modal" @click.stop>
+            <button
+              class="modal-close"
+              @click="showForgotPasswordModal = false"
+            >
+              ×
+            </button>
             <h3>
               {{
                 textosTraducidos["Recuperar Contraseña"] ||
@@ -113,9 +116,12 @@
             </h3>
             <form @submit.prevent="handleForgotPassword">
               <div class="form-group">
-                <label for="email">{{
-                  textosTraducidos["Correo Electrónico"] || "Correo Electrónico"
-                }}</label>
+                <label for="email">
+                  {{
+                    textosTraducidos["Correo Electrónico"] ||
+                    "Correo Electrónico"
+                  }}
+                </label>
                 <input
                   type="email"
                   id="email"
@@ -131,22 +137,12 @@
               <button type="submit" class="submit-btn">
                 {{ textosTraducidos["Enviar"] || "Enviar" }}
               </button>
-              <button
-                type="button"
-                class="cancel-btn"
-                @click="showForgotPasswordModal = false"
-              >
-                {{ textosTraducidos["Cancelar"] || "Cancelar" }}
-              </button>
             </form>
             <div v-if="forgotPasswordError" class="error-message">
               {{ forgotPasswordError }}
             </div>
           </div>
         </div>
-
-        <!-- ========== End Section ========== -->
-
         <div class="additional-options">
           <span class="register-span">
             {{
@@ -158,7 +154,6 @@
             </router-link>
           </span>
         </div>
-
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
@@ -169,7 +164,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   name: "Login",
   data() {
@@ -187,13 +181,11 @@ export default {
     };
   },
   async mounted() {
-    // Detectar el idioma del navegador
     this.idiomaUsuario = navigator.language.split("-")[0] || "es";
     if (this.idiomaUsuario !== "es") {
       await this.traducirContenido();
     }
   },
- 
   methods: {
     async handleLogin() {
       try {
@@ -204,18 +196,13 @@ export default {
             ] || "La contraseña debe tener al menos 6 caracteres"
           );
         }
-
-        // Usando axios en lugar de fetch
         const response = await axios.post("/api/index.php?action=login", {
           username: this.user,
           password: this.password,
         });
-
         const data = response.data;
-
         if (data.status === "success") {
           this.$cookies.set("user", JSON.stringify(data.user), "7d");
-          console.log(this.$cookies.get("user"));
           this.$router.push("/quizmania").then(() => {
             location.reload();
           });
@@ -236,41 +223,37 @@ export default {
         }, 3000);
       }
     },
-
     togglePasswordVisibility() {
       this.passwordVisible = !this.passwordVisible;
     },
-
     async handleForgotPassword() {
       try {
         const response = await axios.post("/api/perfil/comprobar_email.php", {
           email: this.forgotPasswordEmail,
         });
-
         if (response.data.status === "success") {
           this.$router.push({
-            path: "/resetcontraseña",
-            query: { email: this.forgotPasswordEmail },
+            path: "/reset-password",
+            query: {
+              email: this.forgotPasswordEmail,
+              token: response.data.token,
+            },
           });
         } else {
           throw new Error(
-            response.data.mensaje ||
-              this.textosTraducidos["Correo no encontrado"] ||
+            this.textosTraducidos["Correo no encontrado"] ||
               "Correo no encontrado"
           );
         }
       } catch (error) {
         this.forgotPasswordError =
-          error.message ||
           this.textosTraducidos["Error al verificar el correo"] ||
           "Error al verificar el correo";
-
         setTimeout(() => {
           this.forgotPasswordError = "";
         }, 3000);
       }
     },
-
     async traducirTexto(texto) {
       if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
       try {
@@ -287,7 +270,6 @@ export default {
         return texto;
       }
     },
-
     async traducirContenido() {
       this.traduccionesCargando = true;
       const textos = [
@@ -301,16 +283,23 @@ export default {
         "Ingresa tu contraseña",
         "La contraseña debe tener al menos 6 caracteres",
         "Error al iniciar sesión",
+        "¿Te has olvidado de tu contraseña?",
+        "Recuperar Contraseña",
+        "Correo Electrónico",
+        "Ingresa tu correo electrónico",
+        "Enviar",
+        "Correo no encontrado",
+        "Error al verificar el correo",
+        "La contraseña no cumple con los requisitos mínimos",
+        "Usuario o contraseña incorrectos",
+        "Por favor complete todos los campos",
+        "Ha ocurrido un error, intente nuevamente",
       ];
       const traducciones = await Promise.all(textos.map(this.traducirTexto));
       textos.forEach((texto, index) => {
         this.textosTraducidos[texto] = traducciones[index];
       });
       this.traduccionesCargando = false;
-    },
-
-    toggleForgotPasswordModal() {
-      this.showForgotPasswordModal = true;
     },
   },
 };
@@ -325,7 +314,6 @@ export default {
   background-color: #cac5f5;
   padding: 1rem;
 }
-
 .login-form {
   color: white;
   background: #5759cd;
@@ -335,7 +323,6 @@ export default {
   width: 100%;
   max-width: 500px;
 }
-
 .form-title {
   text-align: center;
   margin-bottom: 2rem;
@@ -343,23 +330,19 @@ export default {
   font-size: 2rem;
   letter-spacing: 1px;
 }
-
 .form-group {
   margin-bottom: 1.5rem;
 }
-
 .form-label {
   display: block;
   margin-bottom: 0.6rem;
   font-size: 1rem;
   font-weight: 500;
 }
-
 .password-input-container {
   position: relative;
   width: 100%;
 }
-
 .form-input {
   width: 100%;
   padding: 0.8rem 1rem;
@@ -368,18 +351,15 @@ export default {
   font-size: 1rem;
   transition: all 0.3s ease;
 }
-
 .form-input:focus {
   outline: none;
   border-color: #8d89f9;
   box-shadow: 0 0 0 3px rgba(141, 137, 249, 0.3);
 }
-
 .form-input::placeholder {
   color: #b0b0b0;
   font-size: 0.9rem;
 }
-
 .password-toggle-btn {
   position: absolute;
   right: 12px;
@@ -393,12 +373,10 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
 .eye-icon {
   width: 20px;
   height: 20px;
 }
-
 .submit-btn {
   width: 100%;
   padding: 0.8rem;
@@ -414,67 +392,52 @@ export default {
   letter-spacing: 1px;
   margin-top: 1rem;
 }
-
 .submit-btn:hover {
   background-color: #6c69d4;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-
 .submit-btn:active {
   transform: translateY(-1px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
-
 .forgot-btn {
   width: 100%;
   padding: 0.8rem;
-  background-color: #434175;
-  color: white;
+  background-color: transparent;
+  color: #8d89f9;
   border: none;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-top: 1rem;
+  text-decoration: underline;
 }
-
 .forgot-btn:hover {
-  background-color: #6c69d4;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: #6c69d4;
 }
-
-.forgot-btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
 .additional-options {
   margin-top: 1.5rem;
   text-align: center;
 }
-
 .register-span {
   color: white;
   font-size: 0.9rem;
 }
-
 .register-link {
   color: white;
   text-decoration: none;
   font-weight: bold;
   transition: all 0.3s ease;
 }
-
 .register-link:hover {
   color: #74eaff;
   text-decoration: underline;
 }
-
 .error-message {
   color: #ffcccb;
   background-color: rgba(220, 53, 69, 0.2);
@@ -485,132 +448,278 @@ export default {
   font-size: 0.9rem;
 }
 
+/* Enhanced Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7); 
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; 
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .modal {
   background: #fff;
-  color: #333;  
-  padding: 2rem;
-  border-radius: 12px;
+  color: #333;
+  border-radius: 20px;
   width: 90%;
-  max-width: 500px;
-  max-height: 600px;
+  max-width: 450px;
+  max-height: 450px;
+  padding: 2rem;
   text-align: center;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  border: 2px solid #8d89f9;
+  overflow: auto;
+}
+
+.modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: #5759cd;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f0f0f7;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
-  position: relative;
-  gap: 1rem;
+  font-size: 1.8rem;
+  line-height: 0;
+  cursor: pointer;
+  color: #5759cd;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-.cancel-btn {
-  margin-top: 1rem;
-  background-color: #ccc;
-  color: black;
-  border: none;
+.modal-close:hover {
+  background: #5759cd;
+  color: white;
+  transform: rotate(90deg);
+  box-shadow: 0 5px 15px rgba(87, 89, 205, 0.3);
+}
+
+.modal h3 {
+  font-size: 1.8rem;
+  color: #5759cd;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.modal .form-group {
+  margin-bottom: 1.8rem;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.modal .form-input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1rem;
-  padding: 0.8rem;
-  cursor: pointer;
   transition: all 0.3s ease;
+  background-color: #f9f9fd;
 }
 
-.cancel-btn:hover {
-  background-color: #bbb;
+.modal .form-input:focus {
+  border-color: #8d89f9;
+  box-shadow: 0 0 0 4px rgba(141, 137, 249, 0.15);
+  background-color: #fff;
 }
 
-/* Media queries para diferentes tamaños de pantalla */
-@media (max-width: 768px) {
-  .login-form {
-    max-width: 100%;
-    padding: 1.5rem;
+.modal .form-input::placeholder {
+  color: #b0b0b0;
+  font-size: 0.95rem;
+}
+
+.modal .submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #5759cd;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 15px rgba(87, 89, 205, 0.3);
+}
+
+.modal .submit-btn:hover {
+  background: #4547b0;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(87, 89, 205, 0.4);
+}
+
+.modal .submit-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(87, 89, 205, 0.4);
+}
+
+.modal .error-message {
+  margin-top: 1rem;
+  color: #fff;
+  background-color: rgba(220, 53, 69, 0.9);
+  padding: 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
   }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
 
-  .form-title {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
 @media (max-width: 480px) {
-  .login-form {
-    padding: 1.2rem;
-  }
-
-  .form-title {
-    font-size: 1.5rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .form-group {
-    margin-bottom: 1.2rem;
-  }
-
-  .form-input {
-    padding: 0.7rem;
-  }
-
-  .submit-btn {
-    font-size: 1rem;
-    padding: 0.7rem;
-  }
-
   .modal {
-    padding: 1.5rem; /* Adjust padding for smaller screens */
-    max-width: 90%; /* Ensure it fits within the viewport */
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+
+  .modal h3 {
+    font-size: 1.5rem;
   }
 }
 
 @media (max-height: 600px) {
   .modal {
-    padding: 1rem; /* Reduce padding for shorter screens */
+    padding: 1.2rem;
+    max-height: 90vh;
   }
 }
 
-/* Ajustes para pantallas muy altas */
+@media (max-width: 768px) {
+  .login-form {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  .form-title {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .login-form {
+    padding: 1.2rem;
+  }
+  .form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+  .form-input {
+    padding: 0.7rem;
+  }
+  .submit-btn {
+    font-size: 1rem;
+    padding: 0.7rem;
+  }
+  .modal {
+    padding: 1.5rem 1rem;
+    max-width: 90%;
+  }
+}
+@media (max-height: 600px) {
+  .modal {
+    padding: 1rem 0.8rem;
+  }
+}
 @media (min-height: 900px) {
   .login-container {
     padding: 2rem;
   }
 }
-
-/* Ajustes para pantallas muy bajas */
 @media (max-height: 600px) {
   .login-container {
     min-height: auto;
     padding-top: 2rem;
     padding-bottom: 2rem;
   }
-
   .login-form {
     padding: 1.2rem;
   }
-
   .form-group {
     margin-bottom: 1rem;
   }
 }
-
-/* Ajustes para dispositivos móviles en landscape */
 @media (max-height: 500px) and (orientation: landscape) {
   .login-container {
     min-height: auto;
     padding: 1rem;
   }
-
   .login-form {
     max-width: 400px;
   }

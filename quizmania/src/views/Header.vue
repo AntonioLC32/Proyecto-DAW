@@ -233,7 +233,6 @@ export default {
           throw new Error(`Error HTTP! estado: ${response.status}`);
         const data = await response.json();
         if (data.error) {
-          console.error("Error en la API:", data.error);
           return;
         }
         this.userData = {

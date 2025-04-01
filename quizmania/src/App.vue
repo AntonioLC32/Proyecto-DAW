@@ -21,7 +21,7 @@ const router = useRouter();
 const route = useRoute();
 const { cookies } = useCookies();
 
-const rutasPublicas = ["/", "/login", "/register", "/resetcontraseña"];
+const rutasPublicas = ["/", "/login", "/register", "/reset-password"];
 const rutasAdmin = [
   "/admin",
   "/categorias",

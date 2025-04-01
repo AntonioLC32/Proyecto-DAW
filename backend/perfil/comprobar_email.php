@@ -22,7 +22,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    echo json_encode(["status" => "success", "mensaje" => "Correo encontrado"]);
+    $token = bin2hex(random_bytes(32));
+    echo json_encode(["status" => "success", "mensaje" => "Correo encontrado", "token" => $token]);
 } else {
     echo json_encode(["status" => "error", "mensaje" => "Correo no encontrado"]);
 }
