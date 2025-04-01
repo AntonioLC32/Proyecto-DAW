@@ -1,13 +1,17 @@
 <template>
   <div class="usuarios">
-    <h1 class="titulo-usuarios">GESTIÓN DE USUARIOS</h1>
+    <h1 class="titulo-usuarios">
+      {{ textosTraducidos["GESTIÓN DE USUARIOS"] || "GESTIÓN DE USUARIOS" }}
+    </h1>
 
     <div class="num-usuarios">
       <div class="total-usuarios">
-        <span>{{ totalUsuarios }}</span> Usuarios Totales
+        <span>{{ totalUsuarios }}</span>
+        {{ textosTraducidos["Usuarios Totales"] || "Usuarios Totales" }}
       </div>
       <div class="usuarios-conectados">
-        <span>{{ usuariosConectados }}</span> Usuarios Conectados
+        <span>{{ usuariosConectados }}</span>
+        {{ textosTraducidos["Usuarios Conectados"] || "Usuarios Conectados" }}
       </div>
     </div>
 
@@ -25,43 +29,50 @@
 
       <div class="right-column">
         <section class="edit-user">
-          <!-- Imagen de perfil del administrador -->
           <img :src="getImageUrl(adminData.imagen)" alt="Admin" />
 
           <form action="" @submit.prevent="actualizarAdmin">
-            <label for="username">Nombre de usuario</label>
+            <label for="username">{{
+              textosTraducidos["Nombre de usuario"] || "Nombre de usuario"
+            }}</label>
             <input
               type="text"
               id="username"
-              placeholder="Ej: admin123"
+              :placeholder="textosTraducidos['Ej: admin123'] || 'Ej: admin123'"
               v-model="adminData.nombre"
               required
             />
 
-            <label for="email">Correo electrónico</label>
+            <label for="email">{{
+              textosTraducidos["Correo electrónico"] || "Correo electrónico"
+            }}</label>
             <input
               type="email"
               id="email"
-              placeholder="Ej: admin@dominio.com"
+              :placeholder="
+                textosTraducidos['Ej: admin@dominio.com'] ||
+                'Ej: admin@dominio.com'
+              "
               v-model="adminData.email"
               required
             />
 
-            <!-- Botón personalizado para seleccionar imagen -->
             <div class="custom-file-upload">
               <button
                 v-if="!nuevaImagenPreview"
                 @click="$refs.fileInput.click()"
                 class="popup-btn cambiar-imagen-btn"
               >
-                Seleccionar Imagen
+                {{
+                  textosTraducidos["Seleccionar Imagen"] || "Seleccionar Imagen"
+                }}
               </button>
               <button
                 v-else
                 @click="guardarCambios"
                 class="btn btn-confirm-update mb-3"
               >
-                Confirmar Cambio
+                {{ textosTraducidos["Confirmar Cambio"] || "Confirmar Cambio" }}
               </button>
               <input
                 type="file"
@@ -71,17 +82,6 @@
                 @change="handleImageUpload"
               />
             </div>
-
-            <!-- Botones centrados -->
-            <!--
-            
-            <div class="botones-form">
-              <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
-              <button type="button" class="btn-cancel" @click="cancelarEdicion">
-                Cancelar
-              </button>
-            </div>
-             -->
           </form>
         </section>
       </div>
@@ -89,15 +89,27 @@
 
     <div v-if="popupVisible" class="popup-backdrop" @click.self="cerrarPopup">
       <div class="popup" @click.stop>
-        <span class="close" @click="cerrarPopup">&times;</span>
+        <span class="close" @click="cerrarPopup">×</span>
         <div class="popup-content">
           <div class="popup-text">
             <h2>{{ usuarioSeleccionado.user }}</h2>
             <p>{{ usuarioSeleccionado.correo }}</p>
-            <p>Victorias: {{ usuarioSeleccionado.victorias }}</p>
-            <p>Derrotas: {{ usuarioSeleccionado.derrotas }}</p>
-            <p>Ranking: {{ usuarioSeleccionado.ranking }}</p>
-            <p>Puntos: {{ usuarioSeleccionado.puntos }}</p>
+            <p>
+              {{ textosTraducidos["Victorias"] || "Victorias" }}:
+              {{ usuarioSeleccionado.victorias }}
+            </p>
+            <p>
+              {{ textosTraducidos["Derrotas"] || "Derrotas" }}:
+              {{ usuarioSeleccionado.derrotas }}
+            </p>
+            <p>
+              {{ textosTraducidos["Ranking"] || "Ranking" }}:
+              {{ usuarioSeleccionado.ranking }}
+            </p>
+            <p>
+              {{ textosTraducidos["Puntos"] || "Puntos" }}:
+              {{ usuarioSeleccionado.puntos }}
+            </p>
           </div>
           <img
             :src="getImageUrl(usuarioSeleccionado.imagen)"
@@ -112,6 +124,7 @@
 
 <script>
 import Table from "./Table.vue";
+import axios from "axios";
 
 export default {
   name: "Usuarios",
@@ -139,38 +152,80 @@ export default {
         imagen: "",
       },
       selectedImage: null,
+      textosTraducidos: {},
+      idiomaUsuario: "es",
     };
   },
-  mounted() {
+  async mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
     this.usuariosTotales();
     this.obtenerUsuariosConectados();
     this.fetchUsuarios();
-    // Asignamos datos de las cookies
-    //const cookieData = this.$cookies.get("user");
-    /*if (cookieData) {
-      this.adminData = {
-        id: cookieData.id_usuario || "",
-        nombre: cookieData.nombre || "",
-        email: cookieData.correo || "",
-        // Si en la cookie hay imagen, se asigna; si no, se deja default.
-        imagen: cookieData.imagen
-          ? "src/" + cookieData.imagen
-          : "src/assets/users/admin/default.png",
-      };
-    }*/
     this.cargarUsuario();
   },
   methods: {
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      const textos = [
+        "GESTIÓN DE USUARIOS",
+        "Usuarios Totales",
+        "Usuarios Conectados",
+        "ID",
+        "USER",
+        "CORREO",
+        "ACCIONES",
+        "Nombre de usuario",
+        "Correo electrónico",
+        "Seleccionar Imagen",
+        "Confirmar Cambio",
+        "Victorias",
+        "Derrotas",
+        "Ranking",
+        "Puntos",
+        "¿Deshabilitar al usuario",
+        "Usuario deshabilitado correctamente",
+        "Error al deshabilitar el usuario",
+        "Error de conexión",
+        "Usuario actualizado correctamente",
+        "Error al actualizar usuario",
+        "Por favor selecciona un archivo de imagen válido.",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      this.headers = await Promise.all(
+        this.headers.map(async (header) => ({
+          ...header,
+          label: await this.traducirTexto(header.label),
+        }))
+      );
+    },
     async cargarUsuario() {
       try {
-        const response = await fetch("/api/perfil/select_perfil.php", {
-          credentials: "include",
+        const response = await axios.get("/api/perfil/select_perfil.php", {
+          withCredentials: true,
         });
-
-        if (!response.ok)
-          throw new Error(`Error HTTP! estado: ${response.status}`);
-
-        const data = await response.json();
+        const data = response.data;
 
         if (data.error) {
           console.error("Error en la API:", data.error);
@@ -194,38 +249,39 @@ export default {
     cerrarPopup() {
       this.popupVisible = false;
     },
-    // Si usas getUserImage para mostrar la imagen en el popup:
-    /*getUserImage(imagePath) {
-      const timestamp = new Date().getTime(); // Para evitar caché
-      return "../../" + imagePath
-        ? `${imagePath}?t=${timestamp}`
-        : "src/assets/users/admin/default.png";
-    },*/
     async deshabilitarUsuario(usuario) {
       try {
         const confirmar = confirm(
-          `¿Deshabilitar al usuario "${usuario.user}"?`
+          `${
+            this.textosTraducidos["¿Deshabilitar al usuario"] ||
+            "¿Deshabilitar al usuario"
+          } "${usuario.user}"?`
         );
         if (!confirmar) return;
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=deshabilitarUsuario",
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_usuario: usuario.id }),
+            id_usuario: usuario.id,
           }
         );
-        const data = await response.json();
+        const data = response.data;
         if (data.status === "success") {
-          this.mensaje = "Usuario deshabilitado correctamente";
+          this.mensaje =
+            this.textosTraducidos["Usuario deshabilitado correctamente"] ||
+            "Usuario deshabilitado correctamente";
           this.mensajeTipo = "success";
           this.fetchUsuarios();
         } else {
-          this.mensaje = data.mensaje || "Error al deshabilitar el usuario";
+          this.mensaje =
+            data.mensaje ||
+            this.textosTraducidos["Error al deshabilitar el usuario"] ||
+            "Error al deshabilitar el usuario";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
+        this.mensaje = `${
+          this.textosTraducidos["Error de conexión"] || "Error de conexión"
+        }: ${error.message}`;
         this.mensajeTipo = "error";
       } finally {
         setTimeout(() => (this.mensaje = ""), 5000);
@@ -233,30 +289,24 @@ export default {
     },
     async fetchUsuarios() {
       try {
-        const response = await fetch("/api/index.php?action=obtenerUsuarios");
-        const data = await response.json();
+        const response = await axios.get(
+          "/api/index.php?action=obtenerUsuarios"
+        );
+        const data = response.data;
         if (data.status === "success") {
           this.rows = data.data.map((usuario) => ({
             ...usuario,
             acciones: { editar: false, eliminar: true, info: true },
           }));
 
-          // Buscar el administrador (por ejemplo, rol "admin")
           const admin = data.data.find(
             (u) => u.rol && u.rol.toLowerCase() === "admin"
           );
           if (admin) {
-            // Si la imagen en BD es válida y no es "default.png", se actualiza adminData.imagen
-            if (
-              admin.imagen &&
-              admin.imagen !== "assets/users/admin/default.png"
-            ) {
-              // admin.imagen ya debería contener la ruta correcta, por ejemplo: "assets/users/admin/andres.png"
-              this.adminData.imagen = admin.imagen;
-            } else {
-              // Si no hay imagen o es default, se mantiene la default
-              this.adminData.imagen = "src/assets/users/admin/default.png";
-            }
+            this.adminData.imagen =
+              admin.imagen && admin.imagen !== "assets/users/admin/default.png"
+                ? admin.imagen
+                : "src/assets/users/admin/default.png";
           }
         }
       } catch (error) {
@@ -265,8 +315,10 @@ export default {
     },
     async usuariosTotales() {
       try {
-        const response = await fetch("/api/index.php?action=usuariosTotales");
-        const json = await response.json();
+        const response = await axios.get(
+          "/api/index.php?action=usuariosTotales"
+        );
+        const json = response.data;
         if (json.status === "success") {
           this.totalUsuarios = json.data;
         } else {
@@ -278,10 +330,10 @@ export default {
     },
     async obtenerUsuariosConectados() {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           "/api/index.php?action=usuariosConectados"
         );
-        const json = await response.json();
+        const json = response.data;
         if (json.status === "success") {
           this.usuariosConectados = json.data;
         } else {
@@ -298,9 +350,13 @@ export default {
           URL.revokeObjectURL(this.nuevaImagenPreview);
         }
         this.nuevaImagenPreview = URL.createObjectURL(file);
-        this.selectedImage = file; // Track the selected image
+        this.selectedImage = file;
       } else {
-        alert("Por favor selecciona un archivo de imagen válido.");
+        alert(
+          this.textosTraducidos[
+            "Por favor selecciona un archivo de imagen válido."
+          ] || "Por favor selecciona un archivo de imagen válido."
+        );
       }
     },
     convertFileToBase64(file) {
@@ -324,17 +380,16 @@ export default {
           email: this.adminData.email,
           file: base64Image,
         };
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=actualizarUsuario",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
+          payload
         );
-        const data = await response.json();
+        const data = response.data;
         if (data.status === "success") {
-          alert("Usuario actualizado correctamente");
+          alert(
+            this.textosTraducidos["Usuario actualizado correctamente"] ||
+              "Usuario actualizado correctamente"
+          );
           this.adminData.imagen = data.nuevaImagen || this.adminData.imagen;
           this.nuevaImagenPreview = null;
           this.selectedImage = null;
@@ -347,10 +402,18 @@ export default {
           };
           this.$cookies.set("user", updatedAdminData, "1d");
         } else {
-          alert(data.mensaje || "Error al actualizar usuario");
+          alert(
+            data.mensaje ||
+              this.textosTraducidos["Error al actualizar usuario"] ||
+              "Error al actualizar usuario"
+          );
         }
       } catch (error) {
-        alert("Error de conexión: " + error.message);
+        alert(
+          `${
+            this.textosTraducidos["Error de conexión"] || "Error de conexión"
+          }: ${error.message}`
+        );
       }
     },
     getImageUrl(path) {
@@ -383,6 +446,8 @@ export default {
   color: #fff;
   text-align: center;
   font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 2rem;
 }
 
 .num-usuarios {

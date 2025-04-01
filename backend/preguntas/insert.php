@@ -95,7 +95,7 @@ function insertPregunta($data) {
         $conn->begin_transaction();
 
         // Obtener ID de categoría
-        $stmtCategoria = $conn->prepare("SELECT id_categoría FROM Categoría WHERE nombre = ?");
+        $stmtCategoria = $conn->prepare("SELECT id_categoria FROM Categoria WHERE nombre = ?");
         $stmtCategoria->bind_param("s", $categoriaNombre);
         $stmtCategoria->execute();
         $categoria = $stmtCategoria->get_result()->fetch_assoc();
@@ -103,10 +103,10 @@ function insertPregunta($data) {
         if (!$categoria) {
             throw new Exception("Categoría no encontrada");
         }
-        $id_categoria = $categoria['id_categoría'];
+        $id_categoria = $categoria['id_categoria'];
 
         // Obtener tarjeta correspondiente
-        $stmtTarjeta = $conn->prepare("SELECT id_tarjeta FROM Tarjeta WHERE id_categoría = ? AND dificultad = ?");
+        $stmtTarjeta = $conn->prepare("SELECT id_tarjeta FROM Tarjeta WHERE id_categoria = ? AND dificultad = ?");
         $stmtTarjeta->bind_param("is", $id_categoria, $dificultad);
         $stmtTarjeta->execute();
         $tarjeta = $stmtTarjeta->get_result()->fetch_assoc();
