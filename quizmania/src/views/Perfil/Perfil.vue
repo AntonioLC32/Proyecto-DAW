@@ -131,16 +131,7 @@
                     placeholder="Tu correo"
                     class="form-control mb-3"
                   />
-                  <button
-                    type="button"
-                    class="btn btn-link text-decoration-none mt-3"
-                    @click="retrievePassword"
-                  >
-                    {{
-                      textosTraducidos["Te has olvidado de tu contraseña?"] ||
-                      "Te has olvidado de tu contraseña?"
-                    }}
-                  </button>
+                  
                   <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
@@ -319,7 +310,6 @@ export default {
         "Resumen de tus estadísticas",
         "Nombre de usuario",
         "Correo Electrónico",
-        "Te has olvidado de tu contraseña?",
         "Guardar Ajustes",
         "Pos. Última Partida",
         "Puntos Última Partida",
@@ -392,9 +382,6 @@ export default {
       } catch (error) {
         console.error("Error actualizando perfil:", error);
       }
-    },
-    retrievePassword() {
-      alert("Ups :/ aún no se puede hacer esto.");
     },
   },
 };

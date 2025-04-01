@@ -5,6 +5,7 @@ import Perfil from "../views/Perfil/Perfil.vue";
 import Estadisticas from "../views/Estadisticas/Estadisticas.vue";
 import Ranking from "../views/Ranking/Ranking.vue";
 import Login from "../views/Auth/Login.vue";
+import ResetContraseña from "../views/Auth/ResetContraseña.vue";
 import Register from "../views/Auth/Register.vue";
 import Admin from "../views/Admin/Admin.vue";
 import Quizmania from "../views/Quizmania.vue";
@@ -45,6 +46,11 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
+  },
+  {
+    path: "/resetcontraseña",
+    name: "ResetContraseña",
+    component: ResetContraseña,
   },
   {
     path: "/admin",

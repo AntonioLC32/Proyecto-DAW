@@ -90,6 +90,63 @@
           {{ textosTraducidos["INICIAR SESIÓN"] || "INICIAR SESIÓN" }}
         </button>
 
+        <!-- No se ha traduido esta parte nueva -->
+
+        <button
+          type="button"
+          class="forgot-btn"
+          @click="showForgotPasswordModal = true"
+        >
+          {{
+            textosTraducidos["¿Te has olvidado de tu contraseña?"] ||
+            "¿Te has olvidado de tu contraseña?"
+          }}
+        </button>
+
+        <div v-show="showForgotPasswordModal" class="modal-overlay">
+          <div class="modal">
+            <h3>
+              {{
+                textosTraducidos["Recuperar Contraseña"] ||
+                "Recuperar Contraseña"
+              }}
+            </h3>
+            <form @submit.prevent="handleForgotPassword">
+              <div class="form-group">
+                <label for="email">{{
+                  textosTraducidos["Correo Electrónico"] || "Correo Electrónico"
+                }}</label>
+                <input
+                  type="email"
+                  id="email"
+                  v-model="forgotPasswordEmail"
+                  required
+                  class="form-input"
+                  :placeholder="
+                    textosTraducidos['Ingresa tu correo electrónico'] ||
+                    'Ingresa tu correo electrónico'
+                  "
+                />
+              </div>
+              <button type="submit" class="submit-btn">
+                {{ textosTraducidos["Enviar"] || "Enviar" }}
+              </button>
+              <button
+                type="button"
+                class="cancel-btn"
+                @click="showForgotPasswordModal = false"
+              >
+                {{ textosTraducidos["Cancelar"] || "Cancelar" }}
+              </button>
+            </form>
+            <div v-if="forgotPasswordError" class="error-message">
+              {{ forgotPasswordError }}
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== End Section ========== -->
+
         <div class="additional-options">
           <span class="register-span">
             {{
@@ -124,6 +181,9 @@ export default {
       textosTraducidos: {},
       traduccionesCargando: false,
       idiomaUsuario: "es",
+      showForgotPasswordModal: false,
+      forgotPasswordEmail: "",
+      forgotPasswordError: "",
     };
   },
   async mounted() {
@@ -133,6 +193,7 @@ export default {
       await this.traducirContenido();
     }
   },
+ 
   methods: {
     async handleLogin() {
       try {
@@ -180,6 +241,36 @@ export default {
       this.passwordVisible = !this.passwordVisible;
     },
 
+    async handleForgotPassword() {
+      try {
+        const response = await axios.post("/api/perfil/comprobar_email.php", {
+          email: this.forgotPasswordEmail,
+        });
+
+        if (response.data.status === "success") {
+          this.$router.push({
+            path: "/resetcontraseña",
+            query: { email: this.forgotPasswordEmail },
+          });
+        } else {
+          throw new Error(
+            response.data.mensaje ||
+              this.textosTraducidos["Correo no encontrado"] ||
+              "Correo no encontrado"
+          );
+        }
+      } catch (error) {
+        this.forgotPasswordError =
+          error.message ||
+          this.textosTraducidos["Error al verificar el correo"] ||
+          "Error al verificar el correo";
+
+        setTimeout(() => {
+          this.forgotPasswordError = "";
+        }, 3000);
+      }
+    },
+
     async traducirTexto(texto) {
       if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
       try {
@@ -216,6 +307,10 @@ export default {
         this.textosTraducidos[texto] = traducciones[index];
       });
       this.traduccionesCargando = false;
+    },
+
+    toggleForgotPasswordModal() {
+      this.showForgotPasswordModal = true;
     },
   },
 };
@@ -331,6 +426,33 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+.forgot-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #434175;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1rem;
+}
+
+.forgot-btn:hover {
+  background-color: #6c69d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.forgot-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
 .additional-options {
   margin-top: 1.5rem;
   text-align: center;
@@ -361,6 +483,53 @@ export default {
   margin-top: 1.5rem;
   text-align: center;
   font-size: 0.9rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.modal {
+  background: #fff;
+  color: #333;  
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 600px;
+  text-align: center;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); 
+  position: relative;
+  gap: 1rem;
+}
+
+.cancel-btn {
+  margin-top: 1rem;
+  background-color: #ccc;
+  color: black;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #bbb;
 }
 
 /* Media queries para diferentes tamaños de pantalla */
@@ -397,6 +566,17 @@ export default {
   .submit-btn {
     font-size: 1rem;
     padding: 0.7rem;
+  }
+
+  .modal {
+    padding: 1.5rem; /* Adjust padding for smaller screens */
+    max-width: 90%; /* Ensure it fits within the viewport */
+  }
+}
+
+@media (max-height: 600px) {
+  .modal {
+    padding: 1rem; /* Reduce padding for shorter screens */
   }
 }
 
