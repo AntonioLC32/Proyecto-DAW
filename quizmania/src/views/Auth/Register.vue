@@ -2,46 +2,66 @@
   <div>
     <div class="register-container">
       <form class="register-form" @submit.prevent="handleRegister">
-        <h2 class="form-title">Registro de Usuario</h2>
+        <h2 class="form-title">
+          {{ textosTraducidos["Registro de Usuario"] || "Registro de Usuario" }}
+        </h2>
         <div class="form-content">
           <!-- Campos del formulario -->
           <div class="form-column">
             <div class="form-group">
-              <label for="username" class="form-label">Nombre de usuario</label>
+              <label for="username" class="form-label">{{
+                textosTraducidos["Nombre de usuario"] || "Nombre de usuario"
+              }}</label>
               <input
                 type="text"
                 id="username"
                 v-model="username"
                 required
                 class="form-input"
-                placeholder="Ingresa tu nombre de usuario"
+                :placeholder="
+                  textosTraducidos['Ingresa tu nombre de usuario'] ||
+                  'Ingresa tu nombre de usuario'
+                "
               />
             </div>
             <div class="form-group">
-              <label for="email" class="form-label">Correo electrónico</label>
+              <label for="email" class="form-label">{{
+                textosTraducidos["Correo electrónico"] || "Correo electrónico"
+              }}</label>
               <input
                 type="email"
                 id="email"
                 v-model="email"
                 required
                 class="form-input"
-                placeholder="Ingresa tu correo electrónico"
+                :placeholder="
+                  textosTraducidos['Ingresa tu correo electrónico'] ||
+                  'Ingresa tu correo electrónico'
+                "
               />
             </div>
             <div class="form-group">
-              <label for="password" class="form-label">Contraseña</label>
+              <label for="password" class="form-label">{{
+                textosTraducidos["Contraseña"] || "Contraseña"
+              }}</label>
               <input
                 :type="passwordVisible ? 'text' : 'password'"
                 id="password"
                 v-model="password"
                 required
                 class="form-input"
-                placeholder="Crea una contraseña"
+                :placeholder="
+                  textosTraducidos['Crea una contraseña'] ||
+                  'Crea una contraseña'
+                "
               />
             </div>
             <div class="form-group">
               <label for="confirmPassword" class="form-label">
-                Confirmar Contraseña
+                {{
+                  textosTraducidos["Confirmar Contraseña"] ||
+                  "Confirmar Contraseña"
+                }}
               </label>
               <input
                 :type="passwordVisible ? 'text' : 'password'"
@@ -49,7 +69,10 @@
                 v-model="confirmPassword"
                 required
                 class="form-input"
-                placeholder="Repite tu contraseña"
+                :placeholder="
+                  textosTraducidos['Repite tu contraseña'] ||
+                  'Repite tu contraseña'
+                "
               />
             </div>
           </div>
@@ -57,7 +80,7 @@
           <div class="preview-column">
             <div class="image-preview">
               <div v-if="!previewImage" class="image-placeholder">
-                Vista previa
+                {{ textosTraducidos["Vista previa"] || "Vista previa" }}
               </div>
               <img
                 v-else
@@ -75,17 +98,26 @@
                 id="fileInput"
               />
               <label for="fileInput" class="upload-btn">
-                {{ imageFile ? "Cambiar imagen" : "Subir imagen" }}
+                {{
+                  imageFile
+                    ? textosTraducidos["Cambiar imagen"] || "Cambiar imagen"
+                    : textosTraducidos["Subir imagen"] || "Subir imagen"
+                }}
               </label>
             </div>
           </div>
         </div>
-        <button type="submit" class="submit-btn">REGISTRARSE</button>
+        <button type="submit" class="submit-btn">
+          {{ textosTraducidos["REGISTRARSE"] || "REGISTRARSE" }}
+        </button>
         <div class="additional-options">
           <span class="register-span">
-            ¿Ya tienes una cuenta?
+            {{
+              textosTraducidos["¿Ya tienes una cuenta?"] ||
+              "¿Ya tienes una cuenta?"
+            }}
             <router-link to="/login" class="register-link">
-              Inicia Sesión
+              {{ textosTraducidos["Inicia Sesión"] || "Inicia Sesión" }}
             </router-link>
           </span>
         </div>
@@ -98,6 +130,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Register",
   data() {
@@ -108,45 +142,61 @@ export default {
       confirmPassword: "",
       imageFile: null,
       previewImage: "",
-      imageBase64: "", // 🔹 Almacena la imagen convertida en Base64
+      imageBase64: "",
       errorMessage: "",
       passwordVisible: false,
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      idiomaUsuario: "es",
     };
+  },
+  async mounted() {
+    // Detectar el idioma del navegador
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
   },
   methods: {
     async handleRegister() {
       try {
         if (this.password !== this.confirmPassword) {
-          throw new Error("Las contraseñas no coinciden");
+          throw new Error(
+            this.textosTraducidos["Las contraseñas no coinciden"] ||
+              "Las contraseñas no coinciden"
+          );
         }
 
         const formData = {
           username: this.username,
           email: this.email,
           password: this.password,
-          image: this.imageBase64, // Enviamos la imagen en formato Base64
+          image: this.imageBase64,
         };
 
-        const response = await fetch("/api/index.php?action=register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+        // Usando axios en lugar de fetch
+        const response = await axios.post(
+          "/api/index.php?action=register",
+          formData
+        );
 
-        const result = await response.json();
-        if (result.status === "success") {
-          this.$cookies.set("user", JSON.stringify(result.user), "7d");
-          //console.log(this.$cookies.get("user"));
+        if (response.data.status === "success") {
+          this.$cookies.set("user", JSON.stringify(response.data.user), "7d");
           this.$router.push("/quizmania").then(() => {
             location.reload();
           });
         } else {
-          throw new Error(result.mensaje || "Error en el registro");
+          throw new Error(
+            response.data.mensaje ||
+              this.textosTraducidos["Error en el registro"] ||
+              "Error en el registro"
+          );
         }
       } catch (error) {
-        this.errorMessage = error.message;
+        this.errorMessage =
+          error.message ||
+          this.textosTraducidos["Error en el registro"] ||
+          "Error en el registro";
         setTimeout(() => {
           this.errorMessage = "";
         }, 3000);
@@ -162,10 +212,55 @@ export default {
         // Convertir la imagen a Base64
         const reader = new FileReader();
         reader.onload = (e) => {
-          this.imageBase64 = e.target.result; // Guardamos la imagen convertida
+          this.imageBase64 = e.target.result;
         };
         reader.readAsDataURL(file);
       }
+    },
+
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textos = [
+        "Registro de Usuario",
+        "Nombre de usuario",
+        "Correo electrónico",
+        "Contraseña",
+        "Confirmar Contraseña",
+        "Vista previa",
+        "Cambiar imagen",
+        "Subir imagen",
+        "REGISTRARSE",
+        "¿Ya tienes una cuenta?",
+        "Inicia Sesión",
+        "Las contraseñas no coinciden",
+        "Error en el registro",
+        "Ingresa tu nombre de usuario",
+        "Ingresa tu correo electrónico",
+        "Crea una contraseña",
+        "Repite tu contraseña",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
   },
 };

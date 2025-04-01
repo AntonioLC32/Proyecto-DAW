@@ -2,7 +2,9 @@
   <section>
     <div class="encase">
       <div class="container-fluid title text-white">
-        <h1>Tus Estadísticas</h1>
+        <h1>
+          {{ textosTraducidos["Tus Estadísticas"] || "Tus Estadísticas" }}
+        </h1>
       </div>
       <div class="container-fluid pantalla-estadisticas">
         <div class="perfil-vista">
@@ -11,7 +13,7 @@
               v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
               :src="getImageUserUrl(perfil.imagen)"
               alt="Perfil Image"
-              style="border-radius: 50%; max-width: 250px;"
+              style="border-radius: 50%; max-width: 250px"
             />
             <img
               v-else
@@ -21,42 +23,55 @@
             />
             <h3 class="text-white">{{ perfil.nombre }}</h3>
           </div>
-          <!--
-          <p><u>ESTADÍSTICAS GENERALES</u></p>
-          -->
+
           <div class="est-generales">
             <div class="stat-item">
-              <p class="me-2">Última posición:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Última posición"] || "Última posición" }}:
+              </p>
               <div class="num text-white">
                 <b>{{ perfil.posicion }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Puntos Totales:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Puntos Totales"] || "Puntos Totales" }}:
+              </p>
               <div class="num text-white">
                 <b>{{ perfil.puntos }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Rondas Jugadas:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Rondas Jugadas"] || "Rondas Jugadas" }}:
+              </p>
               <div class="num text-white">
                 <b>{{ perfil.rondasJugadas }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Victorias:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Victorias"] || "Victorias" }}:
+              </p>
               <div class="num text-white">
                 <b>{{ perfil.victorias }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Derrotas:</p>
+              <p class="me-2">
+                {{ textosTraducidos["Derrotas"] || "Derrotas" }}:
+              </p>
               <div class="num text-white">
                 <b>{{ perfil.derrotas }}</b>
               </div>
             </div>
             <div class="stat-item">
-              <p class="me-2">Categoria Destacada:</p>
+              <p class="me-2">
+                {{
+                  textosTraducidos["Categoría Destacada"] ||
+                  "Categoría Destacada"
+                }}:
+              </p>
               <div class="num text-white">
                 <img
                   :src="obtenerImagenCategoria(perfil.categoria_destacada)"
@@ -70,7 +85,12 @@
 
         <div class="estadisticas">
           <div v-if="estadisticas.length === 0" class="no-records">
-            <p>No hay estadísticas para este usuario.</p>
+            <p>
+              {{
+                textosTraducidos["No hay estadísticas para este usuario"] ||
+                "No hay estadísticas para este usuario"
+              }}
+            </p>
           </div>
           <div v-else class="estadisticas-grid">
             <div
@@ -83,15 +103,9 @@
                 :alt="`Categoría: ${categoria.categoria}`"
                 class="estadisticas-img"
               />
-
               <div class="d-flex ptot">
                 <p class="puntos">{{ categoria.puntos }} pts</p>
               </div>
-              <!--
-              <p class="posicion">
-                Mejor Posición #{{ categoria.mejorPosicion }}
-              </p>
-              -->
             </div>
           </div>
         </div>
@@ -101,35 +115,35 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       perfil: {},
       estadisticas: [],
       imagenesCategorias: {},
-      defaultImagePath: "../../assets/users/default/default.png", // Define default image path
+      defaultImagePath: "/src/assets/users/default/default.png",
+      idiomaUsuario: "es",
+      textosTraducidos: {},
+      traduccionesCargando: false,
     };
   },
   methods: {
     async obtenerEstadisticasPerfil() {
       try {
-        const response = await fetch("/api/estadisticas/select_perfil.php", {
-          credentials: "include",
-        });
+        const response = await axios.get(
+          "/api/estadisticas/select_perfil.php",
+          {
+            withCredentials: true,
+          }
+        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = response.data;
         if (!data || data.error) {
           console.error("API Error:", data?.error || "Invalid response");
           return;
         }
-        // solo para debugging
-        // console.log("Datos devueltos por la API:", data);
-        // this.perfil = data; recibidos de la api
-        // this.perfil = this.perfil; // datos de cookie
 
         this.perfil = {
           ...this.perfil,
@@ -139,7 +153,8 @@ export default {
           rondasJugadas: data.rondasJugadas ?? "--",
           victorias: data.victorias ?? this.perfil.num_victorias ?? "--",
           derrotas: data.derrotas || this.perfil.num_derrotas || "--",
-          categoria_destacada: data.categoria_destacada || this.perfil.imagen_categoria || "",
+          categoria_destacada:
+            data.categoria_destacada || this.perfil.imagen_categoria || "",
           imagen: data.imagen || this.perfil.imagen || this.defaultImagePath,
         };
       } catch (error) {
@@ -157,8 +172,10 @@ export default {
     },
     async obtenerCategorias() {
       try {
-        const response = await fetch("/api/estadisticas/select_categorias.php");
-        const data = await response.json();
+        const response = await axios.get(
+          "/api/estadisticas/select_categorias.php"
+        );
+        const data = response.data;
 
         if (data.length > 0) {
           this.imagenesCategorias = data.reduce((acc, categoria) => {
@@ -177,10 +194,10 @@ export default {
     },
     async obtenerEstadisticasCompletas() {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           "/api/estadisticas/select_estadisticas_usuario.php"
         );
-        const data = await response.json();
+        const data = response.data;
 
         if (data.error) {
           console.error("Error:", data.error);
@@ -198,7 +215,6 @@ export default {
           this.estadisticas = data.map((categoria) => ({
             categoria: categoria.categoria,
             puntos: categoria.puntos_totales,
-            // mejorPosicion: Math.floor(Math.random() * 10) + 1, 
           }));
         }
       } catch (error) {
@@ -209,9 +225,52 @@ export default {
     getImageUserUrl(path) {
       return path ? `/src/${path}` : this.defaultImagePath; // Use the defined defaultImagePath
     },
-    // bottom line
+    async traducirTexto(texto) {
+      if (this.idiomaUsuario === "es") return texto;
+      try {
+        this.traduccionesCargando = true;
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      } finally {
+        this.traduccionesCargando = false;
+      }
+    },
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textosOriginales = [
+        "Tus Estadísticas",
+        "Última posición",
+        "Puntos Totales",
+        "Rondas Jugadas",
+        "Victorias",
+        "Derrotas",
+        "Categoría Destacada",
+        "No hay estadísticas para este usuario",
+      ];
+      const traducciones = await Promise.all(
+        textosOriginales.map((texto) => this.traducirTexto(texto))
+      );
+      textosOriginales.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
+    },
   },
   mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      this.traducirContenido();
+    }
+
     const userCookie = document.cookie
       .split("; ")
       .find((row) => row.startsWith("user="))
@@ -223,10 +282,7 @@ export default {
         this.perfil = { ...this.perfil, ...userData };
         this.perfil.imagen =
           this.perfil.imagen || "../../assets/users/default/default.png";
-        // solo para debugging
-        // console.log("Usuario cargado desde cookies:", this.perfil); 
 
-        // Fetch additional data from the API
         this.obtenerEstadisticasPerfil();
         this.obtenerCategorias();
         this.obtenerEstadisticasCompletas();
@@ -234,8 +290,6 @@ export default {
         console.error("Error parsing user cookie:", error.message);
       }
     } else {
-      console.warn("No user found in cookies. Fetching profile from API...");
-      // If no cookie, directly load data from the API
       this.obtenerEstadisticasPerfil();
       this.obtenerCategorias();
       this.obtenerEstadisticasCompletas();
@@ -301,7 +355,7 @@ section {
   min-height: 680px;
 }
 
-.perfil-vista > .nombre-img > img  {
+.perfil-vista > .nombre-img > img {
   width: 250px;
   height: 250px;
   max-width: 250px;

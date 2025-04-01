@@ -6,12 +6,12 @@
   >
     <div class="logo-container">
       <router-link to="/admin">
-        <img src="../../assets/logo.png" alt="QuizManía Logo" class="logo" />
+        <img src="/src/assets/logo.png" alt="QuizManía Logo" class="logo" />
       </router-link>
     </div>
 
     <div class="menu-header">
-      <span class="menu-title">MENU</span>
+      <span class="menu-title">{{ textosTraducidos["MENU"] || "MENU" }}</span>
       <div class="menu-divider"></div>
     </div>
 
@@ -19,7 +19,9 @@
       <li v-for="item in menuItems" :key="item.text">
         <router-link :to="item.route">
           <i class="fa" :class="item.icon"></i>
-          <span class="nav-text">{{ item.text }}</span>
+          <span class="nav-text">{{
+            textosTraducidos[item.text] || item.text
+          }}</span>
         </router-link>
       </li>
     </ul>
@@ -28,7 +30,9 @@
       <li>
         <router-link to="/">
           <i class="fa fa-power-off"></i>
-          <span class="nav-text">SALIR</span>
+          <span class="nav-text">{{
+            textosTraducidos["SALIR"] || "SALIR"
+          }}</span>
         </router-link>
       </li>
     </ul>
@@ -36,11 +40,16 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Sidebar",
   data() {
     return {
       isExpanded: false,
+      idiomaUsuario: "es",
+      textosTraducidos: {},
+      traduccionesCargando: false,
       menuItems: [
         { text: "PREGUNTAS", route: "/preguntas", icon: "fa-question-circle" },
         { text: "CATEGORÍAS", route: "/categorias", icon: "fa-list" },
@@ -54,12 +63,56 @@ export default {
       ],
     };
   },
+  mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      this.traducirContenido();
+    }
+  },
   methods: {
     expandMenu() {
       this.isExpanded = true;
     },
     collapseMenu() {
       this.isExpanded = false;
+    },
+    async traducirTexto(texto) {
+      if (this.idiomaUsuario === "es") return texto;
+      try {
+        this.traduccionesCargando = true;
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      } finally {
+        this.traduccionesCargando = false;
+      }
+    },
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textosOriginales = [
+        "MENU",
+        "PREGUNTAS",
+        "CATEGORÍAS",
+        "USUARIOS",
+        "DATOS GENERALES",
+        "IMPORTAR CSV",
+        "SALIR",
+      ];
+      const traducciones = await Promise.all(
+        textosOriginales.map((texto) => this.traducirTexto(texto))
+      );
+      textosOriginales.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
   },
 };

@@ -2,10 +2,14 @@
   <div>
     <div class="login-container">
       <form class="login-form" @submit.prevent="handleLogin">
-        <h2 class="form-title">Iniciar Sesión</h2>
+        <h2 class="form-title">
+          {{ textosTraducidos["Iniciar Sesión"] || "Iniciar Sesión" }}
+        </h2>
 
         <div class="form-group">
-          <label for="user" class="form-label">Nombre de usuario</label>
+          <label for="user" class="form-label">{{
+            textosTraducidos["Nombre de usuario"] || "Nombre de usuario"
+          }}</label>
           <input
             type="text"
             id="user"
@@ -13,12 +17,17 @@
             required
             autocomplete="username"
             class="form-input"
-            placeholder="Ingresa tu nombre de usuario"
+            :placeholder="
+              textosTraducidos['Ingresa tu nombre de usuario'] ||
+              'Ingresa tu nombre de usuario'
+            "
           />
         </div>
 
         <div class="form-group">
-          <label for="password" class="form-label">Contraseña</label>
+          <label for="password" class="form-label">{{
+            textosTraducidos["Contraseña"] || "Contraseña"
+          }}</label>
           <div class="password-input-container">
             <input
               :type="passwordVisible ? 'text' : 'password'"
@@ -27,7 +36,10 @@
               required
               autocomplete="current-password"
               class="form-input"
-              placeholder="Ingresa tu contraseña"
+              :placeholder="
+                textosTraducidos['Ingresa tu contraseña'] ||
+                'Ingresa tu contraseña'
+              "
             />
             <button
               type="button"
@@ -74,13 +86,18 @@
           </div>
         </div>
 
-        <button type="submit" class="submit-btn">INICIAR SESIÓN</button>
+        <button type="submit" class="submit-btn">
+          {{ textosTraducidos["INICIAR SESIÓN"] || "INICIAR SESIÓN" }}
+        </button>
 
         <div class="additional-options">
           <span class="register-span">
-            ¿No tienes una cuenta?
+            {{
+              textosTraducidos["¿No tienes una cuenta?"] ||
+              "¿No tienes una cuenta?"
+            }}
             <router-link to="/register" class="register-link">
-              Regístrate
+              {{ textosTraducidos["Regístrate"] || "Regístrate" }}
             </router-link>
           </span>
         </div>
@@ -94,35 +111,46 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: "Perfil",
+  name: "Login",
   data() {
     return {
       user: "",
       password: "",
       errorMessage: "",
       passwordVisible: false,
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      idiomaUsuario: "es",
     };
+  },
+  async mounted() {
+    // Detectar el idioma del navegador
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
   },
   methods: {
     async handleLogin() {
       try {
         if (this.password.length < 6) {
-          throw new Error("La contraseña debe tener al menos 6 caracteres");
+          throw new Error(
+            this.textosTraducidos[
+              "La contraseña debe tener al menos 6 caracteres"
+            ] || "La contraseña debe tener al menos 6 caracteres"
+          );
         }
 
-        const response = await fetch("/api/index.php?action=login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: this.user,
-            password: this.password,
-          }),
+        // Usando axios en lugar de fetch
+        const response = await axios.post("/api/index.php?action=login", {
+          username: this.user,
+          password: this.password,
         });
 
-        const data = await response.json();
+        const data = response.data;
 
         if (data.status === "success") {
           this.$cookies.set("user", JSON.stringify(data.user), "7d");
@@ -131,10 +159,17 @@ export default {
             location.reload();
           });
         } else {
-          throw new Error(data.mensaje || "Error al iniciar sesión");
+          throw new Error(
+            data.mensaje ||
+              this.textosTraducidos["Error al iniciar sesión"] ||
+              "Error al iniciar sesión"
+          );
         }
       } catch (error) {
-        this.errorMessage = error.message || "Error al iniciar sesión";
+        this.errorMessage =
+          error.message ||
+          this.textosTraducidos["Error al iniciar sesión"] ||
+          "Error al iniciar sesión";
         setTimeout(() => {
           this.errorMessage = "";
         }, 3000);
@@ -143,6 +178,44 @@ export default {
 
     togglePasswordVisibility() {
       this.passwordVisible = !this.passwordVisible;
+    },
+
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textos = [
+        "Iniciar Sesión",
+        "Nombre de usuario",
+        "Contraseña",
+        "INICIAR SESIÓN",
+        "¿No tienes una cuenta?",
+        "Regístrate",
+        "Ingresa tu nombre de usuario",
+        "Ingresa tu contraseña",
+        "La contraseña debe tener al menos 6 caracteres",
+        "Error al iniciar sesión",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
   },
 };

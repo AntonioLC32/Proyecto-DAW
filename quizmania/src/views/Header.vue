@@ -7,14 +7,14 @@
         </router-link>
       </div>
       <h1 class="titulo titulo--default">
-        <router-link to="/" class="nav-link"> QuizMania </router-link>
+        <router-link to="/" class="nav-link">QuizMania</router-link>
       </h1>
       <nav class="nav">
         <ul class="nav-list">
-          <li v-if="this.userData" class="nav-item">
+          <li v-if="userData" class="nav-item">
             <router-link to="/perfil" class="nav-link perfil">
               <img
-                :src="getImageUserUrl(this.userData.imagen)"
+                :src="getImageUserUrl(userData.imagen)"
                 alt="Foto de perfil"
                 class="profile-pic"
               />
@@ -56,22 +56,24 @@
         <ul class="sidebar-list">
           <li class="sidebar-item">
             <router-link to="/perfil" class="sidebar-link">
-              <span>PERFIL</span>
+              <span>{{ textosTraducidos["PERFIL"] || "PERFIL" }}</span>
             </router-link>
           </li>
           <li class="sidebar-item">
             <router-link to="/ranking" class="sidebar-link">
-              <span>RANKING</span>
+              <span>{{ textosTraducidos["RANKING"] || "RANKING" }}</span>
             </router-link>
           </li>
           <li class="sidebar-item">
             <router-link to="/estadisticas" class="sidebar-link">
-              <span>ESTADÍSTICAS</span>
+              <span>{{
+                textosTraducidos["ESTADÍSTICAS"] || "ESTADÍSTICAS"
+              }}</span>
             </router-link>
           </li>
           <li v-if="userData && userData.rol === 'admin'" class="sidebar-item">
             <router-link to="/admin" class="sidebar-link">
-              <span>ADMIN</span>
+              <span>{{ textosTraducidos["ADMIN"] || "ADMIN" }}</span>
             </router-link>
           </li>
         </ul>
@@ -92,7 +94,7 @@
               d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
             />
           </svg>
-          Cerrar Sesión
+          {{ textosTraducidos["Cerrar Sesión"] || "Cerrar Sesión" }}
         </button>
       </div>
     </div>
@@ -100,13 +102,11 @@
   </div>
   <div v-else-if="$route.path === '/juego'">
     <header class="header header--centered">
-      <div v-if="this.width > 480" class="logo">
+      <div v-if="width > 480" class="logo">
         <img src="../assets/logo.png" alt="Logo" />
       </div>
       <div class="juego-container">
-        <div class="timer" :style="{ color: timerColor }">
-          {{ timer }}
-        </div>
+        <div class="timer" :style="{ color: timerColor }">{{ timer }}</div>
         <div class="category-info">
           <h1 class="titulo">{{ nombreCategoria }}</h1>
           <img
@@ -131,6 +131,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Header",
   data() {
@@ -138,23 +139,25 @@ export default {
       showSidebar: false,
       timer: 60,
       timerInterval: null,
-      perfil: "perfil.jpg",
-      nombreCategoria: null,
-      imagenCategoria: null,
-      ronda: 1,
       userData: null,
       width: window.innerWidth,
       height: window.innerHeight,
+      idiomaUsuario: "es",
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      nombreCategoria: null,
+      imagenCategoria: null,
+      ronda: 1,
       imageMap: {
-        "Historia": "historia.png",
-        "Ciencia": "ciencia.png",
-        "Deportes": "deportes.png",
-        "Música": "musica.png",
-        "Entretenimiento": "entre.png",
+        Historia: "historia.png",
+        Ciencia: "ciencia.png",
+        Deportes: "deportes.png",
+        Música: "musica.png",
+        Entretenimiento: "entre.png",
         "Arte y Literatura": "arte.png",
-        "Geografía": "geografia.png",
-        "Matemáticas": "mates.png",
-        "Tecnología": "tecno.png",
+        Geografía: "geografia.png",
+        Matemáticas: "mates.png",
+        Tecnología: "tecno.png",
         "Cultura General": "cultura.png",
       },
     };
@@ -170,16 +173,20 @@ export default {
       }
     },
     tituloRonda() {
-      return `Ronda ${this.ronda}`;
+      return `${this.textosTraducidos["Ronda"] || "Ronda"} ${this.ronda}`;
     },
   },
   mounted() {
-
     this.userData = this.$cookies.get("user");
     this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
-    
     this.cargarUsuario();
-    //console.log(this.userData);
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      this.traducirContenido();
+    }
+    if (this.$route.path === "/juego") {
+      this.iniciarTimer();
+    }
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -188,18 +195,23 @@ export default {
   },
   watch: {
     "$route.path"(newPath) {
-      if (newPath === "/juego" && !this.timerInterval) {
-        // No resetear el timer aquí, se recuperará del sessionStorage
-        this.nombreCategoria = sessionStorage.getItem("categoria");
-        this.imagenCategoria = this.imageMap[this.nombreCategoria] || "";
-        this.startTimer();
-      }
-      if (newPath !== "/juego" && this.timerInterval) {
+      if (newPath === "/juego") {
+        const categoriaOriginal = sessionStorage.getItem("categoria");
+        if (categoriaOriginal) {
+          if (this.idiomaUsuario !== "es") {
+            this.traducirTexto(categoriaOriginal).then((trad) => {
+              this.nombreCategoria = trad;
+            });
+          } else {
+            this.nombreCategoria = categoriaOriginal;
+          }
+          this.imagenCategoria = this.imageMap[categoriaOriginal] || "";
+        }
+        this.iniciarTimer();
+      } else if (this.timerInterval) {
         clearInterval(this.timerInterval);
         this.timerInterval = null;
-        // No resetear el timer aquí para mantener el estado
       }
-
       if (newPath === "/selecciontema") {
         this.ronda = parseInt(sessionStorage.getItem("ronda") || "1", 10);
       }
@@ -217,64 +229,49 @@ export default {
         const response = await fetch("/api/perfil/select_perfil.php", {
           credentials: "include",
         });
-
         if (!response.ok)
           throw new Error(`Error HTTP! estado: ${response.status}`);
-
         const data = await response.json();
-
         if (data.error) {
           console.error("Error en la API:", data.error);
           return;
         }
-
         this.userData = {
           ...this.userData,
           nombre: data.nombre || this.userData?.nombre,
           imagen: data.imagen || this.userData?.imagen,
-          //posicion: data.posicion ?? this.userData?.posicion,
-          //puntos: data.puntos ?? this.userData?.puntos,
-          //rondasJugadas: data.rondasJugadas ?? this.userData?.rondasJugadas,
-          //victorias: data.victorias ?? this.userData?.victorias,
-          //categoria_destacada: {
-          //  id:
-          //    data.categoria_destacada ??
-          //    this.userData?.categoria_destacada?.id,
-          //  imagen:
-          //    data.imagen_categoria ||
-          //    this.userData?.categoria_destacada?.imagen,
-          //},
         };
       } catch (error) {
         console.error("Error cargando perfil:", error.message);
       }
     },
-
-    onResize(e) {
+    onResize() {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
     },
-
     getImageUrl(path) {
       return new URL(`../assets/${path}`, import.meta.url).href;
     },
-
     getImageUserUrl(path) {
       return `src/${path}`;
     },
-    startTimer() {
-
+    iniciarTimer() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+      }
       const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
-      this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
-
+      if (tiempoGuardado !== null) {
+        this.timer = parseInt(tiempoGuardado);
+      } else {
+        this.timer = 60;
+        sessionStorage.setItem("tiempoRestante", "60");
+      }
       this.timerInterval = setInterval(() => {
         if (this.timer > 0) {
           this.timer--;
           sessionStorage.setItem("tiempoRestante", this.timer.toString());
-
           const elapsed = 60 - this.timer;
           sessionStorage.setItem("tiempoTranscurrido", elapsed.toString());
-
           const minutes = Math.floor(elapsed / 60);
           const seconds = elapsed % 60;
           sessionStorage.setItem(
@@ -287,9 +284,21 @@ export default {
           clearInterval(this.timerInterval);
           sessionStorage.removeItem("tiempoRestante");
           sessionStorage.setItem("tiempoTranscurrido", "60");
+          sessionStorage.removeItem("tiempoRonda");
           window.dispatchEvent(new Event("tiempoAgotado"));
+          this.resetTimer();
         }
       }, 1000);
+    },
+    resetTimer() {
+      clearInterval(this.timerInterval);
+      this.timer = 60;
+      sessionStorage.setItem("tiempoRestante", "60");
+      this.iniciarTimer();
+    },
+    preguntaContestada() {
+      sessionStorage.removeItem("tiempoRestante");
+      this.resetTimer();
     },
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;
@@ -300,6 +309,40 @@ export default {
       this.$router.push("/").then(() => {
         location.reload();
       });
+    },
+    async traducirTexto(texto) {
+      if (/(^\d|:)/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textosOriginales = [
+        "PERFIL",
+        "RANKING",
+        "ESTADÍSTICAS",
+        "ADMIN",
+        "Cerrar Sesión",
+        "Ronda",
+      ];
+      const traducciones = await Promise.all(
+        textosOriginales.map((texto) => this.traducirTexto(texto))
+      );
+      textosOriginales.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
   },
 };

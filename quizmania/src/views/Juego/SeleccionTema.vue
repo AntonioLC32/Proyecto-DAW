@@ -1,14 +1,11 @@
 <template>
   <section>
     <div class="contenedor">
-      <!-- Se muestra en modo multijugador -->
       <div class="jugadores d-flex gap-2" v-if="modo === 'multijugador'">
-        <!-- Se utiliza el componente TemasJugador con la prop themes -->
         <TemasJugador :themes="themes" />
         <TemasJugador :themes="themes" />
       </div>
 
-      <!-- Resto de contenido -->
       <Roulette
         ref="roulette"
         :items="rouletteItems"
@@ -33,14 +30,16 @@
         @wheelEnd="onWheelEnd"
       />
 
-      <button @click="spinWheel" class="boton_girar">GIRA</button>
+      <button @click="spinWheel" class="boton_girar">
+        {{ textosTraducidos["GIRA"] || "GIRA" }}
+      </button>
 
       <div v-if="selectedCategory" class="selected-theme">
-        Tema seleccionado: {{ selectedCategory }}
+        {{ textosTraducidos["Tema seleccionado:"] || "Tema seleccionado:" }}
+        {{ selectedCategory }}
       </div>
 
       <div>
-        <!-- Botón para disparar el modal -->
         <button
           type="button"
           class="btn button_rendirte"
@@ -54,7 +53,6 @@
           />
         </button>
 
-        <!-- Modal -->
         <div
           class="modal fade"
           id="modalRendirte"
@@ -80,14 +78,19 @@
                   class="modal-title text-center mb-3"
                   id="modalRendirteLabel"
                 >
-                  <b>¿Estás seguro que <br />quieres rendirte?</b>
+                  <b
+                    v-html="
+                      textosTraducidos['¿Estás seguro que quieres rendirte?'] ||
+                      '¿Estás seguro que <br />quieres rendirte?'
+                    "
+                  ></b>
                 </h5>
                 <button
                   @click="exit"
                   type="button"
                   class="btn button_rendirte_aceptar text-white text-uppercase"
                 >
-                  <b>Aceptar</b>
+                  <b>{{ textosTraducidos["Aceptar"] || "Aceptar" }}</b>
                 </button>
               </div>
             </div>
@@ -101,13 +104,11 @@
 <script>
 import Roulette from "../../components/Roulette.vue";
 import TemasJugador from "@/components/TemasJugador.vue";
+import axios from "axios";
 
 export default {
   name: "SeleccionTema",
-  components: {
-    Roulette,
-    TemasJugador,
-  },
+  components: { Roulette, TemasJugador },
   data() {
     const themes = [
       { name: "Historia", image: this.getImageUrl("historia.png") },
@@ -121,7 +122,6 @@ export default {
       { name: "Tecnología", image: this.getImageUrl("tecno.png") },
       { name: "Cultura General", image: this.getImageUrl("cultura.png") },
     ];
-
     return {
       themes,
       shuffledThemes: [...themes, ...themes, ...themes, ...themes],
@@ -134,6 +134,9 @@ export default {
       size: 300,
       userData: null,
       id_partida: null,
+      idiomaUsuario: "es",
+      textosTraducidos: {},
+      traduccionesCargando: false,
     };
   },
   computed: {
@@ -149,24 +152,24 @@ export default {
   mounted() {
     this.modo = sessionStorage.getItem("modo-juego");
     this.userData = this.$cookies.get("user");
-    //sessionStorage.removeItem("modo-juego");
     this.handleResize();
     window.addEventListener("resize", this.handleResize);
     if (this.modo === "multijugador") {
       this.size = 300;
     }
-
     if (sessionStorage.getItem("id_partida")) {
       this.id_partida = sessionStorage.getItem("id_partida");
     } else {
       this.crearPartida(this.modo);
     }
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      this.traducirContenido();
+    }
   },
-
   beforeUnmount() {
     window.removeEventListener("resize", this.handleResize);
   },
-
   methods: {
     async crearPartida(modo) {
       if (modo === "multijugador") {
@@ -176,17 +179,11 @@ export default {
             "/api/index.php?action=crearPartidaSolitario",
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                id_usuario: this.userData.id_usuario,
-              }),
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id_usuario: this.userData.id_usuario }),
             }
           );
-
           const data = await response.json();
-
           if (data.status === "error") {
             this.$router.push("/");
           } else {
@@ -199,7 +196,6 @@ export default {
         this.$router.push("/");
       }
     },
-
     handleResize() {
       const screenWidth = window.innerWidth;
       this.size = screenWidth > 768 ? 500 : screenWidth * 0.8;
@@ -207,14 +203,16 @@ export default {
     spinWheel() {
       this.$refs.roulette.launchWheel();
     },
-    onWheelStart(selectedItem) {
-      //console.log("Wheel started:", selectedItem);
-    },
+    onWheelStart(selectedItem) {},
     onWheelEnd(selectedItem) {
-      // console.log("Wheel ended:", selectedItem);
       sessionStorage.setItem("categoria", selectedItem.id);
-      this.selectedCategory = selectedItem.id;
-
+      if (this.idiomaUsuario !== "es") {
+        this.traducirTexto(selectedItem.id).then((trad) => {
+          this.selectedCategory = trad;
+        });
+      } else {
+        this.selectedCategory = selectedItem.id;
+      }
       setTimeout(() => {
         this.$router.push("/juego");
       }, 2000);
@@ -222,24 +220,18 @@ export default {
     getImageUrl(path) {
       return new URL(`../../assets/${path}`, import.meta.url).href;
     },
-
     async exit() {
       try {
         const id_partida = sessionStorage.getItem("id_partida");
-
         const response = await fetch(
           "/api/index.php?action=rendirsePartidaSolitario",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id_partida }),
           }
         );
-
         const data = await response.json();
-
         if (data.status === "success") {
           sessionStorage.removeItem("id_partida");
           sessionStorage.removeItem("ronda");
@@ -255,11 +247,9 @@ export default {
     },
     spin() {
       if (this.spinning) return;
-
       this.spinning = true;
       this.selectedTheme = null;
       this.selectedIndex = null;
-
       const themeWidth = 300;
       const screenCenter = window.innerWidth / 2;
       const targetIndex =
@@ -269,9 +259,7 @@ export default {
         screenCenter +
         themeWidth / 2
       );
-
       this.position = finalPosition;
-
       setTimeout(() => {
         this.spinning = false;
         this.selectedIndex = targetIndex % this.themes.length;
@@ -280,6 +268,44 @@ export default {
           this.$router.push("/juego");
         }, 3500);
       }, 4000);
+    },
+    async traducirTexto(texto) {
+      if (texto === "GIRA" && this.idiomaUsuario === "en") {
+        return "SPIN";
+      }
+      if (this.idiomaUsuario === "es") return texto;
+      try {
+        this.traduccionesCargando = true;
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      } finally {
+        this.traduccionesCargando = false;
+      }
+    },
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+      const textosOriginales = [
+        "GIRA",
+        "Tema seleccionado:",
+        "¿Estás seguro que quieres rendirte?",
+        "Aceptar",
+      ];
+      const traducciones = await Promise.all(
+        textosOriginales.map((texto) => this.traducirTexto(texto))
+      );
+      textosOriginales.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+      this.traduccionesCargando = false;
     },
   },
 };

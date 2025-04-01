@@ -1,6 +1,8 @@
 <template>
   <div class="csv-importer">
-    <h1 class="titulo-csv">IMPORTAR CSV</h1>
+    <h1 class="titulo-csv">
+      {{ textosTraducidos["IMPORTAR CSV"] || "IMPORTAR CSV" }}
+    </h1>
 
     <!-- Mensaje de error -->
     <div v-if="errorMessage" class="error-message">
@@ -22,8 +24,13 @@
         @click="importCsv(csv)"
       >
         <div class="csv-card-content">
-          <h2>{{ csv.name }}</h2>
-          <p>{{ csv.description }}</p>
+          <h2>
+            {{
+              getTranslation(csv.name)[0].toUpperCase() +
+              getTranslation(csv.name).slice(1).toLowerCase()
+            }}
+          </h2>
+          <p>{{ getTranslation(csv.description) }}</p>
         </div>
       </div>
     </div>
@@ -31,6 +38,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "CsvImporter",
   data() {
@@ -59,36 +68,36 @@ export default {
       ],
       errorMessage: "",
       successMessage: "",
+      textosTraducidos: {},
+      traduccionesCargando: false,
+      idiomaUsuario: "es",
     };
+  },
+  async mounted() {
+    // Detectar el idioma del navegador
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
   },
   methods: {
     async importCsv(csv) {
       try {
-        const response = await fetch(`/api/index.php`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ action: csv.action }),
+        const response = await axios.post("/api/index.php", {
+          action: csv.action,
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-          if (data.status === "success") {
-            this.successMessage = data.mensaje;
-            this.errorMessage = "";
-          } else {
-            this.errorMessage = data.mensaje;
-            this.successMessage = "";
-          }
+        if (response.data.status === "success") {
+          this.successMessage = this.getTranslation(response.data.mensaje);
+          this.errorMessage = "";
         } else {
-          this.errorMessage = "Hubo un error en la respuesta del servidor.";
+          this.errorMessage = this.getTranslation(response.data.mensaje);
           this.successMessage = "";
-          console.error("Error en la respuesta del servidor:", data);
         }
       } catch (error) {
-        this.errorMessage = "Error al importar el archivo CSV.";
+        this.errorMessage = this.getTranslation(
+          "Error al importar el archivo CSV."
+        );
         this.successMessage = "";
         console.error("Error en la solicitud:", error);
       }
@@ -97,8 +106,69 @@ export default {
     dismissError() {
       this.errorMessage = "";
     },
+
     dismissSuccess() {
       this.successMessage = "";
+    },
+
+    getTranslation(texto) {
+      return this.textosTraducidos[texto] || texto;
+    },
+
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+
+    async traducirContenido() {
+      this.traduccionesCargando = true;
+
+      // Lista de textos a traducir
+      const textos = [
+        "IMPORTAR CSV",
+        "Categorías",
+        "Tarjetas",
+        "Preguntas",
+        "Respuestas",
+        "Importa datos de categorías",
+        "Importa datos de tarjetas",
+        "Importa datos de preguntas",
+        "Importa datos de respuestas",
+        "Error al importar el archivo CSV.",
+        "Hubo un error en la respuesta del servidor.",
+        // Agregar aquí los mensajes de error y éxito comunes que puedan venir del servidor
+      ];
+
+      // Traducir todos los textos
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+
+      // Guardar las traducciones en el objeto
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      // También traducir los nombres y descripciones de los archivos CSV
+      this.csvFiles.forEach(async (csv) => {
+        const nameTranslation = await this.traducirTexto(csv.name);
+        const descTranslation = await this.traducirTexto(csv.description);
+
+        this.textosTraducidos[csv.name] = nameTranslation;
+        this.textosTraducidos[csv.description] = descTranslation;
+      });
+
+      this.traduccionesCargando = false;
     },
   },
 };
