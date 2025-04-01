@@ -78,6 +78,31 @@ export default {
           {
             data: [],
             backgroundColor: [
+              "#6b8e23", 
+              "#8b5a2b", 
+              "#d2691e", 
+              "#b22222", 
+              "#9370db", 
+              "#f0e68c", 
+              "#c3b091", 
+              "#4682b4", 
+              "#5f9ea0", 
+              "#db7093", 
+            ],
+            hoverBackgroundColor: [
+              "#556b2f", 
+              "#8b4513", 
+              "#cd853f", 
+              "#a52a2a", 
+              "#6a5acd", 
+              "#e6e6fa", 
+              "#4169e1", 
+              "#d2b48c", 
+              "#20b2aa", 
+              "#ff69b4", 
+            ],
+
+            /* backgroundColor: [
               "#2E2E8B",
               "#7373E6",
               "#4C4C9D",
@@ -88,7 +113,7 @@ export default {
               "#32CD32",
               "#1E90FF",
               "#FF69B4",
-            ],
+            ],*/
           },
         ],
       },
@@ -235,7 +260,7 @@ export default {
         );
 
         const data = await response.json();
-        console.log ("Data: " + data);
+        console.log("Data: " + data);
 
         if (data.status === "success") {
           this.mensaje = "Categoría actualizada correctamente";
