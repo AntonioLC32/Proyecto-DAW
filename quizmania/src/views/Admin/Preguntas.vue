@@ -1,17 +1,17 @@
 <template>
   <div class="preguntas">
-    <h1 class="titulo-preguntas">GESTIÓN DE PREGUNTAS</h1>
+    <h1 class="titulo-preguntas">
+      {{ textosTraducidos["GESTIÓN DE PREGUNTAS"] || "GESTIÓN DE PREGUNTAS" }}
+    </h1>
 
     <div class="mensajes">
       <div v-if="mensaje" :class="['mensaje', mensajeTipo]">
         {{ mensaje }}
-        <span class="cerrar-mensaje" @click="mensaje = ''">&times;</span>
+        <span class="cerrar-mensaje" @click="mensaje = ''">×</span>
       </div>
     </div>
 
-    <!-- Contenedor principal que agrupa ambas columnas -->
     <div class="content-wrapper">
-      <!-- Columna izquierda: búsqueda, filtros y tabla -->
       <div class="left-column">
         <section class="gestion-preguntas">
           <div class="searchBar">
@@ -20,7 +20,9 @@
                 type="text"
                 v-model="input"
                 class="search-input"
-                placeholder="Buscar pregunta..."
+                :placeholder="
+                  textosTraducidos['Buscar pregunta...'] || 'Buscar pregunta...'
+                "
               />
               <button @click="buscarPregunta" class="buscar-btn">
                 <i class="fas fa-search"></i>
@@ -31,7 +33,7 @@
           <div class="filtro-categorias">
             <label
               class="category-item"
-              v-for="categoria in listaCategorias"
+              v-for="categoria in categoriasUnicasOriginales"
               :key="categoria"
             >
               <input
@@ -39,13 +41,12 @@
                 :value="categoria"
                 v-model="categoriasSeleccionadas"
               />
-              <span>{{ categoria }}</span>
+              <span>{{ textosTraducidos[categoria] || categoria }}</span>
             </label>
           </div>
         </section>
 
         <section class="tabla">
-          <!-- Se asume que el componente Table emite el evento "editar" pasando la fila -->
           <Table
             :headers="headers"
             :rows="rowsFiltradas"
@@ -55,45 +56,49 @@
         </section>
       </div>
 
-      <!-- Popup de edición -->
       <div v-if="popupVisible" class="popup-backdrop" @click.self="cerrarPopup">
         <div class="popup" @click.stop>
           <div class="popup-content">
-            <span class="close" @click="cerrarPopup">&times;</span>
+            <span class="close" @click="cerrarPopup">×</span>
             <h2>{{ preguntaSeleccionada.pregunta }}</h2>
 
             <div class="form-group">
-              <label>Categoría</label>
+              <label>{{ textosTraducidos["Categoría"] || "Categoría" }}</label>
               <select v-model="preguntaSeleccionada.categoria">
-                <option value="Ciencia">Ciencia</option>
-                <option value="Historia">Historia</option>
-                <option value="Geografía">Geografía</option>
-                <option value="Deportes">Deportes</option>
-                <option value="Arte y Literatura">Arte y Literatura</option>
-                <option value="Entretenimiento">Entretenimiento</option>
-                <option value="Tecnología">Tecnología</option>
-                <option value="Matemáticas">Matemáticas</option>
-                <option value="Cultura General">Cultura General</option>
-                <option value="Música">Música</option>
+                <option
+                  v-for="cat in categoriasOriginales"
+                  :key="cat"
+                  :value="cat"
+                >
+                  {{ textosTraducidos[cat] || cat }}
+                </option>
               </select>
             </div>
 
             <div class="form-group">
-              <label>Dificultad</label>
+              <label>{{
+                textosTraducidos["Dificultad"] || "Dificultad"
+              }}</label>
               <select v-model="preguntaSeleccionada.dificultad">
-                <option value="Fácil">Fácil</option>
-                <option value="Media">Media</option>
-                <option value="Difícil">Difícil</option>
+                <option
+                  v-for="dif in dificultadesOriginales"
+                  :key="dif"
+                  :value="dif"
+                >
+                  {{ textosTraducidos[dif] || dif }}
+                </option>
               </select>
             </div>
 
             <div class="form-group">
-              <label>Opciones</label>
+              <label>{{ textosTraducidos["Opciones"] || "Opciones" }}</label>
               <textarea v-model="preguntaSeleccionada.opciones"></textarea>
             </div>
 
             <div class="form-group">
-              <label>Respuesta correcta</label>
+              <label>{{
+                textosTraducidos["Respuesta correcta"] || "Respuesta correcta"
+              }}</label>
               <input
                 v-model="preguntaSeleccionada.correcta"
                 type="text"
@@ -101,67 +106,104 @@
               />
             </div>
 
-            <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
+            <button @click="guardarCambios" class="popup-btn">
+              {{ textosTraducidos["GUARDAR"] || "GUARDAR" }}
+            </button>
           </div>
         </div>
       </div>
 
       <div class="right-column">
         <section class="add-pregunta">
-          <h1 class="titulo-form">AÑADIR PREGUNTA</h1>
+          <h1 class="titulo-form">
+            {{ textosTraducidos["AÑADIR PREGUNTA"] || "AÑADIR PREGUNTA" }}
+          </h1>
           <form @submit.prevent="addPregunta">
             <div class="form-group">
-              <label for="pregunta">Pregunta</label>
+              <label for="pregunta">{{
+                textosTraducidos["Pregunta"] || "Pregunta"
+              }}</label>
               <textarea
                 id="pregunta"
                 v-model="pregunta"
-                placeholder="Escribe la pregunta"
+                :placeholder="
+                  textosTraducidos['Escribe la pregunta en español'] ||
+                  'Escribe la pregunta en español'
+                "
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="categoria">Categoría</label>
+              <label for="categoria">{{
+                textosTraducidos["Categoría"] || "Categoría"
+              }}</label>
               <select id="categoria" v-model="categoria" required>
-                <option value="">Selecciona una categoría</option>
-                <option value="Ciencia">Ciencia</option>
-                <option value="Historia">Historia</option>
-                <option value="Geografía">Geografía</option>
-                <option value="Deportes">Deportes</option>
-                <option value="Arte y Literatura">Arte y Literatura</option>
-                <option value="Entretenimiento">Entretenimiento</option>
-                <option value="Tecnología">Tecnología</option>
-                <option value="Matemáticas">Matemáticas</option>
-                <option value="Cultura General">Cultura General</option>
-                <option value="Música">Música</option>
+                <option value="">
+                  {{
+                    textosTraducidos["Selecciona una categoría"] ||
+                    "Selecciona una categoría"
+                  }}
+                </option>
+                <option
+                  v-for="cat in categoriasOriginales"
+                  :key="cat"
+                  :value="cat"
+                >
+                  {{ textosTraducidos[cat] || cat }}
+                </option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="dificultad">Dificultad</label>
+              <label for="dificultad">{{
+                textosTraducidos["Dificultad"] || "Dificultad"
+              }}</label>
               <select id="dificultad" v-model="dificultad" required>
-                <option value="">Selecciona la dificultad</option>
-                <option value="Fácil">Fácil</option>
-                <option value="Media">Media</option>
-                <option value="Difícil">Difícil</option>
+                <option value="">
+                  {{
+                    textosTraducidos["Selecciona la dificultad"] ||
+                    "Selecciona la dificultad"
+                  }}
+                </option>
+                <option
+                  v-for="dif in dificultadesOriginales"
+                  :key="dif"
+                  :value="dif"
+                >
+                  {{ textosTraducidos[dif] || dif }}
+                </option>
               </select>
             </div>
             <div class="form-group">
-              <label for="respuestas">Respuestas</label>
+              <label for="respuestas">{{
+                textosTraducidos["Respuestas"] || "Respuestas"
+              }}</label>
               <textarea
                 id="respuestas"
                 v-model="respuestas"
-                placeholder="Escribe las respuestas (separadas por |)"
+                :placeholder="
+                  textosTraducidos[
+                    'Escribe las respuestas (separadas por |)'
+                  ] || 'Escribe las respuestas (separadas por |)'
+                "
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="correcta">Respuesta correcta</label>
+              <label for="correcta">{{
+                textosTraducidos["Respuesta correcta"] || "Respuesta correcta"
+              }}</label>
               <input
                 id="correcta"
                 type="text"
                 v-model="correcta"
-                placeholder="Escribe la respuesta correcta"
+                :placeholder="
+                  textosTraducidos['Escribe la respuesta correcta'] ||
+                  'Escribe la respuesta correcta'
+                "
               />
             </div>
-            <button type="submit">Añadir pregunta</button>
+            <button type="submit">
+              {{ textosTraducidos["Añadir pregunta"] || "Añadir pregunta" }}
+            </button>
           </form>
         </section>
       </div>
@@ -172,6 +214,7 @@
 <script>
 import { computed } from "vue";
 import Table from "./Table.vue";
+import axios from "axios";
 
 export default {
   name: "Preguntas",
@@ -186,7 +229,6 @@ export default {
       categoria: "",
       respuestas: "",
       correcta: "",
-
       headers: [
         { key: "id", label: "ID" },
         { key: "pregunta", label: "PREGUNTA" },
@@ -200,6 +242,21 @@ export default {
       preguntaSeleccionada: {},
       mensaje: "",
       mensajeTipo: "success",
+      textosTraducidos: {},
+      idiomaUsuario: "es",
+      categoriasOriginales: [
+        "Ciencia",
+        "Historia",
+        "Geografía",
+        "Deportes",
+        "Arte y Literatura",
+        "Entretenimiento",
+        "Tecnología",
+        "Matemáticas",
+        "Cultura General",
+        "Música",
+      ],
+      dificultadesOriginales: ["Fácil", "Media", "Difícil"],
     };
   },
   computed: {
@@ -215,19 +272,109 @@ export default {
         return coincideTexto && coincideCategoria;
       });
     },
-    listaCategorias() {
+    categoriasUnicasOriginales() {
       return [...new Set(this.rows.map((item) => item.categoria))];
     },
+    listaCategoriasTraducidas() {
+      const categoriasUnicas = [
+        ...new Set(this.rows.map((item) => item.categoria)),
+      ];
+      return categoriasUnicas.map((cat) =>
+        this.idiomaUsuario !== "es" && this.textosTraducidos[cat]
+          ? this.textosTraducidos[cat]
+          : cat
+      );
+    },
   },
-  mounted() {
+  async mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
     this.fetchPreguntas();
   },
   methods: {
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      const textos = [
+        "GESTIÓN DE PREGUNTAS",
+        "Buscar pregunta...",
+        "ID",
+        "PREGUNTA",
+        "DIFICULTAD",
+        "CATEGORÍA",
+        "ACCIONES",
+        "AÑADIR PREGUNTA",
+        "Pregunta",
+        "Categoría",
+        "Dificultad",
+        "Respuestas",
+        "Respuesta correcta",
+        "Añadir pregunta",
+        "GUARDAR",
+        "Opciones",
+        "Respuesta correcta",
+        "Pregunta deshabilitada correctamente",
+        "Error al deshabilitar la pregunta",
+        "Error de conexión",
+        "¡Pregunta actualizada correctamente!",
+        "Error al actualizar la pregunta",
+        "¡Pregunta añadida exitosamente!",
+        "Error al crear la pregunta",
+        "Error: La respuesta correcta no está en las primeras 4 opciones",
+        "Escribe la pregunta en español",
+        "Selecciona una categoría",
+        "Selecciona la dificultad",
+        "Escribe las respuestas (separadas por |)",
+        "Escribe la respuesta correcta",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      this.headers = await Promise.all(
+        this.headers.map(async (header) => ({
+          ...header,
+          label: await this.traducirTexto(header.label),
+        }))
+      );
+
+      const categoriasTraducidas = await Promise.all(
+        this.categoriasOriginales.map(this.traducirTexto)
+      );
+      const dificultadesTraducidas = await Promise.all(
+        this.dificultadesOriginales.map(this.traducirTexto)
+      );
+
+      this.categoriasOriginales.forEach((cat, index) => {
+        this.textosTraducidos[cat] = categoriasTraducidas[index];
+      });
+      this.dificultadesOriginales.forEach((dif, index) => {
+        this.textosTraducidos[dif] = dificultadesTraducidas[index];
+      });
+    },
     async fetchPreguntas() {
       try {
-        const response = await fetch("/api/index.php?action=obtenerPreguntas");
-        const data = await response.json();
-
+        const response = await axios.get(
+          "/api/index.php?action=obtenerPreguntas"
+        );
+        const data = response.data;
         if (data.status === "success") {
           this.rows = data.data.map((pregunta) => ({
             ...pregunta,
@@ -249,39 +396,39 @@ export default {
     cerrarPopup() {
       this.popupVisible = false;
     },
-
     async deshabilitarPregunta(pregunta) {
       try {
         const confirmar = confirm(
-          `¿Deshabilitar la pregunta "${pregunta.pregunta}"?`
+          `${
+            this.textosTraducidos["¿Deshabilitar la pregunta"] ||
+            "¿Deshabilitar la pregunta"
+          } "${pregunta.pregunta}"?`
         );
         if (!confirmar) return;
-
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=deshabilitarPregunta",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id_pregunta: pregunta.id,
-            }),
+            id_pregunta: pregunta.id,
           }
         );
-
-        const data = await response.json();
-
+        const data = response.data;
         if (data.status === "success") {
-          this.mensaje = "Pregunta deshabilitada correctamente";
+          this.mensaje =
+            this.textosTraducidos["Pregunta deshabilitada correctamente"] ||
+            "Pregunta deshabilitada correctamente";
           this.mensajeTipo = "success";
-          this.fetchPreguntas(); // Actualizar la lista
+          this.fetchPreguntas();
         } else {
-          this.mensaje = data.mensaje || "Error al deshabilitar la pregunta";
+          this.mensaje =
+            data.mensaje ||
+            this.textosTraducidos["Error al deshabilitar la pregunta"] ||
+            "Error al deshabilitar la pregunta";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
+        this.mensaje = `${
+          this.textosTraducidos["Error de conexión"] || "Error de conexión"
+        }: ${error.message}`;
         this.mensajeTipo = "error";
       } finally {
         setTimeout(() => (this.mensaje = ""), 5000);
@@ -295,16 +442,16 @@ export default {
                 .split("|")
                 .map((opcion) => opcion.trim())
             : this.preguntaSeleccionada.opciones.map((opcion) => opcion.trim());
-
-        // Tomamos las primeras 4 opciones
         let opcionesLimitadas = opcionesArray.slice(0, 4);
 
-        // Validación: si la respuesta correcta NO está en las 4 primeras, mostrar error
         if (!opcionesLimitadas.includes(this.preguntaSeleccionada.correcta)) {
           this.mensaje =
+            this.textosTraducidos[
+              "Error: La respuesta correcta no está en las primeras 4 opciones"
+            ] ||
             "Error: La respuesta correcta no está en las primeras 4 opciones";
           this.mensajeTipo = "error";
-          return; // No ejecuta la petición al backend
+          return;
         }
 
         const dataToSend = {
@@ -318,27 +465,30 @@ export default {
           correcta: this.preguntaSeleccionada.correcta,
         };
 
-        const response = await fetch("/api/index.php?action=updatePregunta", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataToSend),
-        });
-
-        const data = await response.json();
+        const response = await axios.post(
+          "/api/index.php?action=updatePregunta",
+          dataToSend
+        );
+        const data = response.data;
 
         if (data.status === "success") {
-          this.mensaje = "¡Pregunta actualizada correctamente!";
+          this.mensaje =
+            this.textosTraducidos["¡Pregunta actualizada correctamente!"] ||
+            "¡Pregunta actualizada correctamente!";
           this.mensajeTipo = "success";
           this.fetchPreguntas();
           this.popupVisible = false;
         } else {
-          this.mensaje = data.mensaje || "Error al actualizar la pregunta";
+          this.mensaje =
+            data.mensaje ||
+            this.textosTraducidos["Error al actualizar la pregunta"] ||
+            "Error al actualizar la pregunta";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
+        this.mensaje = `${
+          this.textosTraducidos["Error de conexión"] || "Error de conexión"
+        }: ${error.message}`;
         this.mensajeTipo = "error";
         console.error("Error al guardar cambios:", error);
       } finally {
@@ -347,44 +497,46 @@ export default {
     },
     async addPregunta() {
       try {
-        const response = await fetch("/api/index.php?action=insertPregunta", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        const response = await axios.post(
+          "/api/index.php?action=insertPregunta",
+          {
             texto: this.pregunta,
             dificultad: this.dificultad,
             categoria: this.categoria,
             respuestas: this.respuestas.split("|"),
             correcta: this.correcta,
-          }),
-        });
-
-        const data = await response.json();
-
+          }
+        );
+        const data = response.data;
         if (data.status === "success") {
-          this.mensaje = "¡Pregunta añadida exitosamente!";
+          this.mensaje =
+            this.textosTraducidos["¡Pregunta añadida exitosamente!"] ||
+            "¡Pregunta añadida exitosamente!";
           this.mensajeTipo = "success";
           this.fetchPreguntas();
-          // Resetear formulario
           this.pregunta = "";
           this.dificultad = "";
           this.categoria = "";
           this.respuestas = "";
           this.correcta = "";
         } else {
-          this.mensaje = data.mensaje || "Error al crear la pregunta";
+          this.mensaje =
+            data.mensaje ||
+            this.textosTraducidos["Error al crear la pregunta"] ||
+            "Error al crear la pregunta";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
+        this.mensaje = `${
+          this.textosTraducidos["Error de conexión"] || "Error de conexión"
+        }: ${error.message}`;
         this.mensajeTipo = "error";
         console.error("Error al añadir pregunta:", error);
       } finally {
         setTimeout(() => (this.mensaje = ""), 5000);
       }
     },
+    buscarPregunta() {},
   },
 };
 </script>
@@ -413,6 +565,8 @@ export default {
   color: #fff;
   text-align: center;
   font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 2rem;
 }
 
 .mensajes {

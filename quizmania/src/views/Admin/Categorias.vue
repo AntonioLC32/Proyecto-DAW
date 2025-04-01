@@ -1,10 +1,12 @@
 <template>
   <div class="categorias">
-    <h1 class="titulo-categorias">GESTIÓN DE CATEGORÍAS</h1>
+    <h1 class="titulo-categorias">
+      {{ textosTraducidos["GESTIÓN DE CATEGORÍAS"] || "GESTIÓN DE CATEGORÍAS" }}
+    </h1>
     <div class="mensajes">
       <div v-if="mensaje" :class="['mensaje', mensajeTipo]">
         {{ mensaje }}
-        <span class="cerrar-mensaje" @click="mensaje = ''">&times;</span>
+        <span class="cerrar-mensaje" @click="mensaje = ''">×</span>
       </div>
     </div>
     <div class="content-wrapper">
@@ -16,7 +18,7 @@
       <div v-if="popupVisible" class="popup-backdrop" @click.self="cerrarPopup">
         <div class="popup" @click.stop>
           <div class="popup-content">
-            <span class="close" @click="cerrarPopup">&times;</span>
+            <span class="close" @click="cerrarPopup">×</span>
             <h2>{{ categoriaSeleccionada.nombre }}</h2>
             <img
               :src="
@@ -28,7 +30,7 @@
               @click="$refs.fileInput.click()"
               class="popup-btn cambiar-imagen-btn"
             >
-              CAMBIAR IMAGEN
+              {{ textosTraducidos["CAMBIAR IMAGEN"] || "CAMBIAR IMAGEN" }}
             </button>
             <input
               type="file"
@@ -37,13 +39,20 @@
               accept="image/*"
               @change="handleImageUpload"
             />
-            <button @click="guardarCambios" class="popup-btn">GUARDAR</button>
+            <button @click="guardarCambios" class="popup-btn">
+              {{ textosTraducidos["GUARDAR"] || "GUARDAR" }}
+            </button>
           </div>
         </div>
       </div>
       <div class="right-column">
         <section class="grafico">
-          <h3>Preguntas por categoría</h3>
+          <h3>
+            {{
+              textosTraducidos["Preguntas por categoría"] ||
+              "Preguntas por categoría"
+            }}
+          </h3>
           <canvas ref="pieChart"></canvas>
         </section>
       </div>
@@ -54,6 +63,8 @@
 <script>
 import Table from "./Table.vue";
 import Chart from "chart.js/auto";
+import axios from "axios";
+
 export default {
   name: "Categorias",
   components: { Table },
@@ -78,72 +89,115 @@ export default {
           {
             data: [],
             backgroundColor: [
-              "#6b8e23", 
-              "#8b5a2b", 
-              "#d2691e", 
-              "#b22222", 
-              "#9370db", 
-              "#f0e68c", 
-              "#c3b091", 
-              "#4682b4", 
-              "#5f9ea0", 
-              "#db7093", 
+              "#6b8e23",
+              "#8b5a2b",
+              "#d2691e",
+              "#b22222",
+              "#9370db",
+              "#f0e68c",
+              "#c3b091",
+              "#4682b4",
+              "#5f9ea0",
+              "#db7093",
             ],
             hoverBackgroundColor: [
-              "#556b2f", 
-              "#8b4513", 
-              "#cd853f", 
-              "#a52a2a", 
-              "#6a5acd", 
-              "#e6e6fa", 
-              "#4169e1", 
-              "#d2b48c", 
-              "#20b2aa", 
-              "#ff69b4", 
+              "#556b2f",
+              "#8b4513",
+              "#cd853f",
+              "#a52a2a",
+              "#6a5acd",
+              "#e6e6fa",
+              "#4169e1",
+              "#d2b48c",
+              "#20b2aa",
+              "#ff69b4",
             ],
-
-            /* backgroundColor: [
-              "#2E2E8B",
-              "#7373E6",
-              "#4C4C9D",
-              "#C2C2E6",
-              "#D3D3F5",
-              "#FFD700",
-              "#FF4500",
-              "#32CD32",
-              "#1E90FF",
-              "#FF69B4",
-            ],*/
           },
         ],
       },
+      textosTraducidos: {},
+      idiomaUsuario: "es",
     };
   },
-  mounted() {
-    this.fetchCategorias();
-    this.fetchPreguntas();
+  async mounted() {
+    this.idiomaUsuario = navigator.language.split("-")[0] || "es";
+    if (this.idiomaUsuario !== "es") {
+      await this.traducirContenido();
+    }
+    await this.fetchCategorias();
+    await this.fetchPreguntas();
   },
   methods: {
+    async traducirTexto(texto) {
+      if (/^[\d:]/.test(texto) || this.idiomaUsuario === "es") return texto;
+      try {
+        const response = await axios.post("/api/index.php?action=traducir", {
+          texto: texto,
+          idioma_origen: "es",
+          idioma_destino: this.idiomaUsuario,
+        });
+        return response.data.status === "success"
+          ? response.data.traduccion
+          : texto;
+      } catch (error) {
+        console.error("Error en traducción:", error);
+        return texto;
+      }
+    },
+    async traducirContenido() {
+      const textos = [
+        "GESTIÓN DE CATEGORÍAS",
+        "Preguntas por categoría",
+        "ID",
+        "NOMBRE",
+        "IMAGEN",
+        "ACCIONES",
+        "CAMBIAR IMAGEN",
+        "GUARDAR",
+        "Categoría actualizada correctamente",
+        "Error al actualizar categoría",
+        "Error de conexión",
+        "Por favor selecciona un archivo de imagen válido.",
+      ];
+      const traducciones = await Promise.all(textos.map(this.traducirTexto));
+      textos.forEach((texto, index) => {
+        this.textosTraducidos[texto] = traducciones[index];
+      });
+
+      this.headers = await Promise.all(
+        this.headers.map(async (header) => ({
+          ...header,
+          label: await this.traducirTexto(header.label),
+        }))
+      );
+    },
     async fetchCategorias() {
       try {
-        const response = await fetch("/api/index.php?action=obtenerCategorias");
-        const data = await response.json();
+        const response = await axios.get(
+          "/api/index.php?action=obtenerCategorias"
+        );
+        const data = response.data;
         if (data.status === "success") {
-          this.rows = data.data.map((categoria) => ({
-            id: categoria.id,
-            nombre: categoria.nombre,
-            imagen: categoria.imagen,
-            total_preguntas: 0,
-            acciones: {
-              editar: true,
-              eliminar: false,
-              info: false,
-            },
-          }));
-
-          if (this.rows.length > 0) {
-            this.actualizarGrafica();
-          }
+          this.rows = await Promise.all(
+            data.data.map(async (categoria) => {
+              const nombreTraducido =
+                this.idiomaUsuario !== "es"
+                  ? await this.traducirTexto(categoria.nombre)
+                  : categoria.nombre;
+              return {
+                id: categoria.id,
+                nombre: nombreTraducido,
+                nombreOriginal: categoria.nombre,
+                imagen: categoria.imagen,
+                total_preguntas: 0,
+                acciones: {
+                  editar: true,
+                  eliminar: false,
+                  info: false,
+                },
+              };
+            })
+          );
         }
       } catch (error) {
         console.error("Error fetching categorias:", error);
@@ -151,19 +205,18 @@ export default {
     },
     async fetchPreguntas() {
       try {
-        const response = await fetch("/api/index.php?action=obtenerPreguntas");
-        const data = await response.json();
+        const response = await axios.get(
+          "/api/index.php?action=obtenerPreguntas"
+        );
+        const data = response.data;
         if (data.status === "success") {
           this.preguntas = data.data;
           this.contarPreguntasPorCategoria();
+          this.actualizarGrafica();
         }
       } catch (error) {
         console.error("Error fetching preguntas:", error);
       }
-    },
-    imageURL(imagen) {
-      const path = new URL("../../", import.meta.url);
-      return `${path}/${imagen}`;
     },
     contarPreguntasPorCategoria() {
       const conteoPorCategoria = {};
@@ -174,9 +227,8 @@ export default {
       });
       this.rows = this.rows.map((categoria) => ({
         ...categoria,
-        total_preguntas: conteoPorCategoria[categoria.nombre] || 0,
+        total_preguntas: conteoPorCategoria[categoria.nombreOriginal] || 0,
       }));
-      this.actualizarGrafica();
     },
     actualizarGrafica() {
       this.chartData.labels = this.rows.map((categoria) => categoria.nombre);
@@ -188,11 +240,9 @@ export default {
     renderChart() {
       if (this.$refs.pieChart) {
         const ctx = this.$refs.pieChart.getContext("2d");
-
         if (this.chartInstance) {
           this.chartInstance.destroy();
         }
-
         this.chartInstance = new Chart(ctx, {
           type: "pie",
           data: this.chartData,
@@ -215,15 +265,17 @@ export default {
           URL.revokeObjectURL(this.nuevaImagenPreview);
         }
         this.nuevaImagenPreview = URL.createObjectURL(file);
-        // Guardamos el archivo para enviarlo luego
         this.categoriaSeleccionada.imagenFile = file;
       } else {
-        alert("Por favor selecciona un archivo de imagen válido.");
+        alert(
+          this.textosTraducidos[
+            "Por favor selecciona un archivo de imagen válido."
+          ] || "Por favor selecciona un archivo de imagen válido."
+        );
       }
     },
     cerrarPopup() {
       this.popupVisible = false;
-      // No es necesario revocar el Base64
       this.nuevaImagenPreview = null;
     },
     convertFileToBase64(file) {
@@ -246,45 +298,43 @@ export default {
         const payload = {
           action: "actualizarCategorias",
           id_categoria: this.categoriaSeleccionada.id,
-          nombre: this.categoriaSeleccionada.nombre,
+          nombre: this.categoriaSeleccionada.nombreOriginal,
           file: base64Image,
         };
 
-        const response = await fetch(
+        const response = await axios.post(
           "/api/index.php?action=actualizarCategorias",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
+          payload
         );
-
-        const data = await response.json();
-        console.log("Data: " + data);
+        const data = response.data;
 
         if (data.status === "success") {
-          this.mensaje = "Categoría actualizada correctamente";
+          this.mensaje =
+            this.textosTraducidos["Categoría actualizada correctamente"] ||
+            "Categoría actualizada correctamente";
           this.mensajeTipo = "success";
           this.cerrarPopup();
-
-          // Forzar actualización completa
           await this.fetchCategorias();
           await this.fetchPreguntas();
-
-          // Limpiar previsualización de imagen
           this.nuevaImagenPreview = null;
         } else {
-          this.mensaje = data.mensaje || "Error al actualizar categoría";
+          this.mensaje =
+            data.mensaje ||
+            this.textosTraducidos["Error al actualizar categoría"] ||
+            "Error al actualizar categoría";
           this.mensajeTipo = "error";
         }
       } catch (error) {
-        this.mensaje = "Error de conexión: " + error.message;
+        this.mensaje = `${
+          this.textosTraducidos["Error de conexión"] || "Error de conexión"
+        }: ${error.message}`;
         this.mensajeTipo = "error";
       } finally {
         setTimeout(() => {
           this.mensaje = "";
           this.mensajeTipo = "";
-        }, 5000);
+          location.reload();
+        }, 2000);
       }
     },
     getImageUrl(path) {
@@ -310,6 +360,8 @@ export default {
   color: #fff;
   text-align: center;
   font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 2rem;
 }
 .content-wrapper {
   display: flex;
