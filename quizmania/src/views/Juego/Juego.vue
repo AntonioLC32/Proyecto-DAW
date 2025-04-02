@@ -37,7 +37,7 @@
 
           <div class="misc">
             <div class="progreso">{{ progreso }}%</div>
-            <a href="#" @click.prevent="usarPista">
+            <a v-if="!pistaUsada" href="#" @click.prevent="usarPista">
               <img
                 src="../../assets/pista.png"
                 alt="Pista"
@@ -45,7 +45,7 @@
                 height="70px"
               />
             </a>
-            <a href="#" @click.prevent="siguientePregunta">
+            <a v-if="!skipUsada" href="#" @click.prevent="usarSkip">
               <img
                 src="../../assets/siguiente.png"
                 alt="Siguiente"
@@ -104,6 +104,7 @@ export default {
       respuestaSeleccionada: null,
       seleccionado: false,
       pistaUsada: false,
+      skipUsada: false,
       progreso: 50,
       vidas: 3,
       categoriaSeleccionada: null,
@@ -123,6 +124,13 @@ export default {
     });
     this.backgroundMusic.play();
     this.startTimer();
+
+    if (sessionStorage.getItem("pistaUsada") === "true") {
+      this.pistaUsada = true;
+    }
+    if (sessionStorage.getItem("skipUsada") === "true") {
+      this.skipUsada = true;
+    }
 
     window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
     this.idiomaUsuario = navigator.language.split("-")[0] || "es";
@@ -164,6 +172,14 @@ export default {
 
 
   methods: {
+    usarSkip() {
+      if (!this.skipUsada) {
+        this.skipUsada = true;
+        sessionStorage.setItem("skipUsada", "true");
+        this.siguientePregunta();
+      }
+    },
+
     startTimer() {
       const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
       this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
@@ -291,6 +307,7 @@ export default {
 
     tiempoAgotadoHandler() {
       if (!this.seleccionado) {
+        clearInterval(this.timerInterval);
         this.seleccionado = true;
         this.procesarTiempoAgotado();
       }
@@ -353,6 +370,8 @@ export default {
 
     async seleccionarRespuesta(opcion) {
       if (!this.seleccionado) {
+        clearInterval(this.timerInterval);
+
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
         const esCorrecta = opcion === this.preguntas[this.questionIndex].correcta;
@@ -420,6 +439,8 @@ export default {
     },
 
     async siguientePregunta() {
+      clearInterval(this.timerInterval);
+
       await axios.post("/api/index.php?action=insertarRonda", {
         id_partida: sessionStorage.getItem("id_partida"),
         tiempo: sessionStorage.getItem("tiempoTranscurrido") || 0,
@@ -460,6 +481,7 @@ export default {
           }
         }
         this.pistaUsada = true;
+        sessionStorage.setItem("pistaUsada", "true");
       }
     },
 
