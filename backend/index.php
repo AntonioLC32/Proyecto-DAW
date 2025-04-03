@@ -162,6 +162,11 @@ switch ($action) {
         traducir($input);
         break;
 
+    case 'actualizarConexion':
+        require 'usuarios/update.php';
+        actualizarConexion();
+        break;
+
     // Añadir casos para otras importaciones
     default:
         echo json_encode(['status' => 'error', 'mensaje' => 'Acción no válida']);

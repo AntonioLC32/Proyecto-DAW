@@ -51,4 +51,4 @@ if ($stmt = $conn->prepare($sql)) {
     echo json_encode(["error" => "Error en la consulta SQL."]);
 }
 
-$conn->close();
+

@@ -41,4 +41,38 @@ function deshabilitarUsuario($data) {
     }
 }
 
+function actualizarConexion() {
+    global $conn;
+
+    if (!isset($_COOKIE['user'])) {
+        echo json_encode(['status' => 'error', 'error' => 'Usuario no autenticado']);
+        return;
+    }
+
+    $user = json_decode($_COOKIE['user'], true);
+
+    if (!$user || !isset($user['id_usuario'])) {
+        echo json_encode(['status' => 'error', 'error' => 'Cookie de usuario inválida']);
+        return;
+    }
+
+    $id_usuario = $user['id_usuario'];  
+
+    try {
+        $sql = "UPDATE Usuario SET ult_conexion = NOW() WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            throw new Exception("No se pudo actualizar la conexión");
+        }
+
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'error' => $e->getMessage()]);
+    }
+}
+
 ?>

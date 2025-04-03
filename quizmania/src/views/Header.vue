@@ -187,6 +187,7 @@ export default {
     if (this.$route.path === "/juego") {
       this.iniciarTimer();
     }
+    this.actualizarConexion();
   },
   beforeDestroy() {
     if (this.timerInterval) {
@@ -224,6 +225,7 @@ export default {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
+    
     async cargarUsuario() {
       try {
         const response = await fetch("/api/perfil/select_perfil.php", {
@@ -342,6 +344,18 @@ export default {
         this.textosTraducidos[texto] = traducciones[index];
       });
       this.traduccionesCargando = false;
+    },
+    async actualizarConexion() {
+        try {
+            const response = await axios.post('/api/index.php?action=actualizarConexion');
+            if (response.data.status === 'success') {
+                console.log('Conexión actualizada correctamente');
+            } else {
+                console.error('Error al actualizar la conexión:', response.data.error);
+            }
+        } catch (error) {
+            console.error('Error al realizar la solicitud:', error);
+        }
     },
   },
 };
