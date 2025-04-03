@@ -37,7 +37,7 @@
 
           <div class="misc">
             <a v-if="!mitadUsada" href="#" @click.prevent="usarMitad">
-              <div class="progreso">{{ progreso }}%</div>
+              <div class="progreso">50%</div>
             </a>
             <a v-if="!pistaUsada" href="#" @click.prevent="usarPista">
               <img
@@ -166,12 +166,12 @@ export default {
   computed: {
     isRespuestaCorrecta() {
       return (opcion) =>
-        this.seleccionado && opcion === this.preguntas[this.questionIndex].correcta;
+        this.seleccionado && opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
-        this.respuestaSeleccionada !== this.preguntas[this.questionIndex].correcta &&
+        this.respuestaSeleccionada !== this.preguntas[this.questionIndex].respuestaCorrecta &&
         this.respuestaSeleccionada === opcion;
     },
   },
@@ -183,25 +183,30 @@ export default {
       if (!this.skipUsada) {
         this.skipUsada = true;
         sessionStorage.setItem("skipUsada", "true");
-        
+
         clearInterval(this.timerInterval);
+
+        sessionStorage.removeItem("tiempoRestante");
         this.timer = 60;
         sessionStorage.setItem("tiempoRestante", "60");
+        this.progreso = 100;
+
         this.startTimer();
 
         this.obtenerPregunta(this.categoriaSeleccionada);
       }
     },
 
-
     startTimer() {
       const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
       this.timer = tiempoGuardado ? parseInt(tiempoGuardado) : 60;
+      this.progreso = (this.timer / 60) * 100;
 
       this.timerInterval = setInterval(() => {
         if (this.timer > 0) {
           this.timer--;
           sessionStorage.setItem("tiempoRestante", this.timer.toString());
+          this.progreso = (this.timer / 60) * 100;
 
           const elapsed = 60 - this.timer;
           sessionStorage.setItem("tiempoTranscurrido", elapsed.toString());
@@ -210,15 +215,15 @@ export default {
           const seconds = elapsed % 60;
           sessionStorage.setItem(
             "tiempoRonda",
-            `${minutes.toString().padStart(2, "0")}:${seconds
-              .toString()
-              .padStart(2, "0")}`
+            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
           );
         } else {
           this.backgroundMusic.stop();
+          clearInterval(this.timerInterval);
         }
       }, 1000);
     },
+
 
     async traducirTexto(texto) {
       if (
@@ -394,8 +399,7 @@ export default {
 
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
-        const esCorrecta = opcion === this.preguntas[this.questionIndex].correcta;
-
+        const esCorrecta = opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
 
         try {
           if (!esCorrecta) {

@@ -293,9 +293,13 @@ export default {
     },
     resetTimer() {
       clearInterval(this.timerInterval);
-      this.timer = 60;
-      sessionStorage.setItem("tiempoRestante", "60");
-      this.iniciarTimer();
+      this.timer = 0;
+
+      this.$nextTick(() => {
+        this.timer = 60;
+        sessionStorage.setItem("tiempoRestante", "60");
+        this.iniciarTimer(); 
+      });
     },
     preguntaContestada() {
       sessionStorage.removeItem("tiempoRestante");
