@@ -36,7 +36,9 @@
           </button>
 
           <div class="misc">
-            <div class="progreso">{{ progreso }}%</div>
+            <a v-if="!mitadUsada" href="#" @click.prevent="usarMitad">
+              <div class="progreso">{{ progreso }}%</div>
+            </a>
             <a v-if="!pistaUsada" href="#" @click.prevent="usarPista">
               <img
                 src="../../assets/pista.png"
@@ -103,6 +105,7 @@ export default {
       questionIndex: 0,
       respuestaSeleccionada: null,
       seleccionado: false,
+      mitadUsada: false,
       pistaUsada: false,
       skipUsada: false,
       progreso: 50,
@@ -125,6 +128,9 @@ export default {
     this.backgroundMusic.play();
     this.startTimer();
 
+    if (sessionStorage.getItem("mitadUsada") === "true") {
+      this.mitadUsada = true;
+    }
     if (sessionStorage.getItem("pistaUsada") === "true") {
       this.pistaUsada = true;
     }
@@ -173,12 +179,20 @@ export default {
 
   methods: {
     usarSkip() {
+      if (this.seleccionado) return;
       if (!this.skipUsada) {
         this.skipUsada = true;
         sessionStorage.setItem("skipUsada", "true");
-        this.siguientePregunta();
+        
+        clearInterval(this.timerInterval);
+        this.timer = 60;
+        sessionStorage.setItem("tiempoRestante", "60");
+        this.startTimer();
+
+        this.obtenerPregunta(this.categoriaSeleccionada);
       }
     },
+
 
     startTimer() {
       const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
@@ -339,7 +353,13 @@ export default {
       const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
       this.rondasTotales = ronda;
       this.showGameOver = true;
+      this.mitadUsada = false,
+      this.pistaUsada = false,
+      this.skipUsada = false,
 
+      sessionStorage.removeItem("mitadUsada");
+      sessionStorage.removeItem("pistaUsada");
+      sessionStorage.removeItem("skipUsada");
       sessionStorage.removeItem("id_partida");
       sessionStorage.removeItem("preguntaActual");
       sessionStorage.removeItem("preguntasUsadas");
@@ -461,6 +481,7 @@ export default {
     },
 
     usarPista() {
+      if (this.seleccionado) return;
       if (!this.pistaUsada) {
         const incorrectas = this.preguntas[this.questionIndex].opciones.filter(
           (opcion) =>
@@ -482,6 +503,37 @@ export default {
         }
         this.pistaUsada = true;
         sessionStorage.setItem("pistaUsada", "true");
+      }
+    },
+
+    usarMitad() {
+      if (this.seleccionado) return;
+      if (!this.mitadUsada) {
+        const incorrectas = this.preguntas[this.questionIndex].opciones.filter(
+          (opcion) =>
+            opcion !== this.preguntas[this.questionIndex].respuestaCorrecta
+        );
+
+        if (incorrectas.length >= 2) {
+          for (let i = 0; i < 2; i++) {
+            const randomIndex = Math.floor(Math.random() * incorrectas.length);
+            const opcionAEliminar = incorrectas[randomIndex];
+
+            const eliminarIndex = this.preguntas[this.questionIndex].opciones.indexOf(opcionAEliminar);
+            if (eliminarIndex !== -1) {
+              this.preguntas[this.questionIndex].opciones.splice(eliminarIndex, 1);
+            }
+
+            incorrectas.splice(randomIndex, 1);
+          }
+        } else if (incorrectas.length === 1) {
+          const eliminarIndex = this.preguntas[this.questionIndex].opciones.indexOf(incorrectas[0]);
+          if (eliminarIndex !== -1) {
+            this.preguntas[this.questionIndex].opciones.splice(eliminarIndex, 1);
+          }
+        }
+        this.mitadUsada = true;
+        sessionStorage.setItem("mitadUsada", "true");
       }
     },
 
@@ -782,6 +834,14 @@ section {
   background-color: #5759cd;
   border: 5px solid #4a4da5;
   font-size: 24px;
+}
+
+.progreso {
+  transition: all 0.3s ease-in-out;
+}
+
+.progreso:hover {
+  transform: scale(1.1);
 }
 
 .vidas-container {

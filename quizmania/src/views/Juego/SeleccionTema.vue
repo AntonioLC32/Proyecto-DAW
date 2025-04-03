@@ -105,6 +105,7 @@
 import Roulette from "../../components/Roulette.vue";
 import TemasJugador from "@/components/TemasJugador.vue";
 import axios from "axios";
+import Juego from "./Juego.vue";
 
 export default {
   name: "SeleccionTema",
@@ -137,6 +138,9 @@ export default {
       idiomaUsuario: "es",
       textosTraducidos: {},
       traduccionesCargando: false,
+      mitadUsada: false,
+      pistaUsada: false,
+      skipUsada: false,
     };
   },
   computed: {
@@ -233,6 +237,9 @@ export default {
         );
         const data = await response.json();
         if (data.status === "success") {
+          sessionStorage.removeItem("mitadUsada");
+          sessionStorage.removeItem("pistaUsada");
+          sessionStorage.removeItem("skipUsada");
           sessionStorage.removeItem("id_partida");
           sessionStorage.removeItem("ronda");
           this.$router.push("/").then(() => {
