@@ -89,15 +89,6 @@ CREATE TABLE Ronda (
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
 );
 
--- Tabla dependiente de Usuario
-CREATE TABLE Historial (
-    id_historial INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    resultado ENUM('victoria','derrota','empate') NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
-);
-
 -- Tabla dependiente de Partida
 CREATE TABLE Comodin (
     id_comodin INT AUTO_INCREMENT PRIMARY KEY,
@@ -168,7 +159,6 @@ CREATE INDEX idx_historial_fecha ON Historial(fecha);
 CREATE INDEX idx_comodin_nombre ON Comodin(nombre);
 
 CREATE INDEX idx_estadisticas_puntos ON Estadisticas(puntos);
-
 
 CREATE INDEX idx_historial_partida ON HistorialPreguntas (id_partida);
 CREATE INDEX idx_historial_pregunta ON HistorialPreguntas (id_pregunta);

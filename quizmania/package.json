@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/motion": "^3.0.3",
     "axios": "^1.8.4",
+    "canvas-confetti": "^1.9.3",
     "chart.js": "^4.4.7",
     "howler": "^2.2.4",
     "pinia": "^2.3.1",

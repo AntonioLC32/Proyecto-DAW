@@ -2,8 +2,27 @@
   <section>
     <div class="division">
       <div class="left">
-        <div class="encase">
-          <div class="pregunta slide-in">
+        <div class="encase" :class="{ shake: animacionShake }">
+          <div
+            class="pregunta"
+            v-motion
+            :initial="{ opacity: 0, scale: 0.5, rotate: -10, y: -120 }"
+            :enter="{
+              opacity: 1,
+              scale: 1.08,
+              rotate: 0,
+              y: 0,
+              transition: {
+                type: 'spring',
+                stiffness: 400,
+                damping: 18,
+                mass: 0.7,
+                delay: 0.2,
+              },
+            }"
+            :leave="{ opacity: 0, scale: 0.7, rotate: 10, y: 100 }"
+            ref="preguntaRef"
+          >
             <span
               v-if="preguntas[questionIndex].dificultad"
               class="dificultad"
@@ -22,10 +41,39 @@
           </div>
 
           <button
-            class="respuesta slide-in-hidden"
+            class="respuesta"
             v-for="(opcion, index) in preguntas[questionIndex].opciones"
             :key="opcion"
-            :style="{ animationDelay: index * 0.4 + 0.8 + 's' }"
+            v-motion
+            :initial="{
+              opacity: 0,
+              scale: 0.5,
+              y: 80,
+              rotate: -10 + index * 5,
+              x: index % 2 === 0 ? -50 : 50,
+            }"
+            :enter="{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              x: 0,
+              rotate: 0,
+              boxShadow: '0 0 24px #5759cd88',
+              transition: {
+                delay: 0.6 + index * 0.2,
+                type: 'spring',
+                stiffness: 420,
+                damping: 16,
+                mass: 0.7,
+              },
+            }"
+            :leave="{ opacity: 0, scale: 0.7, y: 100, rotate: 8 }"
+            :whileHover="{
+              scale: 1.13,
+              boxShadow: '0 0 32px #26fb09cc',
+              rotate: 2,
+            }"
+            :whileTap="{ scale: 0.96, rotate: -2 }"
             :class="{
               correcta: isRespuestaCorrecta(opcion),
               incorrecta: isRespuestaIncorrecta(opcion),
@@ -36,10 +84,24 @@
           </button>
 
           <div class="misc">
-            <a v-if="!mitadUsada" href="#" @click.prevent="usarMitad">
+            <a
+              v-if="!mitadUsada"
+              href="#"
+              @click.prevent="usarMitadAnimada"
+              ref="mitadRef"
+              v-motion
+              :whileTap="{ rotate: 360, scale: 1.2 }"
+            >
               <div class="progreso">50%</div>
             </a>
-            <a v-if="!pistaUsada" href="#" @click.prevent="usarPista">
+            <a
+              v-if="!pistaUsada"
+              href="#"
+              @click.prevent="usarPistaAnimada"
+              ref="pistaRef"
+              v-motion
+              :whileTap="{ rotate: 360, scale: 1.2 }"
+            >
               <img
                 src="../../assets/pista.png"
                 alt="Pista"
@@ -47,7 +109,14 @@
                 height="70px"
               />
             </a>
-            <a v-if="!skipUsada" href="#" @click.prevent="usarSkip">
+            <a
+              v-if="!skipUsada"
+              href="#"
+              @click.prevent="usarSkipAnimada"
+              ref="skipRef"
+              v-motion
+              :whileTap="{ rotate: 360, scale: 1.2 }"
+            >
               <img
                 src="../../assets/siguiente.png"
                 alt="Siguiente"
@@ -66,13 +135,35 @@
               width="60px"
               height="60px"
               class="corazon"
+              v-motion
+              :initial="{ scale: 0.7, opacity: 0 }"
+              :enter="{
+                scale: 1,
+                opacity: 1,
+                transition: {
+                  delay: index * 0.1,
+                  type: 'spring',
+                  stiffness: 200,
+                },
+              }"
+              :whileHover="{ scale: 1.15, boxShadow: '0 0 24px #ff0707cc' }"
             />
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="showGameOver" class="game-over-popup">
+    <div
+      v-if="showGameOver"
+      class="game-over-popup"
+      v-motion
+      :initial="{ opacity: 0, scale: 0.7 }"
+      :enter="{
+        opacity: 1,
+        scale: 1,
+        transition: { type: 'spring', stiffness: 180 },
+      }"
+    >
       <div class="popup-content">
         <h2>¡HAS PERDIDO!</h2>
         <p>Rondas completadas: {{ rondasTotales }}</p>
@@ -86,6 +177,9 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useMotion } from "@vueuse/motion";
+import confetti from "canvas-confetti";
 import axios from "axios";
 import { Howl } from "howler";
 
@@ -119,6 +213,37 @@ export default {
     };
   },
 
+  setup() {
+    // Refs para animar pregunta y comodines
+    const preguntaRef = ref(null);
+    const pistaRef = ref(null);
+    const mitadRef = ref(null);
+    const skipRef = ref(null);
+
+    // Motion para pregunta
+    useMotion(preguntaRef, {
+      initial: { opacity: 0, y: 40 },
+      enter: {
+        opacity: 1,
+        y: 0,
+        transition: { type: "spring", stiffness: 120 },
+      },
+      leave: { opacity: 0, y: -40 },
+    });
+
+    // Motion para comodines (ejemplo: escala al usar)
+    const animarComodin = (refEl) => {
+      useMotion(refEl, {
+        initial: { scale: 1 },
+        variants: {
+          usado: { scale: 1.2, rotate: 15, opacity: 0.5 },
+        },
+      });
+    };
+
+    return { preguntaRef, pistaRef, mitadRef, skipRef, animarComodin };
+  },
+
   mounted() {
     this.backgroundMusic = new Howl({
       src: "/src/assets/sounds/trivia.mp3",
@@ -143,18 +268,16 @@ export default {
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
     this.userData = this.$cookies.get("user");
 
-    const preguntaGuardada = sessionStorage.getItem("preguntaActual");
-    const vidasGuardadas = sessionStorage.getItem("vidas");
-    if (preguntaGuardada) {
-      this.preguntas[this.questionIndex] = JSON.parse(preguntaGuardada);
-      this.progreso = sessionStorage.getItem("progreso") || 50;
-      if (vidasGuardadas) {
-        this.vidas = parseInt(vidasGuardadas);
+    // Siempre consulta las vidas reales al backend al cargar la partida
+    this.cargarVidas().then(() => {
+      const preguntaGuardada = sessionStorage.getItem("preguntaActual");
+      if (preguntaGuardada) {
+        this.preguntas[this.questionIndex] = JSON.parse(preguntaGuardada);
+        this.progreso = sessionStorage.getItem("progreso") || 50;
+      } else {
+        this.obtenerPregunta(this.categoriaSeleccionada);
       }
-    } else {
-      this.cargarVidas();
-      this.obtenerPregunta(this.categoriaSeleccionada);
-    }
+    });
   },
 
   beforeDestroy() {
@@ -181,6 +304,19 @@ export default {
   },
 
   methods: {
+    usarPistaAnimada() {
+      this.animarComodin(this.pistaRef);
+      this.usarPista();
+    },
+    usarMitadAnimada() {
+      this.animarComodin(this.mitadRef);
+      this.usarMitad();
+    },
+    usarSkipAnimada() {
+      this.animarComodin(this.skipRef);
+      this.usarSkip();
+    },
+
     usarSkip() {
       if (this.seleccionado) return;
       if (!this.skipUsada) {
@@ -291,15 +427,11 @@ export default {
 
         if (response.data.status === "success") {
           const nuevaPregunta = response.data.data;
-          console.log(nuevaPregunta);
 
-          // Forzar traducción si el idioma es diferente
           if (this.idiomaUsuario !== "es") {
-            //console.log("Iniciando traducción...");
             const preguntaTraducida = await this.obtenerPreguntaTraducida(
               nuevaPregunta
             );
-            //console.log("Pregunta traducida:", preguntaTraducida);
             this.preguntas = [preguntaTraducida];
             sessionStorage.setItem(
               "preguntaActual",
@@ -348,11 +480,25 @@ export default {
         if (response.data.status === "success") {
           this.vidas = response.data.vidas;
           sessionStorage.setItem("vidas", this.vidas);
-          if (response.data.estado === "finalizada") this.mostrarGameOver();
+          if (response.data.estado === "finalizada") {
+            this.mostrarGameOver();
+            return;
+          }
         }
 
         await this.guardarHistorialPregunta(false);
-        this.redirigirASeleccionTema();
+
+        if (this.vidas > 0) {
+          sessionStorage.removeItem("preguntaActual");
+          sessionStorage.removeItem("tiempoRestante");
+          setTimeout(() => {
+            this.seleccionado = false;
+            this.respuestaSeleccionada = null;
+            this.$router.push("/selecciontema");
+          }, 1500);
+        } else {
+          this.redirigirASeleccionTema();
+        }
       } catch (error) {
         console.error("Error procesando tiempo agotado:", error);
       }
@@ -408,6 +554,8 @@ export default {
 
         try {
           if (!esCorrecta) {
+            this.animacionShake = true;
+            setTimeout(() => (this.animacionShake = false), 600);
             const soundWrong = new Howl({
               src: "/src/assets/sounds/wrong.wav",
               volume: 1,
@@ -441,6 +589,14 @@ export default {
                 nombre_categoria: this.categoriaSeleccionada,
                 puntos: puntos,
               });
+
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.7 },
+            });
+            if (window.navigator.vibrate)
+              window.navigator.vibrate([80, 40, 80]);
           }
         } finally {
           setTimeout(() => {
@@ -461,6 +617,7 @@ export default {
           }
         );
         this.vidas = response.data.vidas;
+        sessionStorage.setItem("vidas", this.vidas);
         if (response.data.estado === "finalizada") this.mostrarGameOver();
       } catch (error) {
         console.error("Error de conexión:", error);
@@ -913,6 +1070,30 @@ section {
 .slide-in-hidden {
   opacity: 0;
   animation: scaleInWithDelay 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.shake {
+  animation: shake 0.6s;
 }
 
 @media (max-width: 1024px) {
