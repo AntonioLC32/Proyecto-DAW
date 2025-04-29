@@ -87,7 +87,7 @@
 
 <script>
 import axios from "axios";
-import { Howl } from 'howler';
+import { Howl } from "howler";
 
 export default {
   name: "Juego",
@@ -121,7 +121,7 @@ export default {
 
   mounted() {
     this.backgroundMusic = new Howl({
-      src: '/src/assets/sounds/trivia.mp3',
+      src: "/src/assets/sounds/trivia.mp3",
       loop: false,
       volume: 0.5,
     });
@@ -140,15 +140,17 @@ export default {
 
     window.addEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
     this.idiomaUsuario = navigator.language.split("-")[0] || "es";
-    //this.idiomaUsuario = "en";
-
     this.categoriaSeleccionada = sessionStorage.getItem("categoria");
     this.userData = this.$cookies.get("user");
 
     const preguntaGuardada = sessionStorage.getItem("preguntaActual");
+    const vidasGuardadas = sessionStorage.getItem("vidas");
     if (preguntaGuardada) {
       this.preguntas[this.questionIndex] = JSON.parse(preguntaGuardada);
       this.progreso = sessionStorage.getItem("progreso") || 50;
+      if (vidasGuardadas) {
+        this.vidas = parseInt(vidasGuardadas);
+      }
     } else {
       this.cargarVidas();
       this.obtenerPregunta(this.categoriaSeleccionada);
@@ -157,25 +159,26 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener("tiempoAgotado", this.tiempoAgotadoHandler);
-    if (!this.showGameOver) {
-      sessionStorage.removeItem("preguntaActual");
-      sessionStorage.removeItem("preguntasUsadas");
-    }
+    //if (!this.showGameOver) {
+    //  sessionStorage.removeItem("preguntaActual");
+    //  sessionStorage.removeItem("preguntasUsadas");
+    //}
   },
 
   computed: {
     isRespuestaCorrecta() {
       return (opcion) =>
-        this.seleccionado && opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
+        this.seleccionado &&
+        opcion === this.preguntas[this.questionIndex].correcta;
     },
     isRespuestaIncorrecta() {
       return (opcion) =>
         this.seleccionado &&
-        this.respuestaSeleccionada !== this.preguntas[this.questionIndex].respuestaCorrecta &&
+        this.respuestaSeleccionada !==
+          this.preguntas[this.questionIndex].correcta &&
         this.respuestaSeleccionada === opcion;
     },
   },
-
 
   methods: {
     usarSkip() {
@@ -215,7 +218,9 @@ export default {
           const seconds = elapsed % 60;
           sessionStorage.setItem(
             "tiempoRonda",
-            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+            `${minutes.toString().padStart(2, "0")}:${seconds
+              .toString()
+              .padStart(2, "0")}`
           );
         } else {
           this.backgroundMusic.stop();
@@ -223,7 +228,6 @@ export default {
         }
       }, 1000);
     },
-
 
     async traducirTexto(texto) {
       if (
@@ -265,8 +269,7 @@ export default {
           pregunta: traducciones[0],
           opciones: traducciones.slice(1, 1 + numOpciones),
           dificultad: traducciones[1 + numOpciones],
-          respuestaCorrecta:
-            traducciones[2 + numOpciones] || preguntaOriginal.correcta, // Fallback al original
+          correcta: traducciones[2 + numOpciones] || preguntaOriginal.correcta, // Fallback al original
         };
       } catch (error) {
         console.error("Error traduciendo pregunta:", error);
@@ -344,6 +347,7 @@ export default {
 
         if (response.data.status === "success") {
           this.vidas = response.data.vidas;
+          sessionStorage.setItem("vidas", this.vidas);
           if (response.data.estado === "finalizada") this.mostrarGameOver();
         }
 
@@ -358,18 +362,19 @@ export default {
       const ronda = parseInt(sessionStorage.getItem("ronda"), 10) || 0;
       this.rondasTotales = ronda;
       this.showGameOver = true;
-      this.mitadUsada = false,
-      this.pistaUsada = false,
-      this.skipUsada = false,
-
-      sessionStorage.removeItem("mitadUsada");
+      (this.mitadUsada = false),
+        (this.pistaUsada = false),
+        (this.skipUsada = false),
+        sessionStorage.removeItem("mitadUsada");
       sessionStorage.removeItem("pistaUsada");
       sessionStorage.removeItem("skipUsada");
       sessionStorage.removeItem("id_partida");
       sessionStorage.removeItem("preguntaActual");
       sessionStorage.removeItem("preguntasUsadas");
       sessionStorage.removeItem("tiempoRestante");
-
+      sessionStorage.removeItem("tiempoTranscurrido");
+      sessionStorage.removeItem("tiempoRonda");
+      sessionStorage.setItem("nuevaPartida", "true");
       setTimeout(() => {
         this.backgroundMusic.stop();
         this.$router.push("/").then(() => {
@@ -378,7 +383,6 @@ export default {
         });
       }, 3000);
     },
-
 
     async redirigirASeleccionTema() {
       await axios.post("/api/index.php?action=insertarRonda", {
@@ -399,14 +403,15 @@ export default {
 
         this.respuestaSeleccionada = opcion;
         this.seleccionado = true;
-        const esCorrecta = opcion === this.preguntas[this.questionIndex].respuestaCorrecta;
+        const esCorrecta =
+          opcion === this.preguntas[this.questionIndex].correcta;
 
         try {
           if (!esCorrecta) {
             const soundWrong = new Howl({
-                src: '/src/assets/sounds/wrong.wav',
-                volume: 1,
-              });
+              src: "/src/assets/sounds/wrong.wav",
+              volume: 1,
+            });
             soundWrong.play();
             const response = await axios.post(
               "/api/index.php?action=actualizarVidasPartida",
@@ -423,7 +428,7 @@ export default {
 
           if (esCorrecta) {
             const soundCorrect = new Howl({
-              src: '/src/assets/sounds/correct.wav',
+              src: "/src/assets/sounds/correct.wav",
               volume: 1,
             });
             soundCorrect.play();
@@ -523,17 +528,28 @@ export default {
             const randomIndex = Math.floor(Math.random() * incorrectas.length);
             const opcionAEliminar = incorrectas[randomIndex];
 
-            const eliminarIndex = this.preguntas[this.questionIndex].opciones.indexOf(opcionAEliminar);
+            const eliminarIndex =
+              this.preguntas[this.questionIndex].opciones.indexOf(
+                opcionAEliminar
+              );
             if (eliminarIndex !== -1) {
-              this.preguntas[this.questionIndex].opciones.splice(eliminarIndex, 1);
+              this.preguntas[this.questionIndex].opciones.splice(
+                eliminarIndex,
+                1
+              );
             }
 
             incorrectas.splice(randomIndex, 1);
           }
         } else if (incorrectas.length === 1) {
-          const eliminarIndex = this.preguntas[this.questionIndex].opciones.indexOf(incorrectas[0]);
+          const eliminarIndex = this.preguntas[
+            this.questionIndex
+          ].opciones.indexOf(incorrectas[0]);
           if (eliminarIndex !== -1) {
-            this.preguntas[this.questionIndex].opciones.splice(eliminarIndex, 1);
+            this.preguntas[this.questionIndex].opciones.splice(
+              eliminarIndex,
+              1
+            );
           }
         }
         this.mitadUsada = true;

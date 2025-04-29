@@ -117,11 +117,13 @@
           textosTraducidos["Modo solitario"] || "Modo solitario"
         }}</span>
       </button>
+      <!--
       <button class="juego" @click="navegarA('multijugador')">
         <span class="juego-link">{{
           textosTraducidos["Modo multijugador"] || "Modo multijugador"
         }}</span>
       </button>
+      -->
     </div>
   </section>
 </template>

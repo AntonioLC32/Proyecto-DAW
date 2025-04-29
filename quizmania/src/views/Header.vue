@@ -197,6 +197,13 @@ export default {
   watch: {
     "$route.path"(newPath) {
       if (newPath === "/juego") {
+        if (sessionStorage.getItem("nuevaPartida") === "true") {
+          sessionStorage.setItem("tiempoRestante", "60");
+          this.timer = 60;
+          sessionStorage.removeItem("nuevaPartida"); // Limpia la marca
+        }
+        this.iniciarTimer();
+
         const categoriaOriginal = sessionStorage.getItem("categoria");
         if (categoriaOriginal) {
           if (this.idiomaUsuario !== "es") {
@@ -208,7 +215,6 @@ export default {
           }
           this.imagenCategoria = this.imageMap[categoriaOriginal] || "";
         }
-        this.iniciarTimer();
       } else if (this.timerInterval) {
         clearInterval(this.timerInterval);
         this.timerInterval = null;
@@ -225,7 +231,6 @@ export default {
     window.removeEventListener("resize", this.onResize);
   },
   methods: {
-    
     async cargarUsuario() {
       try {
         const response = await fetch("/api/perfil/select_perfil.php", {
@@ -260,8 +265,8 @@ export default {
       if (this.timerInterval) {
         clearInterval(this.timerInterval);
       }
-      const tiempoGuardado = sessionStorage.getItem("tiempoRestante");
-      if (tiempoGuardado !== null) {
+      let tiempoGuardado = sessionStorage.getItem("tiempoRestante");
+      if (tiempoGuardado !== null && parseInt(tiempoGuardado) > 0) {
         this.timer = parseInt(tiempoGuardado);
       } else {
         this.timer = 60;
@@ -298,7 +303,7 @@ export default {
       this.$nextTick(() => {
         this.timer = 60;
         sessionStorage.setItem("tiempoRestante", "60");
-        this.iniciarTimer(); 
+        this.iniciarTimer();
       });
     },
     preguntaContestada() {
@@ -350,16 +355,21 @@ export default {
       this.traduccionesCargando = false;
     },
     async actualizarConexion() {
-        try {
-            const response = await axios.post('/api/index.php?action=actualizarConexion');
-            if (response.data.status === 'success') {
-                console.log('Conexión actualizada correctamente');
-            } else {
-                console.error('Error al actualizar la conexión:', response.data.error);
-            }
-        } catch (error) {
-            console.error('Error al realizar la solicitud:', error);
+      try {
+        const response = await axios.post(
+          "/api/index.php?action=actualizarConexion"
+        );
+        if (response.data.status === "success") {
+          console.log("Conexión actualizada correctamente");
+        } else {
+          console.error(
+            "Error al actualizar la conexión:",
+            response.data.error
+          );
         }
+      } catch (error) {
+        console.error("Error al realizar la solicitud:", error);
+      }
     },
   },
 };
