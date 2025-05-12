@@ -30,7 +30,7 @@ function traducir($data) {
         }
     }
     
-    $auth_key = "0d41092b-dcb7-4bc5-93c0-4e3c03abff35:fx";
+    $auth_key = "84c24639-4030-4081-a698-2854561ba240:fx";
     $deeplUrl = "https://api-free.deepl.com/v2/translate";
     $postData = [
         'auth_key'    => $auth_key,

@@ -339,13 +339,13 @@ export default {
   display: flex;
   justify-content: center;
   flex-direction: row;
-  margin: 0 10%;
+  margin: 0 auto;
   height: 30%;
-  gap: 20%;
+  width: 40%;
 }
 
 .juego {
-  background: linear-gradient(135deg, #5759cd, #4a4da5);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   border: none;
   border-radius: 25px;
   width: 100%;
@@ -356,14 +356,14 @@ export default {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(87, 89, 205, 0.3);
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
   padding: 0;
 }
 
 .juego:hover {
-  background: linear-gradient(135deg, #4a4da5, #3f418a);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(87, 89, 205, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
 }
 
 .juego-link {
