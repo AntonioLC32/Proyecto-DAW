@@ -26,17 +26,17 @@ cd quizmania
 
 ### Paso 3: Instalar dependencias y ejecutar la aplicación
 
-Navega a la carpeta del proyecto frontend:
+Navega a la carpeta del proyecto quizmania:
 
 ```bash
-cd frontend
+cd quizmania
 npm install
 npm run dev
 ```
 
 ### Paso 4: Acceder a la aplicación
 
-1. Abre tu navegador y accede a la URL proporcionada por Vite (normalmente http://localhost:5173)
+1. Abre tu navegador y accede a la URL proporcionada por Vite (http://localhost:5173)
 2. Haz clic en el icono de usuario en el encabezado
 3. Puedes crear una nueva cuenta o usar estas credenciales predefinidas:
    - **Usuario:** admin
