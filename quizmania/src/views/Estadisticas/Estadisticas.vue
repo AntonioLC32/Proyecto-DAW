@@ -13,7 +13,12 @@
               v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
               :src="getImageUserUrl(perfil.imagen)"
               alt="Perfil Image"
-              style="border-radius: 50%; max-width: 250px"
+              style="
+                border-radius: 50%;
+                max-width: 250px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                  0 8px 20px rgba(0, 0, 0, 0.1);
+              "
             />
             <img
               v-else
@@ -409,27 +414,24 @@ section {
   color: #fff;
 }
 
-/* estadisticas GRID */
 .estadisticas {
   width: 70%;
   background-color: #5759cd;
   border-radius: 8px;
   padding: 20px;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: stretch;
   filter: drop-shadow(0 2px 2px #00000073);
   height: 680px;
 }
 
 .estadisticas-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 15px;
   width: 100%;
-  max-height: 600px;
-  overflow-y: auto;
-  padding-right: 10px;
+  height: 100%;
 }
 
 .estadisticas-item {
@@ -441,9 +443,10 @@ section {
   font-weight: bold;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   filter: drop-shadow(0 2px 2px #00000073);
+  height: 100%;
 }
 
 .cat-img {
@@ -484,6 +487,7 @@ section {
 
 *::-webkit-scrollbar-track {
   background-color: #8d89f9;
+  border-radius: 20px;
 }
 
 *::-webkit-scrollbar-thumb {

@@ -2,7 +2,7 @@
   <section>
     <div class="perfil">
       <div class="perfil-title">
-        <h1>{{ textosTraducidos["PERFIL"] || "PERFIL" }}</h1>
+        <h1>{{ textosTraducidos["Perfil"] || "Perfil" }}</h1>
       </div>
 
       <div class="division">
@@ -12,19 +12,31 @@
               v-if="previewImage"
               :src="previewImage"
               alt="Preview Image"
-              style="border-radius: 50%"
+              style="
+                border-radius: 50%;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                  0 8px 20px rgba(0, 0, 0, 0.1);
+              "
             />
             <img
               v-else-if="user?.imagen"
               :src="getImageUserUrl(user.imagen)"
               alt="Perfil Image"
-              style="border-radius: 50%"
+              style="
+                border-radius: 50%;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                  0 8px 20px rgba(0, 0, 0, 0.1);
+              "
             />
             <img
               v-else
               src="../../assets/users/default/default.png"
               alt="Imagen predeterminada"
-              style="border-radius: 50%"
+              style="
+                border-radius: 50%;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                  0 8px 20px rgba(0, 0, 0, 0.1);
+              "
             />
           </div>
           <div class="perfil_img_update">
@@ -131,7 +143,7 @@
                     placeholder="Tu correo"
                     class="form-control mb-3"
                   />
-                  
+
                   <button
                     class="btn btn-profile-update w-100 mt-3"
                     type="submit"
@@ -153,8 +165,8 @@
                   <div class="estadistica-item">
                     <h4>
                       {{
-                        textosTraducidos["Pos. Última Partida"] ||
-                        "Pos. Última Partida"
+                        textosTraducidos["Posición Ranking"] ||
+                        "Posición Ranking"
                       }}
                     </h4>
                     <p class="estadistica-valor">
@@ -164,8 +176,7 @@
                   <div class="estadistica-item">
                     <h4>
                       {{
-                        textosTraducidos["Puntos Última Partida"] ||
-                        "Puntos Última Partida"
+                        textosTraducidos["Puntos Totales"] || "Puntos Totales"
                       }}
                     </h4>
                     <p class="estadistica-valor">
@@ -302,7 +313,7 @@ export default {
     async traducirContenido() {
       this.traduccionesCargando = true;
       const textos = [
-        "PERFIL",
+        "Perfil",
         "Cambiar Imagen",
         "Confirmar Cambio",
         "¡Comparte tu perfil con tus amigos!",
@@ -311,8 +322,8 @@ export default {
         "Nombre de usuario",
         "Correo Electrónico",
         "Guardar Ajustes",
-        "Pos. Última Partida",
-        "Puntos Última Partida",
+        "Posición Ranking",
+        "Puntos Totales",
         "Categoría Destacada",
         "Ver tus estadísticas completas",
         "Cargando...",

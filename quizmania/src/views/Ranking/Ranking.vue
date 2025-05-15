@@ -12,13 +12,21 @@
             v-if="perfil.imagen && perfil.imagen !== defaultImagePath"
             :src="getImageUserUrl(perfil.imagen)"
             alt="Perfil Image"
-            style="border-radius: 50%"
+            style="
+              border-radius: 50%;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                0 8px 20px rgba(0, 0, 0, 0.1);
+            "
           />
           <img
             v-else
             :src="defaultImagePath"
             alt="Imagen predeterminada"
-            style="border-radius: 50%"
+            style="
+              border-radius: 50%;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+                0 8px 20px rgba(0, 0, 0, 0.1);
+            "
           />
           <h3 class="text-white">
             {{
@@ -31,7 +39,7 @@
             </p>
             <div class="d-flex posicion">
               <p class="me-2">
-                {{ textosTraducidos["Última posición:"] || "Última posición:" }}
+                {{ textosTraducidos["Posición:"] || "Posición:" }}
               </p>
               <div class="num text-white">
                 <u
@@ -161,7 +169,7 @@ export default {
       const textos = [
         "Ránking Global",
         "ESTADÍSTICAS",
-        "Última posición:",
+        "Posición:",
         "Jugador",
         "Posición",
         "Puntos",
